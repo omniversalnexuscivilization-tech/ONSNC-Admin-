@@ -33,14 +33,14 @@ const previewCollaborationScore = document.getElementById('previewCollaborationS
 const previewCommunityImpact = document.getElementById('previewCommunityImpact');
 const previewDateIssued = document.getElementById('previewDateIssued');
 const previewMentorName = document.getElementById('previewMentorName');
-const previewCertificateId = document.getElementById('previewCertificateId');
-const previewLlpId = document.getElementById('previewLlpId');
+const previewCredentialId = document.getElementById('previewCredentialId');
 const previewVerificationUrl = document.getElementById('previewVerificationUrl');
-const previewDigitalSignature = document.getElementById('previewDigitalSignature');
+const previewSignature = document.getElementById('previewSignature');
 
-// Mobile navigation
-const mobileNav = document.querySelector('.mobile-nav');
-const navbarToggler = document.querySelector('.navbar-toggler');
+// Mobile navigation elements
+const mobileMenuToggler = document.getElementById('mobileMenuToggler');
+const mobileNav = document.getElementById('mobileNav');
+const closeMenuBtn = document.getElementById('closeMenuBtn');
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -76,25 +76,42 @@ document.addEventListener('DOMContentLoaded', function() {
     saveTemplateBtn.addEventListener('click', saveTemplate);
     
     // Mobile navigation toggle
-    navbarToggler.addEventListener('click', function() {
-        mobileNav.classList.toggle('show');
-    });
+    mobileMenuToggler.addEventListener('click', toggleMobileMenu);
+    closeMenuBtn.addEventListener('click', toggleMobileMenu);
     
-    // Close mobile nav when clicking outside
-    document.addEventListener('click', function(event) {
-        if (!navbarToggler.contains(event.target) && !mobileNav.contains(event.target)) {
-            mobileNav.classList.remove('show');
-        }
-    });
-    
-    // Close mobile nav when clicking on a link
+    // Close mobile menu when clicking on a link
     const mobileNavLinks = document.querySelectorAll('.mobile-nav-menu a');
     mobileNavLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            mobileNav.classList.remove('show');
-        });
+        link.addEventListener('click', toggleMobileMenu);
+    });
+    
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(event) {
+        if (mobileNav.classList.contains('active') && 
+            !mobileNav.contains(event.target) && 
+            !mobileMenuToggler.contains(event.target)) {
+            toggleMobileMenu();
+        }
     });
 });
+
+// Toggle mobile menu
+function toggleMobileMenu() {
+    mobileNav.classList.toggle('active');
+    
+    // Add/remove overlay
+    let overlay = document.querySelector('.mobile-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.className = 'mobile-overlay';
+        document.body.appendChild(overlay);
+    }
+    
+    overlay.classList.toggle('active');
+    
+    // Close overlay when clicked
+    overlay.addEventListener('click', toggleMobileMenu);
+}
 
 // Set up live preview functionality
 function setupLivePreview() {
@@ -133,23 +150,19 @@ function updateCertificatePreview() {
     previewLearnerName.textContent = learnerNameInput.value || '[Learner Name]';
     previewInstitution.textContent = communityInstitutionInput.value || '[Community / Institution / Learning Hub]';
     previewProgramTitle.textContent = programTitleInput.value || '[Program Title]';
-    previewBadgeName.textContent = badgeNameInput.value || '[Insert Badge Name]';
-    previewKnowledgeScore.textContent = knowledgeScoreInput.value || '[Knowledge_Score / Reflection]';
-    previewCreativeSkill.textContent = creativeSkillInput.value || '[Creative_Skill]';
-    previewCollaborationScore.textContent = collaborationScoreInput.value || '[Collaboration_Score]';
-    previewCommunityImpact.textContent = communityImpactInput.value || '[Community_Impact]';
-    previewDateIssued.textContent = formatDate(dateIssuedInput.value) || '[Date_Issued]';
+    previewBadgeName.textContent = `Metamorphic Badge: ${badgeNameInput.value}` || 'Metamorphic Badge: [Insert Badge Name]';
+    previewKnowledgeScore.textContent = knowledgeScoreInput.value || '[KnowledgeScore]';
+    previewCreativeSkill.textContent = creativeSkillInput.value || '[CreativeSkill]';
+    previewCollaborationScore.textContent = collaborationScoreInput.value || '[CollaborationScore]';
+    previewCommunityImpact.textContent = communityImpactInput.value || '[CommunityImpact]';
+    previewDateIssued.textContent = formatDate(dateIssuedInput.value) || 'October 31, 2025';
     previewMentorName.textContent = mentorNameInput.value || '[Mentor_Name / DAO Council]';
-    previewCertificateId.textContent = certificateIdInput.value || '[Certificate_ID]';
-    previewLlpId.textContent = llpIdInput.value || '[LLP_ID]';
     
-    // Generate verification URL and digital signature based on certificate ID
-    if (certificateIdInput.value) {
-        previewVerificationUrl.textContent = `https://verify.education.onsnc.org/${certificateIdInput.value}`;
-        previewDigitalSignature.textContent = generateDigitalSignature(certificateIdInput.value);
+    // Generate digital signature
+    if (learnerNameInput.value) {
+        previewSignature.textContent = generateDigitalSignature(learnerNameInput.value);
     } else {
-        previewVerificationUrl.textContent = '[Verification_URL]';
-        previewDigitalSignature.textContent = '[Signature or DAO hash]';
+        previewSignature.textContent = 'Digital Signature';
     }
 }
 
@@ -170,25 +183,25 @@ function generatePDF() {
     html2canvas(element, {
         scale: 2,
         useCORS: true,
-        logging: false
+        logging: false,
+        width: element.scrollWidth,
+        height: element.scrollHeight
     }).then(canvas => {
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('p', 'mm', 'a4');
-        const imgWidth = 210;
-        const pageHeight = 295;
-        const imgHeight = canvas.height * imgWidth / canvas.width;
-        let heightLeft = imgHeight;
-        let position = 0;
         
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+        // Calculate dimensions to fit the certificate on one page
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
         
-        while (heightLeft >= 0) {
-            position = heightLeft - imgHeight;
-            pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
-        }
+        const imgWidth = pageWidth;
+        const imgHeight = (canvas.height * pageWidth) / canvas.width;
+        
+        // Center the certificate on the page
+        const x = 0;
+        const y = (pageHeight - imgHeight) / 2;
+        
+        pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
         
         const fileName = `UNETS_Certificate_${learnerNameInput.value.replace(/\s+/g, '_')}.pdf`;
         pdf.save(fileName);
@@ -218,7 +231,7 @@ function saveTemplate() {
         savedAt: new Date().toISOString()
     };
     
-    // Save to localStorage (in a real app, this would be saved to a database)
+    // Save to localStorage
     let templates = JSON.parse(localStorage.getItem('unetsTemplates')) || [];
     templates.push(templateData);
     localStorage.setItem('unetsTemplates', JSON.stringify(templates));
@@ -232,19 +245,21 @@ function generateCertificateId() {
     const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
     const certificateId = `UNETS-CERT-${new Date().getFullYear()}-${timestamp}${random}`;
     certificateIdInput.value = certificateId;
-    updateCertificatePreview();
+    previewCredentialId.textContent = certificateId;
+    previewVerificationUrl.textContent = `https://verify.education.onsnc.org/${certificateId}`;
 }
 
 // Format date for display
 function formatDate(dateString) {
-    if (!dateString) return '[Date_Issued]';
+    if (!dateString) return 'October 31, 2025';
     
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString('en-US', options);
 }
 
 // Generate a mock digital signature
-function generateDigitalSignature(certificateId) {
+function generateDigitalSignature(learnerName) {
     // This is a simplified mock - in a real system, this would be a proper hash
-    return `0x${btoa(certificateId).replace(/=/g, '').substring(0, 40)}`;
+    const baseString = learnerName + new Date().toISOString();
+    return `Sig: ${btoa(baseString).substring(0, 15)}...`;
 }
