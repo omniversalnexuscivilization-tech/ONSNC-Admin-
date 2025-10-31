@@ -130,6 +130,10 @@ body {
     box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
 }
 
+.address-section {
+    margin: 15px 0;
+}
+
 .main-dashboard {
     display: grid;
     gap: 25px;
@@ -452,6 +456,10 @@ body {
     gap: 5px;
 }
 
+.detail-item.full-width {
+    grid-column: 1 / -1;
+}
+
 .detail-label {
     font-size: 0.8rem;
     opacity: 0.7;
@@ -509,4 +517,3 @@ body {
     .form-grid { grid-template-columns: 1fr; }
     .form-actions { flex-direction: column; }
 }
-
