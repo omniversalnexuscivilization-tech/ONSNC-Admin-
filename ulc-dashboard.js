@@ -38,6 +38,10 @@ const previewLlpId = document.getElementById('previewLlpId');
 const previewVerificationUrl = document.getElementById('previewVerificationUrl');
 const previewDigitalSignature = document.getElementById('previewDigitalSignature');
 
+// Mobile navigation
+const mobileNav = document.querySelector('.mobile-nav');
+const navbarToggler = document.querySelector('.navbar-toggler');
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     // Set current date as default
@@ -70,6 +74,26 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Save template button
     saveTemplateBtn.addEventListener('click', saveTemplate);
+    
+    // Mobile navigation toggle
+    navbarToggler.addEventListener('click', function() {
+        mobileNav.classList.toggle('show');
+    });
+    
+    // Close mobile nav when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!navbarToggler.contains(event.target) && !mobileNav.contains(event.target)) {
+            mobileNav.classList.remove('show');
+        }
+    });
+    
+    // Close mobile nav when clicking on a link
+    const mobileNavLinks = document.querySelectorAll('.mobile-nav-menu a');
+    mobileNavLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            mobileNav.classList.remove('show');
+        });
+    });
 });
 
 // Set up live preview functionality
@@ -139,6 +163,10 @@ function generatePDF() {
         return;
     }
     
+    // Show loading state
+    generateCertificateBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
+    generateCertificateBtn.disabled = true;
+    
     html2canvas(element, {
         scale: 2,
         useCORS: true,
@@ -164,6 +192,10 @@ function generatePDF() {
         
         const fileName = `UNETS_Certificate_${learnerNameInput.value.replace(/\s+/g, '_')}.pdf`;
         pdf.save(fileName);
+        
+        // Reset button state
+        generateCertificateBtn.innerHTML = '<i class="fas fa-file-pdf me-2"></i>Generate PDF Certificate';
+        generateCertificateBtn.disabled = false;
     });
 }
 
@@ -216,4 +248,3 @@ function generateDigitalSignature(certificateId) {
     // This is a simplified mock - in a real system, this would be a proper hash
     return `0x${btoa(certificateId).replace(/=/g, '').substring(0, 40)}`;
 }
-
