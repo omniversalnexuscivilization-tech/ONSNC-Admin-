@@ -1,4 +1,4 @@
-// body-script.js
+// body-script.js - UPDATED VERSION
 document.addEventListener('DOMContentLoaded', function() {
   // Form submission handler
   const contactForm = document.getElementById('contactForm');
@@ -90,16 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
     observer.observe(card);
   });
   
-  // Add click handlers for explore links
-  const exploreLinks = document.querySelectorAll('.explore');
-  exploreLinks.forEach(link => {
-    link.addEventListener('click', function(e) {
-      // In a real application, this would navigate to the page
-      // For demo purposes, we'll show a toast
-      e.preventDefault();
-      const target = this.getAttribute('href');
-      showToast(`Opening ${target} — this would navigate to the detailed page in a live system.`);
-    });
-  });
+  // REMOVED: The code that was preventing explore links from working
+  // Now explore links will work normally
 });
 
