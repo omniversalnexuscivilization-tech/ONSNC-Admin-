@@ -44,6 +44,7 @@ function updateULPCard(formData) {
     document.getElementById('card-name').textContent = formData.fullName;
     document.getElementById('card-citizen-id').textContent = formData.citizenId;
     document.getElementById('card-archetype').textContent = formData.archetype;
+    document.getElementById('card-address').textContent = formData.address;
     document.getElementById('card-education').textContent = formData.education;
     document.getElementById('card-health').textContent = formData.health;
     document.getElementById('card-environment').textContent = formData.environment;
@@ -77,6 +78,7 @@ function updateDashboard(formData) {
     document.getElementById('dashboard-name').textContent = formData.fullName;
     document.getElementById('dashboard-citizen-id').textContent = `Global Citizen ID: ${formData.citizenId}`;
     document.getElementById('dashboard-archetype').textContent = formData.archetype;
+    document.getElementById('dashboard-address').innerHTML = formData.address.replace(/\n/g, '<br>');
     
     // Update photo in dashboard if available
     if (formData.photo) {
@@ -145,6 +147,7 @@ function resetForm() {
     document.getElementById('card-name').textContent = '-';
     document.getElementById('card-citizen-id').textContent = '-';
     document.getElementById('card-archetype').textContent = '-';
+    document.getElementById('card-address').textContent = '-';
     document.getElementById('card-education').textContent = '-';
     document.getElementById('card-health').textContent = '-';
     document.getElementById('card-environment').textContent = '-';
@@ -160,6 +163,7 @@ function resetForm() {
     document.getElementById('dashboard-name').textContent = 'Aari Sen';
     document.getElementById('dashboard-citizen-id').textContent = 'Global Citizen ID: QM-2025-789';
     document.getElementById('dashboard-archetype').textContent = '🌱 Guardian–Innovator';
+    document.getElementById('dashboard-address').innerHTML = 'Sector 7, Harmony District<br>New Terra Prime';
     document.getElementById('dashboard-avatar').innerHTML = '👤';
     
     // Reset all stats to default
@@ -201,6 +205,7 @@ document.addEventListener('DOMContentLoaded', function() {
             fullName: document.getElementById('full-name').value,
             citizenId: document.getElementById('citizen-id').value,
             archetype: document.getElementById('archetype').value,
+            address: document.getElementById('address').value,
             photo: document.getElementById('photo').files[0],
             signature: document.getElementById('signature').value,
             education: document.getElementById('education').value,
@@ -220,4 +225,3 @@ document.addEventListener('DOMContentLoaded', function() {
     // Reset button
     document.getElementById('reset-btn').addEventListener('click', resetForm);
 });
-
