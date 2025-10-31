@@ -6,7 +6,7 @@
 
 ## 🌍 Overview
 
-**ONSNC Admin** is a unified administrative dashboard that powers the management, coordination, and operation of the **Omniversal Nexus Smart Civilization (ONSNC)** ecosystem.  
+**ONSNC Admin** is a unified administrative dashboard that powers the management, coordination, and operation of the **Omniversal NovumSapiens and SentienceNeo for Nexus Civilization (ONSNC)** ecosystem.  
 It provides a secure and intelligent interface for handling data, generating certificates, and configuring systems for **Education 5.0**, **Civilization 3.0**, and **SHCE (Smart Holistic Community Education)** village pilot models.
 
 ---
