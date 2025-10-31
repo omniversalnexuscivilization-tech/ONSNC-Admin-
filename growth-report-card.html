@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UIENC Learner Growth Report System</title>
+    <link rel="stylesheet" href="grc-styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-section">
+                <h1>🌐 UIENC</h1>
+                <p class="tagline">Universal Education Network Transformation System</p>
+            </div>
+            <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+        <div class="sub-header">
+            <p>Council by UIENC | Civilization 3.0 | Education 5.0</p>
+        </div>
+    </header>
+
+    <!-- Navigation Menu -->
+    <nav class="nav-menu" id="navMenu">
+        <button class="close-nav" id="closeNav">✕</button>
+        <ul>
+            <li><a href="#dashboard">📊 Dashboard</a></li>
+            <li><a href="#learner-entry">👤 Learner Entry</a></li>
+            <li><a href="#report-card">📄 Report Card</a></li>
+            <li><a href="#previous-reports">📁 Previous Reports</a></li>
+            <li><a href="#settings">⚙️ Settings</a></li>
+            <li><a href="#help">❓ Help</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="page-title">
+                <h2>🎓 Learner Growth Portfolio System</h2>
+                <p>Quarter 2, 2025 | Markless Assessment Framework</p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-secondary" id="prevReportsBtn">📁 Previous Reports</button>
+                <button class="btn btn-secondary" id="saveDataBtn">💾 Save Data</button>
+                <button class="btn btn-primary" id="clearFormBtn">🔄 New Entry</button>
+            </div>
+
+            <!-- Data Entry Form -->
+            <section class="data-entry-section">
+                <h3>📝 Learner Information Entry</h3>
+                <form id="learnerForm">
+                    <!-- Personal Information -->
+                    <div class="form-section">
+                        <h4>Personal Details</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="learnerName">Full Name *</label>
+                                <input type="text" id="learnerName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="age">Age *</label>
+                                <input type="number" id="age" min="5" max="25" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="learningPod">Learning Pod *</label>
+                                <input type="text" id="learningPod" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="location">Location *</label>
+                                <input type="text" id="location" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="mentor">Primary Mentor *</label>
+                                <input type="text" id="mentor" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="period">Assessment Period *</label>
+                                <input type="text" id="period" placeholder="e.g., April - June 2025" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="passportId">Life Passport ID *</label>
+                                <input type="text" id="passportId" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="learnerPhoto">Learner Photo</label>
+                                <input type="file" id="learnerPhoto" accept="image/*">
+                                <small>Upload learner's photo (optional)</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Growth Dimensions -->
+                    <div class="form-section">
+                        <h4>Growth Dimensions Assessment</h4>
+                        <div class="dimension-inputs">
+                            <div class="dimension-item">
+                                <label>🧠 Critical Thinking & Problem-Solving</label>
+                                <select class="rating-select" id="dim1Rating" required>
+                                    <option value="">Select Rating</option>
+                                    <option value="1">★ Beginning</option>
+                                    <option value="2">★★ Developing</option>
+                                    <option value="3">★★★ Emerging</option>
+                                    <option value="4">★★★★ Maturing</option>
+                                    <option value="5">★★★★★ Contributing</option>
+                                </select>
+                                <input type="number" class="progress-input" id="dim1Progress" placeholder="Progress %" min="0" max="100" required>
+                                <textarea id="dim1Details" placeholder="Evidence and observations..." required></textarea>
+                            </div>
+
+                            <div class="dimension-item">
+                                <label>💡 Creativity & Innovation</label>
+                                <select class="rating-select" id="dim2Rating" required>
+                                    <option value="">Select Rating</option>
+                                    <option value="1">★ Beginning</option>
+                                    <option value="2">★★ Developing</option>
+                                    <option value="3">★★★ Emerging</option>
+                                    <option value="4">★★★★ Maturing</option>
+                                    <option value="5">★★★★★ Contributing</option>
+                                </select>
+                                <input type="number" class="progress-input" id="dim2Progress" placeholder="Progress %" min="0" max="100" required>
+                                <textarea id="dim2Details" placeholder="Evidence and observations..." required></textarea>
+                            </div>
+
+                            <div class="dimension-item">
+                                <label>💻 Digital & AI Literacy</label>
+                                <select class="rating-select" id="dim3Rating" required>
+                                    <option value="">Select Rating</option>
+                                    <option value="1">★ Beginning</option>
+                                    <option value="2">★★ Developing</option>
+                                    <option value="3">★★★ Emerging</option>
+                                    <option value="4">★★★★ Maturing</option>
+                                    <option value="5">★★★★★ Contributing</option>
+                                </select>
+                                <input type="number" class="progress-input" id="dim3Progress" placeholder="Progress %" min="0" max="100" required>
+                                <textarea id="dim3Details" placeholder="Evidence and observations..." required></textarea>
+                            </div>
+
+                            <div class="dimension-item">
+                                <label>❤️ Emotional Intelligence</label>
+                                <select class="rating-select" id="dim4Rating" required>
+                                    <option value="">Select Rating</option>
+                                    <option value="1">★ Beginning</option>
+                                    <option value="2">★★ Developing</option>
+                                    <option value="3">★★★ Emerging</option>
+                                    <option value="4">★★★★ Maturing</option>
+                                    <option value="5">★★★★★ Contributing</option>
+                                </select>
+                                <input type="number" class="progress-input" id="dim4Progress" placeholder="Progress %" min="0" max="100" required>
+                                <textarea id="dim4Details" placeholder="Evidence and observations..." required></textarea>
+                            </div>
+
+                            <div class="dimension-item">
+                                <label>👥 Collaboration & Leadership</label>
+                                <select class="rating-select" id="dim5Rating" required>
+                                    <option value="">Select Rating</option>
+                                    <option value="1">★ Beginning</option>
+                                    <option value="2">★★ Developing</option>
+                                    <option value="3">★★★ Emerging</option>
+                                    <option value="4">★★★★ Maturing</option>
+                                    <option value="5">★★★★★ Contributing</option>
+                                </select>
+                                <input type="number" class="progress-input" id="dim5Progress" placeholder="Progress %" min="0" max="100" required>
+                                <textarea id="dim5Details" placeholder="Evidence and observations..." required></textarea>
+                            </div>
+
+                            <div class="dimension-item">
+                                <label>⚖️ Ethical Reasoning</label>
+                                <select class="rating-select" id="dim6Rating" required>
+                                    <option value="">Select Rating</option>
+                                    <option value="1">★ Beginning</option>
+                                    <option value="2">★★ Developing</option>
+                                    <option value="3">★★★ Emerging</option>
+                                    <option value="4">★★★★ Maturing</option>
+                                    <option value="5">★★★★★ Contributing</option>
+                                </select>
+                                <input type="number" class="progress-input" id="dim6Progress" placeholder="Progress %" min="0" max="100" required>
+                                <textarea id="dim6Details" placeholder="Evidence and observations..." required></textarea>
+                            </div>
+
+                            <div class="dimension-item">
+                                <label>🌍 Environmental Consciousness</label>
+                                <select class="rating-select" id="dim7Rating" required>
+                                    <option value="">Select Rating</option>
+                                    <option value="1">★ Beginning</option>
+                                    <option value="2">★★ Developing</option>
+                                    <option value="3">★★★ Emerging</option>
+                                    <option value="4">★★★★ Maturing</option>
+                                    <option value="5">★★★★★ Contributing</option>
+                                </select>
+                                <input type="number" class="progress-input" id="dim7Progress" placeholder="Progress %" min="0" max="100" required>
+                                <textarea id="dim7Details" placeholder="Evidence and observations..." required></textarea>
+                            </div>
+
+                            <div class="dimension-item">
+                                <label>🎯 Self-Directed Learning</label>
+                                <select class="rating-select" id="dim8Rating" required>
+                                    <option value="">Select Rating</option>
+                                    <option value="1">★ Beginning</option>
+                                    <option value="2">★★ Developing</option>
+                                    <option value="3">★★★ Emerging</option>
+                                    <option value="4">★★★★ Maturing</option>
+                                    <option value="5">★★★★★ Contributing</option>
+                                </select>
+                                <input type="number" class="progress-input" id="dim8Progress" placeholder="Progress %" min="0" max="100" required>
+                                <textarea id="dim8Details" placeholder="Evidence and observations..." required></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Projects Section -->
+                    <div class="form-section">
+                        <h4>Major Projects (Add up to 4)</h4>
+                        <div id="projectsContainer">
+                            <div class="project-entry">
+                                <input type="text" placeholder="Project Title" class="project-title">
+                                <input type="text" placeholder="Duration (e.g., 3 weeks)" class="project-duration">
+                                <input type="text" placeholder="Tags (comma separated)" class="project-tags">
+                                <textarea placeholder="Project description..." class="project-description"></textarea>
+                                <textarea placeholder="Measurable impact..." class="project-impact"></textarea>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-secondary" id="addProjectBtn">➕ Add Project</button>
+                    </div>
+
+                    <!-- Reflections Section -->
+                    <div class="form-section">
+                        <h4>Multiple Perspectives & Voices</h4>
+                        <div class="reflection-inputs">
+                            <div class="reflection-item">
+                                <label>🌟 Learner's Voice</label>
+                                <textarea id="learnerVoice" placeholder="Learner's self-reflection..." required></textarea>
+                            </div>
+                            <div class="reflection-item">
+                                <label>👨‍🏫 Primary Mentor</label>
+                                <textarea id="mentorVoice" placeholder="Mentor's observation..." required></textarea>
+                            </div>
+                            <div class="reflection-item">
+                                <label>👭 Peer Mentor</label>
+                                <textarea id="peerVoice" placeholder="Peer feedback..."></textarea>
+                            </div>
+                            <div class="reflection-item">
+                                <label>👪 Parent/Guardian</label>
+                                <textarea id="parentVoice" placeholder="Parent observation..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contribution Index -->
+                    <div class="form-section">
+                        <h4>Life Contribution Index</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="communityService">Community Service (0-25)</label>
+                                <input type="number" id="communityService" min="0" max="25" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="environmentalAction">Environmental Action (0-25)</label>
+                                <input type="number" id="environmentalAction" min="0" max="25" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="knowledgeSharing">Knowledge Sharing (0-25)</label>
+                                <input type="number" id="knowledgeSharing" min="0" max="25" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="culturalPreservation">Cultural Preservation (0-15)</label>
+                                <input type="number" id="culturalPreservation" min="0" max="15" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="innovation">Innovation (0-10)</label>
+                                <input type="number" id="innovation" min="0" max="10" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-large">🎯 Generate Report Card</button>
+                </form>
+            </section>
+
+            <!-- Report Card Preview -->
+            <section class="report-card-section" id="reportCardSection" style="display: none;">
+                <div class="report-actions">
+                    <button class="btn btn-primary" id="downloadPdfBtn">📥 Download PDF</button>
+                    <button class="btn btn-secondary" id="printBtn">🖨️ Print</button>
+                </div>
+                <div id="reportCard" class="report-card-container">
+                    <!-- Report card will be dynamically generated here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Authority by DAO Council</h4>
+                <p>Decentralized Autonomous Organization | UIENC 2025</p>
+            </div>
+            <div class="footer-section">
+                <p>🔐 Blockchain Authenticated Portfolio System</p>
+                <p>© 2025 Universal Education Network Transformation System</p>
+            </div>
+            <div class="footer-section">
+                <p>Civilization 3.0 | Education 5.0</p>
+                <p>Building the Future of Learning</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Previous Reports Modal -->
+    <div id="reportsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>📁 Previous Reports</h3>
+            <div id="reportsList"></div>
+        </div>
+    </div>
+
+    <script src="grc-script.js"></script>
+</body>
+</html>
