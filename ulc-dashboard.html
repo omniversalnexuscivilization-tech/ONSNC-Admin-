@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNETS Admin Dashboard | ONSNC 3.0</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="ulc-dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>UNETS Admin</h3>
+                <p>Universal Nexus Education Transformation System</p>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="#"><i class="fas fa-user-graduate"></i> Learners</a></li>
+                    <li><a href="#"><i class="fas fa-certificate"></i> Certificates</a></li>
+                    <li><a href="#"><i class="fas fa-passport"></i> Life Passports</a></li>
+                    <li><a href="#"><i class="fas fa-chart-line"></i> Growth Reports</a></li>
+                    <li><a href="#"><i class="fas fa-clipboard-check"></i> Assessments</a></li>
+                    <li><a href="#"><i class="fas fa-cogs"></i> System Settings</a></li>
+                    <li><a href="#"><i class="fas fa-database"></i> Data Management</a></li>
+                    <li><a href="#"><i class="fas fa-users-cog"></i> Admin Users</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Navbar -->
+            <div class="top-navbar">
+                <div class="navbar-brand">
+                    <i class="fas fa-graduation-cap me-2"></i>UNETS Admin Dashboard
+                </div>
+                <div class="user-menu">
+                    <div class="user-avatar">AD</div>
+                    <div>
+                        <div class="fw-bold">Admin User</div>
+                        <div class="small text-muted">Super Administrator</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Dashboard Stats -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card stats-card">
+                            <i class="fas fa-user-graduate"></i>
+                            <h3>1,248</h3>
+                            <p>Total Learners</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stats-card">
+                            <i class="fas fa-certificate"></i>
+                            <h3>856</h3>
+                            <p>Certificates Issued</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stats-card">
+                            <i class="fas fa-chart-line"></i>
+                            <h3>94%</h3>
+                            <p>Completion Rate</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stats-card">
+                            <i class="fas fa-tasks"></i>
+                            <h3>42</h3>
+                            <p>Pending Actions</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Certificate Generator Section -->
+                <div class="row">
+                    <div class="col-lg-5">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Certificate Data Entry</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="certificateForm">
+                                    <div class="mb-3">
+                                        <label for="learnerName" class="form-label">Learner Name</label>
+                                        <input type="text" class="form-control" id="learnerName" placeholder="Enter full name">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="communityInstitution" class="form-label">Community / Institution / Learning Hub</label>
+                                        <input type="text" class="form-control" id="communityInstitution" placeholder="Enter institution name">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="programTitle" class="form-label">Program Title</label>
+                                        <input type="text" class="form-control" id="programTitle" placeholder="Enter program title">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="badgeName" class="form-label">Metamorphic Badge Name</label>
+                                        <input type="text" class="form-control" id="badgeName" placeholder="Enter badge name">
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="knowledgeScore" class="form-label">Knowledge & Inquiry Score</label>
+                                            <input type="text" class="form-control" id="knowledgeScore" placeholder="e.g., 95%">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="creativeSkill" class="form-label">Creativity & Innovation</label>
+                                            <input type="text" class="form-control" id="creativeSkill" placeholder="e.g., Advanced">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="collaborationScore" class="form-label">Collaboration & Compassion</label>
+                                            <input type="text" class="form-control" id="collaborationScore" placeholder="e.g., 88%">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="communityImpact" class="form-label">Leadership & Contribution</label>
+                                            <input type="text" class="form-control" id="communityImpact" placeholder="e.g., High Impact">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="dateIssued" class="form-label">Date Issued</label>
+                                            <input type="date" class="form-control" id="dateIssued">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="mentorName" class="form-label">Verified By</label>
+                                            <input type="text" class="form-control" id="mentorName" placeholder="Mentor or DAO Council">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="certificateId" class="form-label">Certificate ID</label>
+                                            <input type="text" class="form-control" id="certificateId" placeholder="Auto-generated">
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="llpId" class="form-label">Lifelong Learning Passport ID</label>
+                                            <input type="text" class="form-control" id="llpId" placeholder="LLP ID">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-grid gap-2">
+                                        <button type="button" class="btn btn-primary" id="previewCertificateBtn">
+                                            <i class="fas fa-eye me-2"></i>Preview Certificate
+                                        </button>
+                                        <button type="button" class="btn btn-gold" id="generateCertificateBtn">
+                                            <i class="fas fa-file-pdf me-2"></i>Generate PDF Certificate
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary" id="saveTemplateBtn">
+                                            <i class="fas fa-save me-2"></i>Save as Template
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-7">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Certificate Preview</h5>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="livePreviewToggle" checked>
+                                    <label class="form-check-label" for="livePreviewToggle">Live Preview</label>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="certificate-container" id="certificatePreview">
+                                    <div class="certificate-header">
+                                        <h1>UNIVERSAL NEXUS EDUCATION TRANSFORMATION SYSTEM (UNETS)</h1>
+                                        <h2>“Education for the Universal Nexus Human Civilization 3.0”</h2>
+                                        <h3>Education 5.0 | Lifelong Learning | Scientific Humanism | Global Citizenship</h3>
+                                    </div>
+                                    
+                                    <div class="certificate-title">
+                                        <h4>CERTIFICATE OF ACHIEVEMENT</h4>
+                                        <p>(Metamorphic Badge: <span id="previewBadgeName">[Insert Badge Name]</span>)</p>
+                                    </div>
+                                    
+                                    <div class="text-center">
+                                        <p>This certifies that</p>
+                                        <div class="learner-name" id="previewLearnerName">[Learner Name]</div>
+                                        <p>of <span id="previewInstitution">[Community / Institution / Learning Hub]</span></p>
+                                    </div>
+                                    
+                                    <div class="program-details">
+                                        <p>has successfully completed the learning journey titled</p>
+                                        <h5>“<span id="previewProgramTitle">[Program Title]</span>”</h5>
+                                        <p>under the Education 5.0 – Discovery → Integration → Creation → Contribution Cycle,</p>
+                                        <p>demonstrating outstanding growth in the following domains:</p>
+                                    </div>
+                                    
+                                    <div class="domains-list">
+                                        <div class="domain-item">
+                                            <i class="fas fa-brain"></i>
+                                            <span>Knowledge & Inquiry: <span id="previewKnowledgeScore">[Knowledge_Score / Reflection]</span></span>
+                                        </div>
+                                        <div class="domain-item">
+                                            <i class="fas fa-lightbulb"></i>
+                                            <span>Creativity & Innovation: <span id="previewCreativeSkill">[Creative_Skill]</span></span>
+                                        </div>
+                                        <div class="domain-item">
+                                            <i class="fas fa-hands-helping"></i>
+                                            <span>Collaboration & Compassion: <span id="previewCollaborationScore">[Collaboration_Score]</span></span>
+                                        </div>
+                                        <div class="domain-item">
+                                            <i class="fas fa-star"></i>
+                                            <span>Leadership & Contribution: <span id="previewCommunityImpact">[Community_Impact]</span></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="certificate-footer">
+                                        <div class="issuance-details">
+                                            <div>
+                                                <p>Issued on: <span id="previewDateIssued">[Date_Issued]</span></p>
+                                                <p>Verified by: <span id="previewMentorName">[Mentor_Name / DAO Council]</span></p>
+                                            </div>
+                                            <div class="text-end">
+                                                <p>Credential ID: <span id="previewCertificateId">[Certificate_ID]</span></p>
+                                                <p>Lifelong Learning Passport Entry: <span id="previewLlpId">[LLP_ID]</span></p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="quote-section">
+                                            <p>“Education 5.0 is not just learning — it's the awakening of human potential to co-create a new civilization 3.0 in harmony with science, nature, and humanity.”</p>
+                                        </div>
+                                        
+                                        <div class="verification-section">
+                                            <p>🏛️ Issued by the UIENC Council under the Open Network for Neo Sustainable, Natural and Conscious Civilization, (ONSNC 3.0)</p>
+                                            <p>🔗 Verification: <span id="previewVerificationUrl">[Verification_URL]</span></p>
+                                            <p>📜 Digital Signature: <span id="previewDigitalSignature">[Signature or DAO hash]</span></p>
+                                            <p>🌐 www.education.onsnc.org</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Certificates Table -->
+                <div class="card mt-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Recently Generated Certificates</h5>
+                        <button class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-sync-alt me-1"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Certificate ID</th>
+                                        <th>Learner Name</th>
+                                        <th>Program</th>
+                                        <th>Date Issued</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>UNETS-CERT-2023-00125</td>
+                                        <td>Alex Johnson</td>
+                                        <td>Digital Transformation Leadership</td>
+                                        <td>2023-10-15</td>
+                                        <td><span class="badge bg-success">Issued</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary me-1">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success me-1">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>UNETS-CERT-2023-00124</td>
+                                        <td>Maria Garcia</td>
+                                        <td>Sustainable Innovation</td>
+                                        <td>2023-10-14</td>
+                                        <td><span class="badge bg-success">Issued</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary me-1">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success me-1">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>UNETS-CERT-2023-00123</td>
+                                        <td>Samuel Chen</td>
+                                        <td>Global Citizenship</td>
+                                        <td>2023-10-12</td>
+                                        <td><span class="badge bg-warning">Pending</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary me-1">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success me-1">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Our JavaScript -->
+    <script src="ulc-dashboard.js"></script>
+</body>
+</html>
