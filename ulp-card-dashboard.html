@@ -42,6 +42,10 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label class="form-label" for="address">Address</label>
+                        <textarea id="address" class="form-input" rows="3" placeholder="Enter your complete address" required></textarea>
+                    </div>
+                    <div class="form-group">
                         <label class="form-label" for="photo">Profile Photo</label>
                         <input type="file" id="photo" class="form-input" accept="image/*">
                     </div>
@@ -119,6 +123,10 @@
                                 <div class="detail-label">Archetype</div>
                                 <div class="detail-value" id="card-archetype">-</div>
                             </div>
+                            <div class="detail-item full-width">
+                                <div class="detail-label">Address</div>
+                                <div class="detail-value" id="card-address">-</div>
+                            </div>
                             <div class="detail-item">
                                 <div class="detail-label">Education</div>
                                 <div class="detail-value" id="card-education">-</div>
@@ -171,6 +179,13 @@
                     <div style="font-size: 0.85rem; opacity: 0.8;">Contribution Archetype</div>
                     <div class="archetype-badge" id="dashboard-archetype" style="display: block; text-align: center; margin: 10px 0;">
                         🌱 Guardian–Innovator
+                    </div>
+                </div>
+
+                <div class="address-section">
+                    <div style="font-size: 0.85rem; opacity: 0.8;">Registered Address</div>
+                    <div id="dashboard-address" style="margin: 10px 0; padding: 10px; background: rgba(0,255,255,0.1); border-radius: 10px; border: 1px solid rgba(0,255,255,0.3);">
+                        Sector 7, Harmony District<br>New Terra Prime
                     </div>
                 </div>
 
