@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Life Passport - Complete Multi-Sector System</title>
+    <link rel="stylesheet" href="ulp-card-styles.css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+</head>
+<body>
+    <div class="floating-particles" id="particles"></div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo">🌌 Universal Life Passport</div>
+            <div class="subtitle">Complete Multi-Sector Identity & Contribution System</div>
+            <p style="opacity: 0.8;">Holographic Memory | Consciousness Evolution | Cross-Sector Integration</p>
+        </header>
+
+        <!-- Data Entry Form -->
+        <div class="form-container">
+            <h2 class="form-title">ULP Data Entry Form</h2>
+            <form id="ulp-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="full-name">Full Name</label>
+                        <input type="text" id="full-name" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="citizen-id">Citizen ID</label>
+                        <input type="text" id="citizen-id" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="archetype">Contribution Archetype</label>
+                        <select id="archetype" class="form-select" required>
+                            <option value="">Select Archetype</option>
+                            <option value="Guardian-Innovator">Guardian-Innovator</option>
+                            <option value="Explorer-Healer">Explorer-Healer</option>
+                            <option value="Creator-Mentor">Creator-Mentor</option>
+                            <option value="Visionary-Builder">Visionary-Builder</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="photo">Profile Photo</label>
+                        <input type="file" id="photo" class="form-input" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="signature">Digital Signature</label>
+                        <input type="text" id="signature" class="form-input" placeholder="Enter your signature" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="education">Education Score</label>
+                        <input type="number" id="education" class="form-input" min="0" max="100" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="health">Health Score</label>
+                        <input type="number" id="health" class="form-input" min="0" max="100" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="environment">Environment Score</label>
+                        <input type="number" id="environment" class="form-input" min="0" max="100" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="technology">Technology Score</label>
+                        <input type="number" id="technology" class="form-input" min="0" max="100" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="governance">Governance Score</label>
+                        <input type="number" id="governance" class="form-input" min="0" max="100" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="economy">Economy Score</label>
+                        <input type="number" id="economy" class="form-input" min="0" max="100" value="0">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn">Generate ULP Card</button>
+                    <button type="button" id="reset-btn" class="btn" style="background: linear-gradient(135deg, #ff6b6b, #ee5a24);">Reset Form</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ULP Card Display -->
+        <div class="ulp-card-container">
+            <h2 class="form-title">Your Universal Life Passport</h2>
+            <div id="ulp-card" class="ulp-card">
+                <div class="card-header">
+                    <div class="card-logo">ULP</div>
+                    <div>Universal Life Passport</div>
+                </div>
+                <div class="card-body">
+                    <div class="card-left">
+                        <div class="card-photo" id="card-photo">
+                            <span>Photo</span>
+                        </div>
+                        <div class="card-signature" id="card-signature">
+                            Signature
+                        </div>
+                    </div>
+                    <div class="card-right">
+                        <div class="chip-section">
+                            <div class="micro-chip">📡</div>
+                            <div>
+                                <div>Advanced Chip</div>
+                                <div class="chip-label">Micro Network Data SIM</div>
+                            </div>
+                        </div>
+                        <div class="card-details">
+                            <div class="detail-item">
+                                <div class="detail-label">Full Name</div>
+                                <div class="detail-value" id="card-name">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Citizen ID</div>
+                                <div class="detail-value" id="card-citizen-id">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Archetype</div>
+                                <div class="detail-value" id="card-archetype">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Education</div>
+                                <div class="detail-value" id="card-education">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Health</div>
+                                <div class="detail-value" id="card-health">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Environment</div>
+                                <div class="detail-value" id="card-environment">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Technology</div>
+                                <div class="detail-value" id="card-technology">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Governance</div>
+                                <div class="detail-value" id="card-governance">-</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Economy</div>
+                                <div class="detail-value" id="card-economy">-</div>
+                            </div>
+                        </div>
+                        <div class="qr-section">
+                            <div class="qr-code" id="qr-code"></div>
+                            <div class="token-id" id="token-id">ULP-TOKEN-XXXX-XXXX</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions" style="margin-top: 30px;">
+                <button id="download-btn" class="btn">Download ULP Card</button>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div class="passport-container">
+            <!-- Profile Section -->
+            <div class="profile-section">
+                <div class="avatar-container">
+                    <div class="quantum-ring"></div>
+                    <div class="avatar" id="dashboard-avatar">👤</div>
+                    <h3 id="dashboard-name">Aari Sen</h3>
+                    <p style="opacity: 0.8;" id="dashboard-citizen-id">Global Citizen ID: QM-2025-789</p>
+                </div>
+
+                <div class="citizen-id">
+                    <div style="font-size: 0.85rem; opacity: 0.8;">Contribution Archetype</div>
+                    <div class="archetype-badge" id="dashboard-archetype" style="display: block; text-align: center; margin: 10px 0;">
+                        🌱 Guardian–Innovator
+                    </div>
+                </div>
+
+                <div class="stats-grid" style="grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="stat-card">
+                        <div class="stat-number" id="dashboard-contributions">342</div>
+                        <div class="stat-label">Total Contributions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="dashboard-sectors">12</div>
+                        <div class="stat-label">Active Sectors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="dashboard-impact">8.9</div>
+                        <div class="stat-label">Impact Score</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="dashboard-validations">156</div>
+                        <div class="stat-label">Validations</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Dashboard -->
+            <div class="main-dashboard">
+                <!-- Sector Navigation -->
+                <div class="dashboard-card">
+                    <div class="card-title">🌍 All Sectors Overview</div>
+                    <p style="opacity: 0.8; margin-bottom: 20px;">Your Universal Life Passport spans across all civilization sectors</p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card" style="background: rgba(0,150,255,0.2); border: 2px solid rgba(0,150,255,0.4);">
+                            <div class="stat-icon">🎓</div>
+                            <div class="stat-number" id="sector-education">47</div>
+                            <div class="stat-label">Education Badges</div>
+                        </div>
+                        <div class="stat-card" style="background: rgba(76,175,80,0.2); border: 2px solid rgba(76,175,80,0.4);">
+                            <div class="stat-icon">🏥</div>
+                            <div class="stat-number" id="sector-health">98.7%</div>
+                            <div class="stat-label">Health Wellness</div>
+                        </div>
+                        <div class="stat-card" style="background: rgba(46,125,50,0.2); border: 2px solid rgba(46,125,50,0.4);">
+                            <div class="stat-icon">🌍</div>
+                            <div class="stat-number" id="sector-environment">2.4T</div>
+                            <div class="stat-label">CO2 Sequestered</div>
+                        </div>
+                        <div class="stat-card" style="background: rgba(156,39,176,0.2); border: 2px solid rgba(156,39,176,0.4);">
+                            <div class="stat-icon">🔬</div>
+                            <div class="stat-number" id="sector-technology">23</div>
+                            <div class="stat-label">Tech Innovations</div>
+                        </div>
+                        <div class="stat-card" style="background: rgba(103,58,183,0.2); border: 2px solid rgba(103,58,183,0.4);">
+                            <div class="stat-icon">🏛️</div>
+                            <div class="stat-number" id="sector-governance">89%</div>
+                            <div class="stat-label">Gov Participation</div>
+                        </div>
+                        <div class="stat-card" style="background: rgba(255,152,0,0.2); border: 2px solid rgba(255,152,0,0.4);">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-number" id="sector-economy">8.9</div>
+                            <div class="stat-label">Economy Score</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Life Contribution Index -->
+                <div class="dashboard-card">
+                    <div class="card-title">📈 Life Contribution Index (LCI)</div>
+                    <p style="opacity: 0.8; margin-bottom: 20px;">Your holistic development across all life dimensions</p>
+                    
+                    <div style="text-align: center; margin: 30px 0;">
+                        <div style="font-size: 5rem; margin-bottom: 20px;">🌟</div>
+                        <div style="font-size: 4rem; font-weight: bold; color: #ffd700;" id="overall-lci">77</div>
+                        <div style="font-size: 1.2rem; opacity: 0.8;">Overall Life Contribution Index</div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">🎓</div>
+                            <div class="stat-number" id="lci-education">85</div>
+                            <div class="stat-label">Learning & Skills</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🧑‍🏫</div>
+                            <div class="stat-number" id="lci-mentorship">70</div>
+                            <div class="stat-label">Mentorship</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🌱</div>
+                            <div class="stat-number" id="lci-ecology">92</div>
+                            <div class="stat-label">Ecology</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🔬</div>
+                            <div class="stat-number" id="lci-technology">65</div>
+                            <div class="stat-label">Technology</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🤝</div>
+                            <div class="stat-number" id="lci-community">60</div>
+                            <div class="stat-label">Community Care</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🎨</div>
+                            <div class="stat-number" id="lci-arts">45</div>
+                            <div class="stat-label">Arts & Culture</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🌍</div>
+                            <div class="stat-number" id="lci-global">90</div>
+                            <div class="stat-label">Global Citizenship</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="ulp-card-script.js"></script>
+</body>
+</html>
