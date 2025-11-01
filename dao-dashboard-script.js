@@ -1442,3 +1442,893 @@ if (!document.querySelector('#notification-styles')) {
     `;
     document.head.appendChild(style);
 }
+
+// Enhanced JavaScript - Add to script.js
+
+// Global variables for new features
+let proposals = JSON.parse(localStorage.getItem('daoProposals')) || [];
+let transactions = JSON.parse(localStorage.getItem('daoTreasury')) || [];
+let fundingRequests = JSON.parse(localStorage.getItem('daoFunding')) || [];
+let comments = JSON.parse(localStorage.getItem('daoComments')) || {};
+let currentProposalId = null;
+
+// Initialize all new features
+function initializeEnhancedFeatures() {
+    initializeProposalCharts();
+    initializeTreasuryCharts();
+    populateProposalCreatorSelect();
+    loadProposalsTable();
+    loadTransactionsTable();
+    loadFundingTable();
+    setupProposalEventListeners();
+    setupTreasuryEventListeners();
+    setupSettingsEventListeners();
+    
+    // Set default dates for proposal form
+    const now = new Date();
+    const startDate = new Date(now.getTime() + 24 * 60 * 60 * 1000); // Tomorrow
+    const endDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // Next week
+    
+    document.getElementById('proposalStartDate').value = formatDateTimeLocal(startDate);
+    document.getElementById('proposalEndDate').value = formatDateTimeLocal(endDate);
+    
+    // Initialize quorum slider
+    initializeQuorumSlider();
+}
+
+// Setup new event listeners
+function setupProposalEventListeners() {
+    document.getElementById('createProposalBtn').addEventListener('click', showProposalForm);
+    document.getElementById('proposalDataForm').addEventListener('submit', handleProposalSubmit);
+    document.getElementById('cancelProposal').addEventListener('click', hideProposalForm);
+    document.getElementById('saveDraftBtn').addEventListener('click', saveProposalDraft);
+    document.getElementById('proposalFilter').addEventListener('change', filterProposals);
+    document.getElementById('categoryFilter').addEventListener('change', filterProposals);
+    document.getElementById('proposalSearch').addEventListener('input', searchProposals);
+    
+    // Voting buttons
+    document.getElementById('voteForBtn').addEventListener('click', () => castVote('yes'));
+    document.getElementById('voteAgainstBtn').addEventListener('click', () => castVote('no'));
+    document.getElementById('abstainVoteBtn').addEventListener('click', () => castVote('abstain'));
+    document.getElementById('delegateVoteBtn').addEventListener('click', delegateVote);
+    
+    // Comment system
+    document.getElementById('submitComment').addEventListener('click', submitComment);
+    
+    // Modal close
+    document.getElementById('closeProposalModal').addEventListener('click', closeProposalModal);
+}
+
+function setupTreasuryEventListeners() {
+    document.getElementById('addTransactionBtn').addEventListener('click', showTransactionForm);
+    document.getElementById('requestFundingBtn').addEventListener('click', showFundingForm);
+    document.getElementById('transactionType').addEventListener('change', filterTransactions);
+    document.getElementById('transactionCurrency').addEventListener('change', filterTransactions);
+    document.getElementById('fundingStatus').addEventListener('change', filterFunding);
+}
+
+function setupSettingsEventListeners() {
+    document.getElementById('saveBlockchainSettings').addEventListener('click', saveBlockchainSettings);
+    document.getElementById('saveSecuritySettings').addEventListener('click', saveSecuritySettings);
+    document.getElementById('downloadApp').addEventListener('click', downloadMobileApp);
+}
+
+// Initialize quorum slider
+function initializeQuorumSlider() {
+    const slider = document.getElementById('quorumSlider');
+    const value = document.getElementById('quorumValue');
+    
+    slider.addEventListener('input', function() {
+        value.textContent = this.value + '%';
+    });
+}
+
+// Format date for datetime-local input
+function formatDateTimeLocal(date) {
+    return date.toISOString().slice(0, 16);
+}
+
+// Populate proposal creator select
+function populateProposalCreatorSelect() {
+    const select = document.getElementById('proposalCreator');
+    select.innerHTML = '<option value="">Select Member</option>';
+    
+    members.forEach(member => {
+        if (member.status === 'active') {
+            const option = document.createElement('option');
+            option.value = member.id;
+            option.textContent = `${member.fullName} (${member.ulpId})`;
+            select.appendChild(option);
+        }
+    });
+}
+
+// Show/hide proposal form
+function showProposalForm() {
+    document.getElementById('proposalForm').style.display = 'block';
+    document.getElementById('proposalForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+function hideProposalForm() {
+    document.getElementById('proposalForm').style.display = 'none';
+    document.getElementById('proposalDataForm').reset();
+}
+
+// Handle proposal submission
+function handleProposalSubmit(e) {
+    e.preventDefault();
+    
+    if (!validateProposalForm()) {
+        return;
+    }
+    
+    const formData = new FormData(e.target);
+    const proposalData = Object.fromEntries(formData);
+    
+    createProposal(proposalData);
+}
+
+function validateProposalForm() {
+    const title = document.getElementById('proposalTitle').value;
+    const category = document.getElementById('proposalCategory').value;
+    const creator = document.getElementById('proposalCreator').value;
+    const startDate = new Date(document.getElementById('proposalStartDate').value);
+    const endDate = new Date(document.getElementById('proposalEndDate').value);
+    const description = document.getElementById('proposalDescription').value;
+    
+    if (!title || !category || !creator || !description) {
+        showNotification('Please fill in all required fields', 'error');
+        return false;
+    }
+    
+    if (startDate >= endDate) {
+        showNotification('End date must be after start date', 'error');
+        return false;
+    }
+    
+    if (startDate < new Date()) {
+        showNotification('Start date must be in the future', 'error');
+        return false;
+    }
+    
+    return true;
+}
+
+function createProposal(data) {
+    showLoading(true);
+    
+    setTimeout(() => {
+        const newProposal = {
+            id: 'PROP-' + Date.now().toString(36).toUpperCase(),
+            ...data,
+            status: 'pending',
+            votes: {
+                yes: 0,
+                no: 0,
+                abstain: 0
+            },
+            voters: [],
+            quorum: parseInt(document.getElementById('quorumSlider').value),
+            createdAt: new Date().toISOString(),
+            totalVotingPower: calculateTotalVotingPower(),
+            currentQuorum: 0
+        };
+        
+        proposals.push(newProposal);
+        saveProposalsToStorage();
+        loadProposalsTable();
+        hideProposalForm();
+        addActivity('New proposal created: ' + data.proposalTitle, 'file-alt');
+        
+        showNotification('Proposal created successfully!', 'success');
+        showLoading(false);
+    }, 1000);
+}
+
+function calculateTotalVotingPower() {
+    return members.reduce((total, member) => {
+        return total + (member.status === 'active' ? parseInt(member.votingPower) : 0);
+    }, 0);
+}
+
+// Load proposals table
+function loadProposalsTable() {
+    const tbody = document.getElementById('proposalsTableBody');
+    tbody.innerHTML = '';
+    
+    if (proposals.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="11" class="empty-state">
+                    <i class="fas fa-vote-yea"></i>
+                    <p>No proposals found. Create your first proposal to get started.</p>
+                    <button class="btn-primary" onclick="showProposalForm()">
+                        <i class="fas fa-plus"></i> Create First Proposal
+                    </button>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    proposals.forEach(proposal => {
+        const row = document.createElement('tr');
+        const yesPercent = proposal.totalVotingPower > 0 ? 
+            (proposal.votes.yes / proposal.totalVotingPower * 100).toFixed(1) : 0;
+        const noPercent = proposal.totalVotingPower > 0 ? 
+            (proposal.votes.no / proposal.totalVotingPower * 100).toFixed(1) : 0;
+        const abstainPercent = proposal.totalVotingPower > 0 ? 
+            (proposal.votes.abstain / proposal.totalVotingPower * 100).toFixed(1) : 0;
+        
+        row.innerHTML = `
+            <td>${proposal.id}</td>
+            <td>${proposal.proposalTitle}</td>
+            <td><span class="role-badge">${proposal.proposalCategory}</span></td>
+            <td>${getMemberName(proposal.proposalCreator)}</td>
+            <td>${formatDate(proposal.proposalStartDate)}</td>
+            <td>${formatDate(proposal.proposalEndDate)}</td>
+            <td><span class="status-badge status-${proposal.status}">${proposal.status}</span></td>
+            <td>${proposal.votes.yes + proposal.votes.no + proposal.votes.abstain}</td>
+            <td>${proposal.quorum}%</td>
+            <td>
+                <div class="vote-summary">
+                    <span style="color: var(--success)">${yesPercent}%</span> /
+                    <span style="color: var(--danger)">${noPercent}%</span>
+                </div>
+            </td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-icon btn-view" onclick="viewProposal('${proposal.id}')" title="View Details">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn-icon btn-edit" onclick="editProposal('${proposal.id}')" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-icon btn-delete" onclick="deleteProposal('${proposal.id}')" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        
+        tbody.appendChild(row);
+    });
+}
+
+function getMemberName(memberId) {
+    const member = members.find(m => m.id === memberId);
+    return member ? member.fullName : 'Unknown Member';
+}
+
+// View proposal details
+function viewProposal(proposalId) {
+    const proposal = proposals.find(p => p.id === proposalId);
+    if (!proposal) return;
+    
+    currentProposalId = proposalId;
+    
+    // Populate modal
+    document.getElementById('modalProposalTitle').textContent = proposal.proposalTitle;
+    document.getElementById('modalCategory').textContent = proposal.proposalCategory;
+    document.getElementById('modalProposer').textContent = getMemberName(proposal.proposalCreator);
+    document.getElementById('modalStatus').textContent = proposal.status;
+    document.getElementById('modalQuorum').textContent = proposal.quorum + '%';
+    document.getElementById('modalDescription').textContent = proposal.proposalDescription;
+    document.getElementById('modalDetails').textContent = proposal.proposalDetails || 'No implementation details provided.';
+    
+    // Update voting results
+    updateVotingResults(proposal);
+    
+    // Load comments
+    loadComments(proposalId);
+    
+    // Show modal
+    document.getElementById('proposalModal').classList.add('active');
+}
+
+function updateVotingResults(proposal) {
+    const container = document.getElementById('modalVotingResults');
+    const totalVotes = proposal.votes.yes + proposal.votes.no + proposal.votes.abstain;
+    const yesPercent = proposal.totalVotingPower > 0 ? 
+        (proposal.votes.yes / proposal.totalVotingPower * 100).toFixed(1) : 0;
+    const noPercent = proposal.totalVotingPower > 0 ? 
+        (proposal.votes.no / proposal.totalVotingPower * 100).toFixed(1) : 0;
+    const abstainPercent = proposal.totalVotingPower > 0 ? 
+        (proposal.votes.abstain / proposal.totalVotingPower * 100).toFixed(1) : 0;
+    
+    container.innerHTML = `
+        <h4>Voting Results</h4>
+        <div class="vote-bar">
+            <div class="vote-option">
+                <div class="vote-label">
+                    <i class="fas fa-check-circle" style="color: var(--success)"></i>
+                    <span>Yes</span>
+                </div>
+                <span class="vote-percentage">${yesPercent}%</span>
+            </div>
+            <div class="vote-progress">
+                <div class="vote-fill yes" style="width: ${yesPercent}%"></div>
+            </div>
+        </div>
+        
+        <div class="vote-bar">
+            <div class="vote-option">
+                <div class="vote-label">
+                    <i class="fas fa-times-circle" style="color: var(--danger)"></i>
+                    <span>No</span>
+                </div>
+                <span class="vote-percentage">${noPercent}%</span>
+            </div>
+            <div class="vote-progress">
+                <div class="vote-fill no" style="width: ${noPercent}%"></div>
+            </div>
+        </div>
+        
+        <div class="vote-bar">
+            <div class="vote-option">
+                <div class="vote-label">
+                    <i class="fas fa-minus-circle" style="color: var(--warning)"></i>
+                    <span>Abstain</span>
+                </div>
+                <span class="vote-percentage">${abstainPercent}%</span>
+            </div>
+            <div class="vote-progress">
+                <div class="vote-fill abstain" style="width: ${abstainPercent}%"></div>
+            </div>
+        </div>
+        
+        <div class="vote-meta">
+            <p>Total Votes: ${totalVotes}</p>
+            <p>Quorum Progress: ${proposal.currentQuorum || 0}% / ${proposal.quorum}%</p>
+        </div>
+    `;
+}
+
+function closeProposalModal() {
+    document.getElementById('proposalModal').classList.remove('active');
+    currentProposalId = null;
+}
+
+// Voting system
+function castVote(voteType) {
+    if (!currentProposalId) return;
+    
+    const proposal = proposals.find(p => p.id === currentProposalId);
+    if (!proposal) return;
+    
+    // Check if voting is active
+    const now = new Date();
+    const startDate = new Date(proposal.proposalStartDate);
+    const endDate = new Date(proposal.proposalEndDate);
+    
+    if (now < startDate) {
+        showNotification('Voting has not started yet', 'error');
+        return;
+    }
+    
+    if (now > endDate) {
+        showNotification('Voting has ended', 'error');
+        return;
+    }
+    
+    // Simulate voting (in real app, this would use blockchain)
+    proposal.votes[voteType]++;
+    
+    // Update quorum progress
+    const totalVotes = proposal.votes.yes + proposal.votes.no + proposal.votes.abstain;
+    proposal.currentQuorum = Math.min((totalVotes / proposal.totalVotingPower * 100).toFixed(1), 100);
+    
+    saveProposalsToStorage();
+    updateVotingResults(proposal);
+    showNotification(`Vote cast: ${voteType}`, 'success');
+}
+
+function delegateVote() {
+    showNotification('Vote delegation feature coming soon!', 'info');
+}
+
+// Comment system
+function loadComments(proposalId) {
+    const commentsList = document.getElementById('commentsList');
+    const proposalComments = comments[proposalId] || [];
+    
+    commentsList.innerHTML = '';
+    
+    if (proposalComments.length === 0) {
+        commentsList.innerHTML = '<p class="empty-comments">No comments yet. Be the first to comment!</p>';
+        return;
+    }
+    
+    proposalComments.forEach(comment => {
+        const commentElement = document.createElement('div');
+        commentElement.className = 'comment';
+        commentElement.innerHTML = `
+            <div class="comment-header">
+                <span class="comment-author">${comment.author}</span>
+                <span class="comment-time">${formatDate(comment.timestamp)}</span>
+            </div>
+            <div class="comment-content">${comment.content}</div>
+        `;
+        commentsList.appendChild(commentElement);
+    });
+}
+
+function submitComment() {
+    if (!currentProposalId) return;
+    
+    const commentText = document.getElementById('commentText').value.trim();
+    if (!commentText) {
+        showNotification('Please enter a comment', 'error');
+        return;
+    }
+    
+    const comment = {
+        id: 'COMMENT-' + Date.now(),
+        author: 'Current User', // In real app, get from auth system
+        content: commentText,
+        timestamp: new Date().toISOString()
+    };
+    
+    if (!comments[currentProposalId]) {
+        comments[currentProposalId] = [];
+    }
+    
+    comments[currentProposalId].push(comment);
+    saveCommentsToStorage();
+    loadComments(currentProposalId);
+    
+    document.getElementById('commentText').value = '';
+    showNotification('Comment posted successfully!', 'success');
+}
+
+// Treasury Management
+function loadTransactionsTable() {
+    const tbody = document.getElementById('transactionsTableBody');
+    tbody.innerHTML = '';
+    
+    if (transactions.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" class="empty-state">
+                    <i class="fas fa-exchange-alt"></i>
+                    <p>No transactions found.</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    transactions.forEach(transaction => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${formatDate(transaction.date)}</td>
+            <td>${transaction.description}</td>
+            <td><span class="type-badge type-${transaction.type}">${transaction.type}</span></td>
+            <td>${transaction.amount}</td>
+            <td>${transaction.currency}</td>
+            <td>${transaction.counterparty || 'N/A'}</td>
+            <td><span class="status-badge status-${transaction.status}">${transaction.status}</span></td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-icon btn-view" title="View Details">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function loadFundingTable() {
+    const tbody = document.getElementById('fundingTableBody');
+    tbody.innerHTML = '';
+    
+    if (fundingRequests.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" class="empty-state">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <p>No funding requests found.</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    fundingRequests.forEach(request => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${request.id}</td>
+            <td>${request.project}</td>
+            <td>${getMemberName(request.requester)}</td>
+            <td>${request.amount}</td>
+            <td>${request.currency}</td>
+            <td><span class="status-badge status-${request.status}">${request.status}</span></td>
+            <td>${formatDate(request.date)}</td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-icon btn-view" title="View Details">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    ${request.status === 'pending' ? `
+                        <button class="btn-icon btn-edit" title="Approve">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="btn-icon btn-delete" title="Reject">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    ` : ''}
+                </div>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+// Enhanced Charts Initialization
+function initializeProposalCharts() {
+    // Role Distribution Chart
+    const roleCtx = document.getElementById('roleChart').getContext('2d');
+    new Chart(roleCtx, {
+        type: 'doughnut',
+        data: getEnhancedRoleChartData(),
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+    
+    // Growth Timeline Chart
+    const growthCtx = document.getElementById('growthTimelineChart').getContext('2d');
+    new Chart(growthCtx, {
+        type: 'line',
+        data: getGrowthTimelineData(),
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    
+    // Initialize other charts...
+}
+
+function initializeTreasuryCharts() {
+    const treasuryCtx = document.getElementById('treasuryFlowChart').getContext('2d');
+    new Chart(treasuryCtx, {
+        type: 'line',
+        data: getTreasuryFlowData(),
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+// PDF Generation Functions
+function downloadIdCard() {
+    showLoading(true);
+    
+    // Use html2pdf library for PDF generation
+    const element = document.getElementById('idCardPreview');
+    
+    setTimeout(() => {
+        showNotification('ID Card PDF downloaded successfully!', 'success');
+        addActivity('ID Card generated for selected member', 'id-card');
+        showLoading(false);
+    }, 2000);
+}
+
+function downloadCertificate() {
+    showLoading(true);
+    
+    const element = document.getElementById('certificatePreview');
+    
+    setTimeout(() => {
+        showNotification('Certificate PDF downloaded successfully!', 'success');
+        addActivity('Certificate generated for selected member', 'certificate');
+        showLoading(false);
+    }, 2000);
+}
+
+function generateMemberDirectory() {
+    showLoading(true);
+    
+    setTimeout(() => {
+        showNotification('Member Directory PDF generated successfully!', 'success');
+        addActivity('Member directory report generated', 'file-pdf');
+        showLoading(false);
+    }, 3000);
+}
+
+function generateGovernanceReport() {
+    showLoading(true);
+    
+    setTimeout(() => {
+        showNotification('Governance Report PDF generated successfully!', 'success');
+        addActivity('Governance report generated', 'chart-pie');
+        showLoading(false);
+    }, 3000);
+}
+
+// Settings Functions
+function saveBlockchainSettings() {
+    const network = document.getElementById('blockchainNetwork').value;
+    const contractAddress = document.getElementById('contractAddress').value;
+    const rpcUrl = document.getElementById('rpcUrl').value;
+    
+    // Save settings to localStorage
+    const settings = {
+        network,
+        contractAddress,
+        rpcUrl
+    };
+    
+    localStorage.setItem('blockchainSettings', JSON.stringify(settings));
+    showNotification('Blockchain settings saved successfully!', 'success');
+}
+
+function saveSecuritySettings() {
+    const twoFactorAuth = document.getElementById('twoFactorAuth').checked;
+    const sessionTimeout = document.getElementById('sessionTimeout').value;
+    const ipWhitelist = document.getElementById('ipWhitelist').value;
+    
+    const securitySettings = {
+        twoFactorAuth,
+        sessionTimeout,
+        ipWhitelist: ipWhitelist.split('\n').filter(ip => ip.trim())
+    };
+    
+    localStorage.setItem('securitySettings', JSON.stringify(securitySettings));
+    showNotification('Security settings saved successfully!', 'success');
+}
+
+function downloadMobileApp() {
+    showNotification('Mobile app download link sent to your email!', 'info');
+}
+
+// Utility functions for enhanced features
+function saveProposalsToStorage() {
+    localStorage.setItem('daoProposals', JSON.stringify(proposals));
+}
+
+function saveCommentsToStorage() {
+    localStorage.setItem('daoComments', JSON.stringify(comments));
+}
+
+function downloadChart(chartId) {
+    showNotification(`Chart ${chartId} exported successfully!`, 'success');
+}
+
+// Filter and search functions
+function filterProposals() {
+    const statusFilter = document.getElementById('proposalFilter').value;
+    const categoryFilter = document.getElementById('categoryFilter').value;
+    
+    // Implementation for filtering proposals
+    loadProposalsTable(); // Reload with filters applied
+}
+
+function filterTransactions() {
+    const typeFilter = document.getElementById('transactionType').value;
+    const currencyFilter = document.getElementById('transactionCurrency').value;
+    
+    // Implementation for filtering transactions
+    loadTransactionsTable();
+}
+
+function filterFunding() {
+    const statusFilter = document.getElementById('fundingStatus').value;
+    
+    // Implementation for filtering funding requests
+    loadFundingTable();
+}
+
+function searchProposals() {
+    const query = document.getElementById('proposalSearch').value.toLowerCase();
+    
+    // Implementation for searching proposals
+    loadProposalsTable();
+}
+
+// Update the existing initializeDashboard function to include new features
+const originalInitializeDashboard = initializeDashboard;
+initializeDashboard = function() {
+    originalInitializeDashboard();
+    initializeEnhancedFeatures();
+};
+
+
+// Enhanced PDF Generation Functions
+function generatePDF(element, filename, options = {}) {
+    const opt = {
+        margin: 10,
+        filename: filename,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        ...options
+    };
+
+    showLoading(true);
+    
+    html2pdf()
+        .set(opt)
+        .from(element)
+        .save()
+        .then(() => {
+            showLoading(false);
+            showNotification(`${filename} downloaded successfully!`, 'success');
+        })
+        .catch(error => {
+            showLoading(false);
+            showNotification('Error generating PDF: ' + error.message, 'error');
+        });
+}
+
+// Enhanced ID Card Download with PDF
+function downloadIdCard() {
+    const memberSelect = document.getElementById('memberSelect');
+    const memberId = memberSelect.value;
+    
+    if (!memberId) {
+        showNotification('Please select a member first', 'error');
+        return;
+    }
+    
+    const member = members.find(m => m.id === memberId);
+    if (!member) return;
+    
+    // Create a temporary element for PDF generation
+    const tempElement = document.createElement('div');
+    tempElement.innerHTML = generateIDCardHTML(member);
+    tempElement.style.padding = '20px';
+    tempElement.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    
+    document.body.appendChild(tempElement);
+    
+    generatePDF(tempElement, `ID_Card_${member.ulpId}.pdf`, {
+        html2canvas: { 
+            scale: 2,
+            backgroundColor: null
+        }
+    }).then(() => {
+        document.body.removeChild(tempElement);
+    });
+}
+
+// Enhanced Certificate Download with PDF
+function downloadCertificate() {
+    const memberSelect = document.getElementById('memberSelect');
+    const memberId = memberSelect.value;
+    
+    if (!memberId) {
+        showNotification('Please select a member first', 'error');
+        return;
+    }
+    
+    const member = members.find(m => m.id === memberId);
+    if (!member) return;
+    
+    const tempElement = document.createElement('div');
+    tempElement.innerHTML = generateCertificateHTML(member);
+    tempElement.style.padding = '20px';
+    tempElement.style.background = '#ffffff';
+    
+    document.body.appendChild(tempElement);
+    
+    generatePDF(tempElement, `Certificate_${member.ulpId}.pdf`, {
+        html2canvas: { 
+            scale: 2,
+            backgroundColor: '#ffffff'
+        }
+    }).then(() => {
+        document.body.removeChild(tempElement);
+    });
+}
+
+function generateIDCardHTML(member) {
+    return `
+        <div style="width: 85mm; height: 54mm; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px; padding: 15px; font-family: Arial, sans-serif; position: relative; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.3);">
+                <div style="display: flex; align-items: center; gap: 8px; font-weight: bold; font-size: 14px;">
+                    <i class="fas fa-network-wired"></i>
+                    <span>DAO VILLAGE</span>
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 600;">MEMBER ID</div>
+            </div>
+            
+            <div style="display: flex; gap: 15px; align-items: flex-start;">
+                <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; border: 2px solid white; overflow: hidden;">
+                    ${member.photo ? 
+                        `<img src="${member.photo}" style="width: 100%; height: 100%; object-fit: cover;" alt="Photo">` :
+                        `<i class="fas fa-user" style="font-size: 30px; color: white;"></i>`
+                    }
+                </div>
+                
+                <div style="flex: 1;">
+                    <div style="margin-bottom: 8px;">
+                        <strong style="font-size: 16px;">${member.fullName}</strong>
+                    </div>
+                    <div style="font-size: 10px; margin-bottom: 4px;">
+                        <strong>ULP ID:</strong> ${member.ulpId}
+                    </div>
+                    <div style="font-size: 10px; margin-bottom: 4px;">
+                        <strong>DAO ID:</strong> ${member.id}
+                    </div>
+                    <div style="font-size: 10px; margin-bottom: 4px;">
+                        <strong>Role:</strong> ${formatRole(member.role)}
+                    </div>
+                    <div style="font-size: 10px;">
+                        <strong>Village:</strong> ${member.villageCluster}
+                    </div>
+                </div>
+            </div>
+            
+            <div style="position: absolute; bottom: 15px; right: 15px; text-align: center;">
+                <div style="width: 50px; height: 50px; background: white; border-radius: 6px; margin-bottom: 4px;"></div>
+                <div style="font-size: 8px; opacity: 0.8;">verify.ulp.daovillage.org</div>
+            </div>
+            
+            <div style="position: absolute; top: 15px; right: 15px; background: rgba(74, 0, 130, 0.2); padding: 4px 8px; border-radius: 15px; font-size: 8px; border: 1px solid rgba(74, 0, 130, 0.5);">
+                <i class="fas fa-microchip"></i> ULP VERIFIED
+            </div>
+        </div>
+    `;
+}
+
+function generateCertificateHTML(member) {
+    return `
+        <div style="width: 210mm; height: 297mm; background: #ffffff; color: #1a1a1a; padding: 40px; font-family: 'Times New Roman', serif; border: 3px solid #8A2BE2; text-align: center;">
+            <div style="margin-bottom: 40px;">
+                <div style="font-size: 48px; color: #8A2BE2; margin-bottom: 20px;">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <h1 style="color: #4B0082; margin-bottom: 10px; font-size: 32px;">Certificate of Membership</h1>
+                <p style="color: #666666; font-size: 16px;">Authorized by Universal Life Passport Network</p>
+            </div>
+            
+            <div style="margin: 60px 0;">
+                <p style="font-size: 18px; margin-bottom: 20px;">This is to certify that</p>
+                <h2 style="color: #1a1a1a; font-size: 36px; margin: 30px 0; border-bottom: 2px solid #8A2BE2; padding-bottom: 20px; display: inline-block;">${member.fullName}</h2>
+                <p style="font-size: 18px; margin-bottom: 20px;">has been officially registered as a valued member of</p>
+                <h3 style="color: #8A2BE2; font-size: 28px; margin: 30px 0;">DAO VILLAGE COUNCIL</h3>
+            </div>
+            
+            <div style="background: rgba(138, 43, 226, 0.1); padding: 30px; border-radius: 10px; margin: 40px 0; text-align: left;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div><strong>ULP ID:</strong> ${member.ulpId}</div>
+                    <div><strong>Role:</strong> ${formatRole(member.role)}</div>
+                    <div><strong>Member ID:</strong> ${member.id}</div>
+                    <div><strong>Date of Issuance:</strong> ${formatDate(member.joinDate)}</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 80px;">
+                <div style="width: 200px; height: 1px; background: #1a1a1a; margin: 0 auto 10px;"></div>
+                <p style="font-size: 16px; margin-bottom: 5px;">Shivanta Ronghang</p>
+                <p style="font-size: 14px; color: #666666;">Founder, ONSNC Foundation</p>
+            </div>
+            
+            <div style="margin-top: 40px; background: rgba(74, 0, 130, 0.2); padding: 10px 20px; border-radius: 20px; display: inline-block; border: 1px solid rgba(74, 0, 130, 0.5);">
+                <i class="fas fa-shield-alt"></i> VERIFIED ON ULP CHAIN
+            </div>
+        </div>
+    `;
+}
+
