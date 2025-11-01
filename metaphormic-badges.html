@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metamorphic Badges - Quantum Authentication System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="metaphormic-badges-styles.css">
+</head>
+<body>
+    <div class="floating-particles" id="particleContainer"></div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo">⚛️ Metamorphic Badges</div>
+            <div class="subtitle">Quantum Authentication System - Education 5.0</div>
+            <div class="quantum-badge">
+                <i class="fas fa-microchip"></i> Quantum Chip Enabled | 
+                <i class="fas fa-shield-alt"></i> Blockchain Verified | 
+                <i class="fas fa-fingerprint"></i> Biometric Secured
+            </div>
+        </header>
+
+        <nav class="nav-tabs">
+            <div class="nav-tab active" onclick="showSection('dashboard')">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </div>
+            <div class="nav-tab" onclick="showSection('create')">
+                <i class="fas fa-plus-circle"></i> Create Badge
+            </div>
+            <div class="nav-tab" onclick="showSection('verify')">
+                <i class="fas fa-check-circle"></i> Verify Badge
+            </div>
+            <div class="nav-tab" onclick="showSection('quantum')">
+                <i class="fas fa-microchip"></i> Quantum Chip
+            </div>
+        </nav>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="content-section active">
+            <h2 class="section-title">
+                <i class="fas fa-chart-line"></i> Learner Dashboard
+            </h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">15</div>
+                    <div class="stat-label">Active Badges</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">98.7%</div>
+                    <div class="stat-label">Verification Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">1,247</div>
+                    <div class="stat-label">Quantum Validations</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">23</div>
+                    <div class="stat-label">Community Endorsements</div>
+                </div>
+            </div>
+
+            <div class="quantum-verification">
+                <div class="verification-status">
+                    <i class="fas fa-shield-alt verification-icon"></i>
+                    <span>Quantum Authentication: ACTIVE</span>
+                    <span class="nfc-indicator"></span>
+                </div>
+                <div style="margin-top: 15px; font-size: 0.9rem; opacity: 0.8;">
+                    Your badges are protected by quantum cryptography and blockchain technology
+                </div>
+            </div>
+        </section>
+
+        <!-- Create Badge Section -->
+        <section id="create" class="content-section">
+            <h2 class="section-title">
+                <i class="fas fa-certificate"></i> Create Quantum-Secured Badge
+            </h2>
+            
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3 style="color: var(--quantum); margin-bottom: 20px;">
+                        <i class="fas fa-edit"></i> Badge Information
+                    </h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Badge Template</label>
+                        <div class="template-grid">
+                            <div class="template-card active" onclick="selectTemplate(this, 'knowledge', '🧠')">
+                                <div class="template-icon">🧠</div>
+                                <div>Knowledge Integration</div>
+                            </div>
+                            <div class="template-card" onclick="selectTemplate(this, 'consciousness', '🧘')">
+                                <div class="template-icon">🧘</div>
+                                <div>Consciousness</div>
+                            </div>
+                            <div class="template-card" onclick="selectTemplate(this, 'ecology', '🌱')">
+                                <div class="template-icon">🌱</div>
+                                <div>Ecology</div>
+                            </div>
+                            <div class="template-card" onclick="selectTemplate(this, 'community', '🤝')">
+                                <div class="template-icon">🤝</div>
+                                <div>Community</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Achievement Level</label>
+                        <div class="level-selector">
+                            <div class="level-option" onclick="selectLevel(this, 'Novice')">Novice</div>
+                            <div class="level-option" onclick="selectLevel(this, 'Practitioner')">Practitioner</div>
+                            <div class="level-option active" onclick="selectLevel(this, 'Expert')">Expert</div>
+                            <div class="level-option" onclick="selectLevel(this, 'Master')">Master</div>
+                            <div class="level-option" onclick="selectLevel(this, 'Sage')">Sage</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-user"></i> Learner Full Name</label>
+                            <input type="text" class="form-control" id="learnerName" 
+                                   placeholder="Enter your full name" 
+                                   value="Priya Sharma"
+                                   oninput="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-id-card"></i> ULP ID</label>
+                            <input type="text" class="form-control" id="ulpId" 
+                                   value="ULP-2024-45678"
+                                   oninput="updatePreview()">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-certificate"></i> Badge Title</label>
+                            <input type="text" class="form-control" id="badgeTitle" 
+                                   value="Quantum Consciousness Master"
+                                   oninput="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label"><i class="fas fa-calendar"></i> Issue Date</label>
+                            <input type="date" class="form-control" id="issueDate" 
+                                   value="2024-11-01"
+                                   onchange="updatePreview()">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-align-left"></i> Achievement Description</label>
+                        <textarea class="form-control" id="description" rows="3" 
+                                  oninput="updatePreview()">Demonstrated exceptional mastery in quantum consciousness principles, multi-dimensional awareness, and consciousness mapping. Successfully integrated ancient wisdom traditions with contemporary quantum physics understanding.</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-tools"></i> Key Skills & Competencies</label>
+                        <textarea class="form-control" id="skills" rows="2" 
+                                  oninput="updatePreview()">Quantum meditation, Multi-dimensional awareness, Consciousness mapping, Wisdom integration, Quantum entanglement understanding</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label"><i class="fas fa-image"></i> Upload Learner Photo</label>
+                        <div class="upload-area" onclick="document.getElementById('photoUpload').click()">
+                            <i class="fas fa-camera" style="font-size: 3rem; color: var(--quantum); margin-bottom: 10px;"></i>
+                            <div>Click to upload photo</div>
+                            <div style="font-size: 0.85rem; opacity: 0.7;">Square image recommended • Max 5MB</div>
+                        </div>
+                        <input type="file" id="photoUpload" accept="image/*" style="display: none" onchange="handlePhotoUpload(this)">
+                        <img id="photoPreview" class="image-preview" alt="Photo Preview">
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" onclick="resetForm()">
+                            <i class="fas fa-redo"></i> Reset Form
+                        </button>
+                        <button class="btn btn-quantum" onclick="generateBadge()">
+                            <i class="fas fa-atom"></i> Generate Quantum Badge
+                        </button>
+                        <button class="btn" onclick="saveBadge()">
+                            <i class="fas fa-save"></i> Save Badge
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Badge Preview -->
+                <div class="card badge-preview-container">
+                    <h3 style="color: var(--quantum); margin-bottom: 20px;">
+                        <i class="fas fa-eye"></i> Live Preview
+                    </h3>
+                    
+                    <div class="badge-preview" id="badgePreview">
+                        <div class="badge-header">
+                            <div class="badge-icon" id="badgeIcon">🧠</div>
+                            <div class="badge-title" id="previewTitle">Quantum Consciousness Master</div>
+                            <div class="learner-name" id="previewLearnerName">Priya Sharma</div>
+                            <div class="badge-subtitle" id="previewLevel">Expert Level</div>
+                        </div>
+                        
+                        <div class="badge-photo-container">
+                            <div id="defaultPhoto" style="width: 100%; height: 100%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user" style="font-size: 3rem; color: rgba(255,255,255,0.5);"></i>
+                            </div>
+                            <img id="previewPhoto" class="badge-photo" style="display: none;" alt="Learner">
+                        </div>
+                        
+                        <div class="badge-content">
+                            <div class="badge-info">
+                                <span class="badge-info-label">Badge ID:</span>
+                                <span id="previewBadgeId">MB-2024-QC-8901</span>
+                            </div>
+                            <div class="badge-info">
+                                <span class="badge-info-label">ULP ID:</span>
+                                <span id="previewUlpId">ULP-2024-45678</span>
+                            </div>
+                            <div class="badge-info">
+                                <span class="badge-info-label">Issue Date:</span>
+                                <span id="previewDate">November 01, 2024</span>
+                            </div>
+                            <div class="badge-info">
+                                <span class="badge-info-label">Achievement:</span>
+                                <span id="previewDescription" style="text-align: right; max-width: 60%;">Quantum consciousness mastery...</span>
+                            </div>
+                        </div>
+
+                        <!-- Quantum Chip Section -->
+                        <div class="quantum-chip-section">
+                            <div class="chip-title">
+                                <i class="fas fa-microchip"></i>
+                                Quantum Micro-SIM Authentication
+                            </div>
+                            <div class="quantum-chip">
+                                <div class="chip-contacts">
+                                    <div class="chip-contact"></div>
+                                    <div class="chip-contact"></div>
+                                    <div class="chip-contact"></div>
+                                    <div class="chip-contact"></div>
+                                    <div class="chip-contact"></div>
+                                    <div class="chip-contact"></div>
+                                    <div class="chip-contact"></div>
+                                    <div class="chip-contact"></div>
+                                </div>
+                                <div class="chip-data">
+                                    <div>⚛️ QUANTUM CHIP v3.0</div>
+                                    <div>ID: <span id="chipId">QC-2024-X7Y9Z2</span></div>
+                                    <div>Auth: Multi-factor</div>
+                                    <div>Status: <span style="color: #00ff00;">ACTIVE</span></div>
+                                </div>
+                                <div class="chip-serial">Serial: QM-X7Y9-Z2A4-B6C8</div>
+                            </div>
+                        </div>
+
+                        <!-- Blockchain Signature -->
+                        <div class="blockchain-signature">
+                            <div style="font-size: 0.9rem; color: var(--quantum); margin-bottom: 8px;">
+                                <i class="fas fa-link"></i> Blockchain Hash Signature
+                            </div>
+                            <div class="blockchain-hash" id="blockchainHash">
+                                0x7f9a3b2c8d1e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a
+                            </div>
+                        </div>
+                        
+                        <div class="badge-footer">
+                            <div class="qr-code-container">
+                                <div id="qrCode" style="width: 120px; height: 120px;"></div>
+                            </div>
+                            <div class="signature-area">
+                                <span style="color: #333; font-style: italic; font-size: 0.9rem;">Digital Signature</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" onclick="downloadPDF()">
+                            <i class="fas fa-file-pdf"></i> Download PDF
+                        </button>
+                        <button class="btn btn-quantum" onclick="downloadImage()">
+                            <i class="fas fa-image"></i> Download Image
+                        </button>
+                        <button class="btn" onclick="shareBadge()">
+                            <i class="fas fa-share-alt"></i> Share
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Verify Badge Section -->
+        <section id="verify" class="content-section">
+            <div class="card" style="max-width: 800px; margin: 0 auto;">
+                <h2 class="section-title">
+                    <i class="fas fa-shield-alt"></i> Quantum Badge Verification
+                </h2>
+                
+                <div class="form-group">
+                    <label class="form-label">Enter Badge ID or Scan QR Code</label>
+                    <input type="text" class="form-control" id="verifyBadgeId" 
+                           placeholder="MB-2024-XXXX-XXXX or scan QR">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Or Upload Badge Image</label>
+                    <div class="upload-area" onclick="document.getElementById('verifyUpload').click()">
+                        <i class="fas fa-qrcode" style="font-size: 3rem; color: var(--quantum); margin-bottom: 10px;"></i>
+                        <div>Click to upload badge for verification</div>
+                    </div>
+                    <input type="file" id="verifyUpload" accept="image/*" style="display: none">
+                </div>
+
+                <button class="btn btn-quantum" onclick="verifyBadge()" style="width: 100%;">
+                    <i class="fas fa-check-circle"></i> Verify Badge Authenticity
+                </button>
+
+                <div id="verificationResult" style="margin-top: 30px; display: none;">
+                    <div class="quantum-verification">
+                        <div class="verification-status">
+                            <i class="fas fa-check-circle" style="font-size: 2rem; color: #00ff00;"></i>
+                            <div style="flex: 1;">
+                                <div style="font-size: 1.3rem; font-weight: bold; color: #00ff00;">VERIFIED AUTHENTIC</div>
+                                <div style="font-size: 0.9rem; margin-top: 5px; opacity: 0.8;">
+                                    Quantum signature validated • Blockchain confirmed • Multi-factor authenticated
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(0,255,255,0.3);">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <div style="color: var(--quantum); font-size: 0.85rem;">Learner Name</div>
+                                    <div style="font-size: 1.1rem; font-weight: bold;">Priya Sharma</div>
+                                </div>
+                                <div>
+                                    <div style="color: var(--quantum); font-size: 0.85rem;">Badge Type</div>
+                                    <div style="font-size: 1.1rem; font-weight: bold;">Quantum Consciousness</div>
+                                </div>
+                                <div>
+                                    <div style="color: var(--quantum); font-size: 0.85rem;">Level</div>
+                                    <div style="font-size: 1.1rem; font-weight: bold;">Expert</div>
+                                </div>
+                                <div>
+                                    <div style="color: var(--quantum); font-size: 0.85rem;">Issue Date</div>
+                                    <div style="font-size: 1.1rem; font-weight: bold;">Nov 01, 2024</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 20px;">
+                            <div style="color: var(--quantum); font-size: 0.85rem; margin-bottom: 8px;">Quantum Chip Status</div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span class="nfc-indicator"></span>
+                                <span>Active and responding</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quantum Chip Details Section -->
+        <section id="quantum" class="content-section">
+            <div class="card" style="max-width: 1000px; margin: 0 auto;">
+                <h2 class="section-title">
+                    <i class="fas fa-atom"></i> Quantum Chip Technology
+                </h2>
+                
+                <div class="quantum-verification" style="margin-bottom: 30px;">
+                    <h3 style="color: var(--quantum); margin-bottom: 20px;">
+                        <i class="fas fa-microchip"></i> Advanced Micro-SIM Authentication
+                    </h3>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+                        <div>
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <div class="quantum-chip" style="margin: 0 auto;">
+                                    <div class="chip-contacts">
+                                        <div class="chip-contact"></div>
+                                        <div class="chip-contact"></div>
+                                        <div class="chip-contact"></div>
+                                        <div class="chip-contact"></div>
+                                        <div class="chip-contact"></div>
+                                        <div class="chip-contact"></div>
+                                        <div class="chip-contact"></div>
+                                        <div class="chip-contact"></div>
+                                    </div>
+                                    <div class="chip-data">
+                                        <div>⚛️ QUANTUM CHIP v3.0</div>
+                                        <div>Multi-layer Security</div>
+                                        <div>NFC Enabled</div>
+                                        <div>Status: ACTIVE</div>
+                                    </div>
+                                    <div class="chip-serial">QM-SECURE-2024</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 style="color: var(--quantum); margin-bottom: 15px;">Key Features</h4>
+                            <div style="font-size: 0.95rem; line-height: 1.8;">
+                                <div style="margin-bottom: 10px;">
+                                    <i class="fas fa-check-circle" style="color: #00ff00;"></i>
+                                    <strong>Quantum Cryptography:</strong> Unhackable encryption
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <i class="fas fa-check-circle" style="color: #00ff00;"></i>
+                                    <strong>NFC Technology:</strong> Contactless verification
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <i class="fas fa-check-circle" style="color: #00ff00;"></i>
+                                    <strong>Biometric Integration:</strong> DNA quantum signatures
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <i class="fas fa-check-circle" style="color: #00ff00;"></i>
+                                    <strong>Blockchain Anchored:</strong> Immutable record
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <i class="fas fa-check-circle" style="color: #00ff00;"></i>
+                                    <strong>Tamper-Proof:</strong> Self-destruct on manipulation
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div class="stat-card">
+                        <i class="fas fa-shield-alt" style="font-size: 2rem; color: var(--quantum); margin-bottom: 10px;"></i>
+                        <div class="stat-label">Security Level</div>
+                        <div class="stat-number" style="font-size: 1.5rem;">Quantum</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <i class="fas fa-bolt" style="font-size: 2rem; color: var(--quantum); margin-bottom: 10px;"></i>
+                        <div class="stat-label">Verification Speed</div>
+                        <div class="stat-number" style="font-size: 1.5rem;">< 0.3s</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <i class="fas fa-infinity" style="font-size: 2rem; color: var(--quantum); margin-bottom: 10px;"></i>
+                        <div class="stat-label">Chip Lifespan</div>
+                        <div class="stat-number" style="font-size: 1.5rem;">50+ years</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <i class="fas fa-globe" style="font-size: 2rem; color: var(--quantum); margin-bottom: 10px;"></i>
+                        <div class="stat-label">Global Recognition</div>
+                        <div class="stat-number" style="font-size: 1.5rem;">195 countries</div>
+                    </div>
+                </div>
+
+                <div class="blockchain-signature" style="margin-top: 30px;">
+                    <h4 style="color: var(--quantum); margin-bottom: 15px;">
+                        <i class="fas fa-network-wired"></i> Technical Specifications
+                    </h4>
+                    <div style="font-size: 0.9rem; line-height: 1.8;">
+                        <div><strong>Chip Type:</strong> Quantum Micro-SIM (12mm × 9mm)</div>
+                        <div><strong>Encryption:</strong> 4096-bit quantum-resistant algorithm</div>
+                        <div><strong>Communication:</strong> NFC Type 4, ISO 14443 compliant</div>
+                        <div><strong>Storage:</strong> 8KB encrypted memory</div>
+                        <div><strong>Power:</strong> Passive NFC, no battery required</div>
+                        <div><strong>Operating Frequency:</strong> 13.56 MHz</div>
+                        <div><strong>Read Range:</strong> Up to 10cm</div>
+                        <div><strong>Temperature Range:</strong> -40°C to +85°C</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="metaphormic-badges-script.js"></script>
+</body>
+</html>
