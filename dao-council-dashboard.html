@@ -462,6 +462,795 @@
                 </section>
 
                 <!-- Additional sections for Proposals, Treasury, Settings would go here -->
+                  <!-- Add these sections to index.html after the ID Cards section -->
+
+<!-- Enhanced Members Analytics Section -->
+<section class="content-section" id="reports-section">
+    <div class="section-header">
+        <h2>Members Analytics & Reports</h2>
+        <div class="report-controls">
+            <select id="reportPeriod">
+                <option value="7d">Last 7 Days</option>
+                <option value="30d" selected>Last 30 Days</option>
+                <option value="90d">Last 90 Days</option>
+                <option value="1y">Last Year</option>
+                <option value="all">All Time</option>
+            </select>
+            <button class="btn-primary" id="exportAnalytics">
+                <i class="fas fa-download"></i> Export Analytics
+            </button>
+        </div>
+    </div>
+
+    <!-- Enhanced Charts Grid -->
+    <div class="charts-grid enhanced">
+        <div class="chart-card full-width">
+            <div class="chart-header">
+                <h3>Member Growth Timeline</h3>
+                <div class="chart-actions">
+                    <button class="btn-icon" onclick="downloadChart('growthChart')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="growthTimelineChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>Role Distribution</h3>
+                <div class="chart-actions">
+                    <button class="btn-icon" onclick="downloadChart('roleChart')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="roleChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>Voting Power Analysis</h3>
+                <div class="chart-actions">
+                    <button class="btn-icon" onclick="downloadChart('votingChart')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="votingChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>Geographic Distribution</h3>
+                <div class="chart-actions">
+                    <button class="btn-icon" onclick="downloadChart('geoChart')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="geoChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>Activity Status</h3>
+                <div class="chart-actions">
+                    <button class="btn-icon" onclick="downloadChart('statusChart')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-header">
+                <h3>Delegation Analysis</h3>
+                <div class="chart-actions">
+                    <button class="btn-icon" onclick="downloadChart('delegationChart')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="delegationChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Advanced Reports -->
+    <div class="advanced-reports">
+        <h3>Advanced Reports</h3>
+        <div class="reports-grid">
+            <div class="report-card" data-report="member-directory">
+                <div class="report-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h4>Member Directory</h4>
+                <p>Complete member listing with contact details</p>
+                <button class="btn-outline" onclick="generateMemberDirectory()">
+                    Generate PDF
+                </button>
+            </div>
+
+            <div class="report-card" data-report="governance-report">
+                <div class="report-icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <h4>Governance Report</h4>
+                <p>Monthly governance activity and voting analysis</p>
+                <button class="btn-outline" onclick="generateGovernanceReport()">
+                    Generate PDF
+                </button>
+            </div>
+
+            <div class="report-card" data-report="voting-analysis">
+                <div class="report-icon">
+                    <i class="fas fa-vote-yea"></i>
+                </div>
+                <h4>Voting Analysis</h4>
+                <p>Detailed voting patterns and participation rates</p>
+                <button class="btn-outline" onclick="generateVotingAnalysis()">
+                    Generate PDF
+                </button>
+            </div>
+
+            <div class="report-card" data-report="financial-report">
+                <div class="report-icon">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <h4>Financial Report</h4>
+                <p>Treasury status and financial transactions</p>
+                <button class="btn-outline" onclick="generateFinancialReport()">
+                    Generate PDF
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Proposal Management Section -->
+<section class="content-section" id="proposals-section">
+    <div class="section-header">
+        <h2>Proposal Management</h2>
+        <button class="btn-primary" id="createProposalBtn">
+            <i class="fas fa-plus"></i> Create New Proposal
+        </button>
+    </div>
+
+    <!-- Proposal Form -->
+    <div class="form-container" id="proposalForm" style="display: none;">
+        <div class="ulp-badge">
+            <i class="fas fa-vote-yea"></i>
+            DAO Governance Proposal System
+        </div>
+        <h3>Create New Proposal</h3>
+
+        <form id="proposalDataForm">
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="proposalTitle">Proposal Title *</label>
+                    <input type="text" id="proposalTitle" name="proposalTitle" required 
+                           placeholder="e.g., Community Garden Funding Request">
+                </div>
+
+                <div class="form-group">
+                    <label for="proposalCategory">Category *</label>
+                    <select id="proposalCategory" name="proposalCategory" required>
+                        <option value="">Select Category</option>
+                        <option value="governance">Governance</option>
+                        <option value="development">Development</option>
+                        <option value="treasury">Treasury</option>
+                        <option value="education">Education</option>
+                        <option value="community">Community</option>
+                        <option value="grants">Grants</option>
+                        <option value="partnerships">Partnerships</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="proposalCreator">Proposed By *</label>
+                    <select id="proposalCreator" name="proposalCreator" required>
+                        <option value="">Select Member</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="proposalStartDate">Voting Start *</label>
+                    <input type="datetime-local" id="proposalStartDate" name="proposalStartDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="proposalEndDate">Voting End *</label>
+                    <input type="datetime-local" id="proposalEndDate" name="proposalEndDate" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="proposalDescription">Proposal Description *</label>
+                    <textarea id="proposalDescription" name="proposalDescription" rows="6" 
+                              placeholder="Detailed description of the proposal, objectives, and expected outcomes..." required></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="proposalDetails">Implementation Details</label>
+                    <textarea id="proposalDetails" name="proposalDetails" rows="4" 
+                              placeholder="Technical implementation details, timeline, and resource requirements..."></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="proposalBudget">Budget Request (if any)</label>
+                    <div class="budget-input">
+                        <input type="number" id="proposalBudget" name="proposalBudget" 
+                               placeholder="0.00" step="0.01" min="0">
+                        <select id="budgetCurrency" name="budgetCurrency">
+                            <option value="ETH">ETH</option>
+                            <option value="DAI">DAI</option>
+                            <option value="USDC">USDC</option>
+                            <option value="DAO">DAO Token</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Voting Options</label>
+                    <div class="voting-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="votingOptions" value="yes" checked> Yes
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="votingOptions" value="no" checked> No
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="votingOptions" value="abstain"> Abstain
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Required Quorum *</label>
+                    <div class="quorum-settings">
+                        <input type="range" id="quorumSlider" min="1" max="100" value="30">
+                        <span id="quorumValue">30%</span>
+                    </div>
+                    <small class="form-hint">Minimum percentage of total voting power required for proposal to pass</small>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary" id="submitProposalBtn">
+                    <i class="fas fa-paper-plane"></i> Submit Proposal
+                </button>
+                <button type="button" class="btn-secondary" id="saveDraftBtn">
+                    <i class="fas fa-save"></i> Save Draft
+                </button>
+                <button type="button" class="btn-danger" id="cancelProposal">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Proposals Table -->
+    <div class="table-container">
+        <div class="table-header">
+            <h3>All Proposals</h3>
+            <div class="table-actions">
+                <div class="filter-group">
+                    <select id="proposalFilter">
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="pending">Pending</option>
+                        <option value="passed">Passed</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                    <select id="categoryFilter">
+                        <option value="all">All Categories</option>
+                        <option value="governance">Governance</option>
+                        <option value="development">Development</option>
+                        <option value="treasury">Treasury</option>
+                        <option value="education">Education</option>
+                    </select>
+                </div>
+                <div class="search-box table-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search proposals..." id="proposalSearch">
+                </div>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table id="proposalsTable">
+                <thead>
+                    <tr>
+                        <th data-sort="id">ID</th>
+                        <th data-sort="title">Title</th>
+                        <th data-sort="category">Category</th>
+                        <th data-sort="creator">Proposer</th>
+                        <th data-sort="startDate">Start Date</th>
+                        <th data-sort="endDate">End Date</th>
+                        <th data-sort="status">Status</th>
+                        <th data-sort="votes">Votes</th>
+                        <th data-sort="quorum">Quorum</th>
+                        <th>Results</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="proposalsTableBody">
+                    <!-- Dynamic content -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-footer">
+            <div class="table-pagination" id="proposalPagination">
+                <!-- Pagination -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Proposal Detail Modal -->
+    <div class="modal" id="proposalModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalProposalTitle">Proposal Details</h3>
+                <button class="modal-close" id="closeProposalModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="proposal-detail">
+                    <div class="proposal-meta">
+                        <div class="meta-item">
+                            <strong>Category:</strong>
+                            <span id="modalCategory"></span>
+                        </div>
+                        <div class="meta-item">
+                            <strong>Proposer:</strong>
+                            <span id="modalProposer"></span>
+                        </div>
+                        <div class="meta-item">
+                            <strong>Status:</strong>
+                            <span id="modalStatus"></span>
+                        </div>
+                        <div class="meta-item">
+                            <strong>Quorum:</strong>
+                            <span id="modalQuorum"></span>
+                        </div>
+                    </div>
+
+                    <div class="proposal-content">
+                        <h4>Description</h4>
+                        <p id="modalDescription"></p>
+
+                        <h4>Implementation Details</h4>
+                        <p id="modalDetails"></p>
+
+                        <div class="voting-results" id="modalVotingResults">
+                            <!-- Voting results will be populated here -->
+                        </div>
+
+                        <div class="discussion-thread" id="discussionThread">
+                            <h4>Discussion</h4>
+                            <div class="comment-form">
+                                <textarea placeholder="Add your comment..." id="commentText"></textarea>
+                                <button class="btn-primary" id="submitComment">Post Comment</button>
+                            </div>
+                            <div class="comments-list" id="commentsList">
+                                <!-- Comments will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" id="voteForBtn">Vote For</button>
+                <button class="btn-danger" id="voteAgainstBtn">Vote Against</button>
+                <button class="btn-secondary" id="abstainVoteBtn">Abstain</button>
+                <button class="btn-outline" id="delegateVoteBtn">Delegate Vote</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Treasury Management Section -->
+<section class="content-section" id="treasury-section">
+    <div class="section-header">
+        <h2>Treasury Management</h2>
+        <div class="treasury-actions">
+            <button class="btn-primary" id="addTransactionBtn">
+                <i class="fas fa-plus"></i> Add Transaction
+            </button>
+            <button class="btn-outline" id="requestFundingBtn">
+                <i class="fas fa-hand-holding-usd"></i> Request Funding
+            </button>
+        </div>
+    </div>
+
+    <!-- Treasury Overview -->
+    <div class="treasury-overview">
+        <div class="treasury-stats">
+            <div class="treasury-stat">
+                <div class="stat-icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="totalFunds">$0.00</h3>
+                    <p>Total Treasury Value</p>
+                </div>
+            </div>
+
+            <div class="treasury-stat">
+                <div class="stat-icon">
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="monthlyIncome">$0.00</h3>
+                    <p>Monthly Income</p>
+                </div>
+            </div>
+
+            <div class="treasury-stat">
+                <div class="stat-icon">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="monthlyExpenses">$0.00</h3>
+                    <p>Monthly Expenses</p>
+                </div>
+            </div>
+
+            <div class="treasury-stat">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="growthRate">0%</h3>
+                    <p>Monthly Growth</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Treasury Chart -->
+        <div class="treasury-chart">
+            <div class="chart-header">
+                <h3>Treasury Flow Over Time</h3>
+                <select id="treasuryPeriod">
+                    <option value="7d">7 Days</option>
+                    <option value="30d">30 Days</option>
+                    <option value="90d">90 Days</option>
+                    <option value="1y">1 Year</option>
+                </select>
+            </div>
+            <div class="chart-container">
+                <canvas id="treasuryFlowChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="table-container">
+        <div class="table-header">
+            <h3>Recent Transactions</h3>
+            <div class="table-actions">
+                <div class="filter-group">
+                    <select id="transactionType">
+                        <option value="all">All Types</option>
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                        <option value="transfer">Transfer</option>
+                    </select>
+                    <select id="transactionCurrency">
+                        <option value="all">All Currencies</option>
+                        <option value="ETH">ETH</option>
+                        <option value="DAI">DAI</option>
+                        <option value="USDC">USDC</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table id="transactionsTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Description</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Currency</th>
+                        <th>From/To</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionsTableBody">
+                    <!-- Dynamic content -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Funding Requests -->
+    <div class="table-container">
+        <div class="table-header">
+            <h3>Funding Requests</h3>
+            <div class="table-actions">
+                <select id="fundingStatus">
+                    <option value="all">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                    <option value="disbursed">Disbursed</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table id="fundingTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Project</th>
+                        <th>Requester</th>
+                        <th>Amount</th>
+                        <th>Currency</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="fundingTableBody">
+                    <!-- Dynamic content -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Settings & Integrations Section -->
+<section class="content-section" id="settings-section">
+    <div class="section-header">
+        <h2>Settings & Integrations</h2>
+    </div>
+
+    <div class="settings-grid">
+        <!-- Blockchain Integration -->
+        <div class="settings-card">
+            <div class="settings-header">
+                <i class="fab fa-ethereum"></i>
+                <h3>Blockchain Integration</h3>
+            </div>
+            <div class="settings-body">
+                <div class="setting-item">
+                    <label>Network</label>
+                    <select id="blockchainNetwork">
+                        <option value="ethereum">Ethereum Mainnet</option>
+                        <option value="polygon">Polygon</option>
+                        <option value="arbitrum">Arbitrum</option>
+                        <option value="solana">Solana</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>Smart Contract Address</label>
+                    <input type="text" id="contractAddress" placeholder="0x...">
+                </div>
+                <div class="setting-item">
+                    <label>RPC URL</label>
+                    <input type="text" id="rpcUrl" placeholder="https://...">
+                </div>
+                <button class="btn-primary" id="saveBlockchainSettings">
+                    Save Settings
+                </button>
+            </div>
+        </div>
+
+        <!-- Community Integration -->
+        <div class="settings-card">
+            <div class="settings-header">
+                <i class="fas fa-robot"></i>
+                <h3>Community Bots</h3>
+            </div>
+            <div class="settings-body">
+                <div class="integration-item">
+                    <div class="integration-info">
+                        <i class="fab fa-telegram"></i>
+                        <div>
+                            <h4>Telegram Bot</h4>
+                            <p>Proposal alerts and voting notifications</p>
+                        </div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="telegramBot">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="integration-item">
+                    <div class="integration-info">
+                        <i class="fab fa-discord"></i>
+                        <div>
+                            <h4>Discord Bot</h4>
+                            <p>Community engagement and governance</p>
+                        </div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="discordBot">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="integration-item">
+                    <div class="integration-info">
+                        <i class="fas fa-bell"></i>
+                        <div>
+                            <h4>Push Notifications</h4>
+                            <p>Mobile alerts for important updates</p>
+                        </div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="pushNotifications">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Integration -->
+        <div class="settings-card">
+            <div class="settings-header">
+                <i class="fas fa-brain"></i>
+                <h3>AI Advisor</h3>
+            </div>
+            <div class="settings-body">
+                <div class="setting-item">
+                    <label>AI Model</label>
+                    <select id="aiModel">
+                        <option value="gpt-4">GPT-4</option>
+                        <option value="claude">Claude</option>
+                        <option value="local">Local Model</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>Proposal Optimization</label>
+                    <label class="switch">
+                        <input type="checkbox" id="proposalOptimization" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label>Duplicate Detection</label>
+                    <label class="switch">
+                        <input type="checkbox" id="duplicateDetection" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label>Sentiment Analysis</label>
+                    <label class="switch">
+                        <input type="checkbox" id="sentimentAnalysis">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Localization -->
+        <div class="settings-card">
+            <div class="settings-header">
+                <i class="fas fa-globe"></i>
+                <h3>Localization</h3>
+            </div>
+            <div class="settings-body">
+                <div class="setting-item">
+                    <label>Default Language</label>
+                    <select id="defaultLanguage">
+                        <option value="en">English</option>
+                        <option value="hi">Hindi</option>
+                        <option value="bn">Bengali</option>
+                        <option value="te">Telugu</option>
+                        <option value="ta">Tamil</option>
+                        <option value="ml">Malayalam</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>Date Format</label>
+                    <select id="dateFormat">
+                        <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                        <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                        <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>Timezone</label>
+                    <select id="timezone">
+                        <option value="IST">India Standard Time (IST)</option>
+                        <option value="UTC">UTC</option>
+                        <option value="EST">Eastern Time</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile App -->
+        <div class="settings-card">
+            <div class="settings-header">
+                <i class="fas fa-mobile-alt"></i>
+                <h3>Mobile App</h3>
+            </div>
+            <div class="settings-body">
+                <div class="mobile-preview">
+                    <div class="mobile-screen">
+                        <div class="mobile-header">
+                            <span>DAO Village</span>
+                        </div>
+                        <div class="mobile-content">
+                            <div class="mobile-item active">
+                                <i class="fas fa-home"></i>
+                                <span>Dashboard</span>
+                            </div>
+                            <div class="mobile-item">
+                                <i class="fas fa-vote-yea"></i>
+                                <span>Vote</span>
+                            </div>
+                            <div class="mobile-item">
+                                <i class="fas fa-id-card"></i>
+                                <span>Profile</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn-primary" id="downloadApp">
+                    <i class="fas fa-download"></i> Download Mobile App
+                </button>
+            </div>
+        </div>
+
+        <!-- Security Settings -->
+        <div class="settings-card">
+            <div class="settings-header">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Security</h3>
+            </div>
+            <div class="settings-body">
+                <div class="setting-item">
+                    <label>Two-Factor Authentication</label>
+                    <label class="switch">
+                        <input type="checkbox" id="twoFactorAuth" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label>Session Timeout</label>
+                    <select id="sessionTimeout">
+                        <option value="15">15 minutes</option>
+                        <option value="30">30 minutes</option>
+                        <option value="60">1 hour</option>
+                        <option value="120">2 hours</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>IP Whitelist</label>
+                    <textarea id="ipWhitelist" placeholder="Enter allowed IP addresses..."></textarea>
+                </div>
+                <button class="btn-primary" id="saveSecuritySettings">
+                    Save Security Settings
+                </button>
+               </div>
+              </div>
+             </div>
+           </section>
                 
                 <!-- Loading Spinner -->
                 <div class="loading-spinner" id="loadingSpinner">
