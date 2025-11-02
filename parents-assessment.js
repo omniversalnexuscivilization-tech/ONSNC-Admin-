@@ -1,192 +1,496 @@
-/**
- * parents-assessment.js
- * - Modular Firebase (v9+/v11) usage
- * - Replace firebaseConfig with your project's values
- * - Features: FEI calc, preview render, save/load to Firestore, download PDF
- */
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import {
-  getFirestore, doc, setDoc, getDoc, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-
-// ---------- CONFIG: replace with your Firebase project values ----------
-const firebaseConfig = {
-  apiKey: "REPLACE_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  // storageBucket, messagingSenderId, appId optional for Firestore-only demo
+// DOM Elements - Form Fields
+const form = {
+  parentName: document.getElementById('parentName'),
+  ulpID: document.getElementById('ulpID'),
+  contactNumber: document.getElementById('contactNumber'),
+  emailID: document.getElementById('emailID'),
+  address: document.getElementById('address'),
+  linkedLearners: document.getElementById('linkedLearners'),
+  communityHub: document.getElementById('communityHub'),
+  emotionalSupport: document.getElementById('emotionalSupport'),
+  communication: document.getElementById('communication'),
+  environment: document.getElementById('environment'),
+  ethics: document.getElementById('ethics'),
+  parentReflection: document.getElementById('parentReflection'),
+  mentorFeedback: document.getElementById('mentorFeedback'),
+  learnerFeedback: document.getElementById('learnerFeedback'),
+  profilePhoto: document.getElementById('profilePhoto'),
+  signature: document.getElementById('signature')
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+// DOM Elements - Report Preview
+const report = {
+  parentName: document.getElementById('rpParentName'),
+  ulpID: document.getElementById('rpUlpID'),
+  contact: document.getElementById('rpContact'),
+  email: document.getElementById('rpEmail'),
+  address: document.getElementById('rpAddress'),
+  learners: document.getElementById('rpLearners'),
+  hub: document.getElementById('rpHub'),
+  date: document.getElementById('rpDate'),
+  emotional: document.getElementById('rpEmotional'),
+  communication: document.getElementById('rpCommunication'),
+  environment: document.getElementById('rpEnvironment'),
+  ethics: document.getElementById('rpEthics'),
+  fei: document.getElementById('rpFEI'),
+  parentRef: document.getElementById('rpParentRef'),
+  mentorRef: document.getElementById('rpMentorRef'),
+  learnerRef: document.getElementById('rpLearnerRef'),
+  timestamp: document.getElementById('rpTimestamp'),
+  profilePic: document.getElementById('reportProfilePic'),
+  signature: document.getElementById('reportSignature')
+};
 
-// ---------- DOM helpers ----------
-const $ = id => document.getElementById(id);
-const statusEl = $('status');
+// Other DOM Elements
+const feiScore = document.getElementById('feiScore');
+const statusMsg = document.getElementById('statusMsg');
+const qrCodeContainer = document.getElementById('qrCodeContainer');
+const calculateBtn = document.getElementById('calculateBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const clearBtn = document.getElementById('clearBtn');
 
-// ---------- FEI Calculation ----------
+// State Management
+let profilePhotoData = '';
+let signatureData = '';
+let currentFEI = 0;
+
+// Initialize
+function init() {
+  setupEventListeners();
+  updateReport();
+  setInitialDates();
+}
+
+// Setup All Event Listeners
+function setupEventListeners() {
+  // Live update listeners for all form fields
+  Object.values(form).forEach(field => {
+    if (field.tagName === 'INPUT' || field.tagName === 'TEXTAREA') {
+      field.addEventListener('input', updateReport);
+      field.addEventListener('change', updateReport);
+    }
+  });
+
+  // File upload listeners
+  form.profilePhoto.addEventListener('change', handleProfilePhotoUpload);
+  form.signature.addEventListener('change', handleSignatureUpload);
+
+  // Button listeners
+  calculateBtn.addEventListener('click', calculateFEI);
+  downloadBtn.addEventListener('click', downloadPDF);
+  clearBtn.addEventListener('click', clearForm);
+}
+
+// Live Update Report Preview
+function updateReport() {
+  // Basic Information
+  report.parentName.textContent = form.parentName.value || '—';
+  report.ulpID.textContent = form.ulpID.value || '—';
+  report.contact.textContent = form.contactNumber.value || '—';
+  report.email.textContent = form.emailID.value || '—';
+  report.address.textContent = form.address.value || '—';
+  report.learners.textContent = form.linkedLearners.value || '—';
+  report.hub.textContent = form.communityHub.value || '—';
+
+  // Scores
+  report.emotional.textContent = form.emotionalSupport.value || '—';
+  report.communication.textContent = form.communication.value || '—';
+  report.environment.textContent = form.environment.value || '—';
+  report.ethics.textContent = form.ethics.value || '—';
+
+  // Reflections
+  report.parentRef.textContent = form.parentReflection.value || '—';
+  report.mentorRef.textContent = form.mentorFeedback.value || '—';
+  report.learnerRef.textContent = form.learnerFeedback.value || '—';
+
+  // Update timestamp
+  report.timestamp.textContent = new Date().toLocaleString();
+}
+
+// Handle Profile Photo Upload
+function handleProfilePhotoUpload(e) {
+  const file = e.target.files[0];
+  if (file) {
+    if (!file.type.startsWith('image/')) {
+      showStatus('Please select a valid image file', 'error');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      profilePhotoData = event.target.result;
+      
+      // Update preview
+      const preview = document.getElementById('profilePreview');
+      preview.src = profilePhotoData;
+      preview.classList.add('show');
+      
+      // Update report
+      report.profilePic.src = profilePhotoData;
+      
+      showStatus('Profile photo uploaded successfully', 'success');
+    };
+    reader.onerror = function() {
+      showStatus('Error reading profile photo', 'error');
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// Handle Signature Upload
+function handleSignatureUpload(e) {
+  const file = e.target.files[0];
+  if (file) {
+    if (!file.type.startsWith('image/')) {
+      showStatus('Please select a valid image file', 'error');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      signatureData = event.target.result;
+      
+      // Update preview
+      const preview = document.getElementById('signaturePreview');
+      preview.src = signatureData;
+      preview.classList.add('show');
+      
+      // Update report
+      report.signature.src = signatureData;
+      
+      showStatus('Signature uploaded successfully', 'success');
+    };
+    reader.onerror = function() {
+      showStatus('Error reading signature', 'error');
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// Calculate FEI Score
 function calculateFEI() {
+  // Validate scores
   const scores = [
-    Number($('emotionalSupport').value || 0),
-    Number($('communication').value || 0),
-    Number($('environment').value || 0),
-    Number($('ethics').value || 0)
+    parseInt(form.emotionalSupport.value) || 0,
+    parseInt(form.communication.value) || 0,
+    parseInt(form.environment.value) || 0,
+    parseInt(form.ethics.value) || 0
   ];
-  const sum = scores.reduce((a,b)=>a+b,0);
-  // max sum = 16 (4 dims × 4 max). FEI normalized to 100
-  const fei = sum ? (sum / 16) * 100 : 0;
-  const feiRounded = Math.round(fei * 10) / 10;
-  $('feiScore').textContent = feiRounded;
-  return feiRounded;
+
+  // Check if all scores are valid
+  const allScoresValid = scores.every(score => score >= 1 && score <= 4);
+  
+  if (!allScoresValid) {
+    showStatus('Please enter valid scores (1-4) for all dimensions', 'error');
+    return;
+  }
+
+  // Calculate FEI: (sum of scores / max possible score) * 100
+  const sum = scores.reduce((a, b) => a + b, 0);
+  const maxScore = 16; // 4 dimensions × 4 max score
+  const fei = ((sum / maxScore) * 100).toFixed(1);
+
+  // Update FEI displays
+  currentFEI = fei;
+  feiScore.textContent = fei;
+  report.fei.textContent = fei;
+
+  // Generate QR Code
+  generateQRCode(fei);
+
+  showStatus('FEI calculated successfully!', 'success');
 }
 
-// ---------- Render Preview ----------
-function renderPreview(docData = null) {
-  // Basic fields
-  $('pv-parent').textContent = $('parentName').value || '—';
-  $('pv-ulp').textContent = $('ulpID').value || '—';
-  $('pv-learners').textContent = $('linkedLearners').value || '—';
-  $('pv-hub').textContent = $('communityHub').value || '—';
-  $('pv-date').textContent = new Date().toLocaleDateString();
+// Generate QR Code
+function generateQRCode(fei) {
+  // Clear existing QR code
+  qrCodeContainer.innerHTML = '';
 
-  // scores
-  $('pv-emotional').textContent = $('emotionalSupport').value || '—';
-  $('pv-communication').textContent = $('communication').value || '—';
-  $('pv-environment').textContent = $('environment').value || '—';
-  $('pv-ethics').textContent = $('ethics').value || '—';
-  $('pv-fei').textContent = $('feiScore').textContent || '—';
+  // Create QR data string
+  const qrData = `UHAN-360-PARENTS|ULP:${form.ulpID.value || 'N/A'}|Name:${form.parentName.value || 'N/A'}|FEI:${fei}|Date:${new Date().toLocaleDateString()}`;
 
-  // reflections
-  $('pv-parentRef').textContent = $('parentReflection').value || '—';
-  $('pv-mentorRef').textContent = $('mentorFeedback').value || '—';
-  $('pv-learnerRef').textContent = $('learnerFeedback').value || '—';
-
-  // saved info
-  $('pv-savedBy').textContent = (docData && docData.savedBy) ? docData.savedBy : '—';
-  $('pv-ts').textContent = docData && docData.timestamp ? new Date(docData.timestamp).toLocaleString() : new Date().toLocaleString();
+  // Generate QR code
+  try {
+    new QRCode(qrCodeContainer, {
+      text: qrData,
+      width: 80,
+      height: 80,
+      colorDark: "#000000",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  } catch (error) {
+    console.error('Error generating QR code:', error);
+    showStatus('Error generating QR code', 'error');
+  }
 }
 
-// ---------- Save to Firestore ----------
-async function saveReport() {
-  const ulp = $('ulpID').value?.trim();
-  if(!ulp) { statusEl.textContent = 'Enter Family / ULP ID before saving.'; return; }
+// Download Report as PDF
+async function downloadPDF() {
+  // Validate that FEI has been calculated
+  if (currentFEI === 0) {
+    showStatus('Please calculate FEI before downloading PDF', 'error');
+    return;
+  }
 
-  const docRef = doc(db, 'parent_assessments', ulp);
-  const payload = {
-    parentName: $('parentName').value || '',
-    ulpID: ulp,
-    linkedLearners: $('linkedLearners').value || '',
-    communityHub: $('communityHub').value || '',
-    emotionalSupport: Number($('emotionalSupport').value || 0),
-    communication: Number($('communication').value || 0),
-    environment: Number($('environment').value || 0),
-    ethics: Number($('ethics').value || 0),
-    parentReflection: $('parentReflection').value || '',
-    mentorFeedback: $('mentorFeedback').value || '',
-    learnerFeedback: $('learnerFeedback').value || '',
-    feiScore: Number($('feiScore').textContent || 0),
-    savedBy: 'web-client', // optionally replace with auth.uid
+  showStatus('Generating PDF... Please wait', 'success');
+
+  try {
+    const reportCard = document.getElementById('reportCard');
+    
+    // Generate canvas from report card
+    const canvas = await html2canvas(reportCard, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false,
+      windowWidth: reportCard.scrollWidth,
+      windowHeight: reportCard.scrollHeight
+    });
+
+    // Convert to image
+    const imgData = canvas.toDataURL('image/png');
+    
+    // Create PDF
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    
+    // Calculate dimensions
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = pdfWidth;
+    const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+    
+    // Add image to PDF
+    let heightLeft = imgHeight;
+    let position = 0;
+    
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pdfHeight;
+    
+    // Add additional pages if content is longer
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight;
+    }
+    
+    // Generate filename
+    const filename = `UHAN-Parents-Report-${form.ulpID.value || 'assessment'}-${Date.now()}.pdf`;
+    
+    // Save PDF
+    pdf.save(filename);
+    
+    showStatus('PDF downloaded successfully!', 'success');
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+    showStatus('Error generating PDF. Please try again.', 'error');
+  }
+}
+
+// Clear Form
+function clearForm() {
+  if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+    // Reset text and number inputs
+    Object.values(form).forEach(field => {
+      if (field.tagName === 'INPUT') {
+        if (field.type === 'number') {
+          field.value = 1;
+        } else if (field.type === 'file') {
+          field.value = '';
+        } else {
+          field.value = '';
+        }
+      } else if (field.tagName === 'TEXTAREA') {
+        field.value = '';
+      }
+    });
+
+    // Clear image previews
+    document.getElementById('profilePreview').classList.remove('show');
+    document.getElementById('signaturePreview').classList.remove('show');
+    
+    // Reset image data
+    profilePhotoData = '';
+    signatureData = '';
+    report.profilePic.src = '';
+    report.signature.src = '';
+    
+    // Reset FEI
+    currentFEI = 0;
+    feiScore.textContent = '—';
+    report.fei.textContent = '—';
+    
+    // Clear QR code
+    qrCodeContainer.innerHTML = '';
+    
+    // Update report
+    updateReport();
+    
+    showStatus('Form cleared successfully', 'success');
+  }
+}
+
+// Show Status Message
+function showStatus(message, type) {
+  statusMsg.textContent = message;
+  statusMsg.className = `status show ${type}`;
+  
+  // Auto-hide after 3 seconds
+  setTimeout(() => {
+    statusMsg.classList.remove('show');
+  }, 3000);
+}
+
+// Set Initial Dates
+function setInitialDates() {
+  const currentDate = new Date().toLocaleDateString();
+  const currentDateTime = new Date().toLocaleString();
+  
+  report.date.textContent = currentDate;
+  report.timestamp.textContent = currentDateTime;
+}
+
+// Validate Form Data
+function validateForm() {
+  const requiredFields = [
+    { field: form.parentName, name: 'Parent Name' },
+    { field: form.ulpID, name: 'ULP ID' },
+    { field: form.contactNumber, name: 'Contact Number' },
+    { field: form.emailID, name: 'Email ID' }
+  ];
+
+  for (let item of requiredFields) {
+    if (!item.field.value.trim()) {
+      showStatus(`${item.name} is required`, 'error');
+      item.field.focus();
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// Export/Save Data to JSON
+function exportData() {
+  const data = {
+    parentName: form.parentName.value,
+    ulpID: form.ulpID.value,
+    contactNumber: form.contactNumber.value,
+    emailID: form.emailID.value,
+    address: form.address.value,
+    linkedLearners: form.linkedLearners.value,
+    communityHub: form.communityHub.value,
+    scores: {
+      emotionalSupport: form.emotionalSupport.value,
+      communication: form.communication.value,
+      environment: form.environment.value,
+      ethics: form.ethics.value
+    },
+    reflections: {
+      parent: form.parentReflection.value,
+      mentor: form.mentorFeedback.value,
+      learner: form.learnerFeedback.value
+    },
+    fei: currentFEI,
+    profilePhoto: profilePhotoData,
+    signature: signatureData,
     timestamp: new Date().toISOString()
   };
 
-  try {
-    await setDoc(docRef, { ...payload, createdAt: serverTimestamp() });
-    statusEl.textContent = '✅ Report saved successfully.';
-    renderPreview(payload);
-  } catch (e) {
-    console.error('Save error', e);
-    statusEl.textContent = '⚠️ Error saving report. Check console.';
+  return data;
+}
+
+// Load Data from JSON
+function loadData(data) {
+  if (!data) return;
+
+  form.parentName.value = data.parentName || '';
+  form.ulpID.value = data.ulpID || '';
+  form.contactNumber.value = data.contactNumber || '';
+  form.emailID.value = data.emailID || '';
+  form.address.value = data.address || '';
+  form.linkedLearners.value = data.linkedLearners || '';
+  form.communityHub.value = data.communityHub || '';
+
+  if (data.scores) {
+    form.emotionalSupport.value = data.scores.emotionalSupport || 1;
+    form.communication.value = data.scores.communication || 1;
+    form.environment.value = data.scores.environment || 1;
+    form.ethics.value = data.scores.ethics || 1;
   }
-}
 
-// ---------- Load from Firestore ----------
-async function loadReport() {
-  const ulp = $('ulpID').value?.trim();
-  if(!ulp) { statusEl.textContent = 'Enter Family / ULP ID to load.'; return; }
-  const docRef = doc(db, 'parent_assessments', ulp);
-  try {
-    const snap = await getDoc(docRef);
-    if(!snap.exists()) {
-      statusEl.textContent = 'No report found for this ULP ID.';
-      return;
-    }
-    const data = snap.data();
-    // populate form
-    $('parentName').value = data.parentName || '';
-    $('linkedLearners').value = data.linkedLearners || '';
-    $('communityHub').value = data.communityHub || '';
-    $('emotionalSupport').value = data.emotionalSupport || '';
-    $('communication').value = data.communication || '';
-    $('environment').value = data.environment || '';
-    $('ethics').value = data.ethics || '';
-    $('parentReflection').value = data.parentReflection || '';
-    $('mentorFeedback').value = data.mentorFeedback || '';
-    $('learnerFeedback').value = data.learnerFeedback || '';
-    $('feiScore').textContent = data.feiScore || '';
-    renderPreview(data);
-    statusEl.textContent = 'Loaded report.';
-  } catch (e) {
-    console.error('Load error', e);
-    statusEl.textContent = '⚠️ Error loading report. Check console.';
+  if (data.reflections) {
+    form.parentReflection.value = data.reflections.parent || '';
+    form.mentorFeedback.value = data.reflections.mentor || '';
+    form.learnerFeedback.value = data.reflections.learner || '';
   }
+
+  if (data.profilePhoto) {
+    profilePhotoData = data.profilePhoto;
+    document.getElementById('profilePreview').src = profilePhotoData;
+    document.getElementById('profilePreview').classList.add('show');
+    report.profilePic.src = profilePhotoData;
+  }
+
+  if (data.signature) {
+    signatureData = data.signature;
+    document.getElementById('signaturePreview').src = signatureData;
+    document.getElementById('signaturePreview').classList.add('show');
+    report.signature.src = signatureData;
+  }
+
+  updateReport();
+  
+  if (data.fei) {
+    currentFEI = data.fei;
+    feiScore.textContent = data.fei;
+    report.fei.textContent = data.fei;
+    generateQRCode(data.fei);
+  }
+
+  showStatus('Data loaded successfully', 'success');
 }
 
-// ---------- PDF Export ----------
-async function downloadPDF() {
-  // ensure preview updated
-  renderPreview();
-  const node = document.getElementById('reportPreview');
-  const scale = 2;
-  const canvas = await html2canvas(node, { scale: scale, useCORS: true, backgroundColor: '#ffffff' });
-  const img = canvas.toDataURL('image/png');
-  const { jsPDF } = window.jspdf;
-  const pdf = new jsPDF({ unit: 'px', format: [canvas.width, canvas.height] });
-  pdf.addImage(img, 'PNG', 0, 0, canvas.width, canvas.height);
-  const name = `UHA_Parents_${($('parentName').value || 'Parent').replaceAll(' ','_')}_${new Date().toISOString().slice(0,10)}.pdf`;
-  pdf.save(name);
-}
+// Initialize the application
+document.addEventListener('DOMContentLoaded', init);
 
-// ---------- Clear form ----------
-function clearForm(){
-  ['parentName','ulpID','linkedLearners','communityHub','emotionalSupport','communication','environment','ethics','parentReflection','mentorFeedback','learnerFeedback','feiScore'].forEach(id=>{
-    const el = $(id);
-    if(!el) return;
-    if(el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.value = '';
-    else el.textContent = '';
-  });
-  $('feiScore').textContent = '—';
-  renderPreview();
-  statusEl.textContent = '';
-}
-
-// ---------- Event wiring ----------
-document.addEventListener('DOMContentLoaded', ()=>{
-  // buttons
-  $('calcFei').addEventListener('click', ()=> {
-    calculateFEI();
-    renderPreview();
-    statusEl.textContent = 'FEI calculated.';
-  });
-  $('saveBtn').addEventListener('click', saveReport);
-  $('loadBtn').addEventListener('click', loadReport);
-  $('downloadPdf').addEventListener('click', downloadPDF);
-  $('clearBtn').addEventListener('click', ()=> {
-    if(confirm('Clear form?')) clearForm();
-  });
-
-  // keep preview live on input change for key fields
-  ['parentName','ulpID','linkedLearners','communityHub','emotionalSupport','communication','environment','ethics','parentReflection','mentorFeedback','learnerFeedback'].forEach(id=>{
-    const el = $(id);
-    if(!el) return;
-    el.addEventListener('input', ()=> {
-      // recalc FEI if relevant
-      if(['emotionalSupport','communication','environment','ethics'].includes(id)) calculateFEI();
-      renderPreview();
-    });
-  });
-
-  // initial preview timestamp
-  renderPreview();
+// Prevent form submission on Enter key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+    e.preventDefault();
+  }
 });
 
+// Auto-save to localStorage (optional)
+function autoSave() {
+  try {
+    const data = exportData();
+    localStorage.setItem('uhan_parents_assessment', JSON.stringify(data));
+  } catch (error) {
+    console.error('Error auto-saving:', error);
+  }
+}
+
+// Auto-load from localStorage on startup (optional)
+function autoLoad() {
+  try {
+    const savedData = localStorage.getItem('uhan_parents_assessment');
+    if (savedData) {
+      const data = JSON.parse(savedData);
+      // Optionally prompt user if they want to load saved data
+      if (confirm('Found saved data. Would you like to load it?')) {
+        loadData(data);
+      }
+    }
+  } catch (error) {
+    console.error('Error auto-loading:', error);
+  }
+}
+
+// Optional: Enable auto-save every 30 seconds
+// setInterval(autoSave, 30000);
+
+// Optional: Load saved data on startup
+// autoLoad();
