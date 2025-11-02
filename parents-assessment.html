@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>UHAN 360° — Parents Assessment Report Card</title>
+
+  <link rel="stylesheet" href="parents-assessment.css" />
+  <!-- html2canvas + jsPDF for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>UHAN 360° — Parents Holistic Assessment Report Card</h1>
+      <p class="muted">Family Engagement Dimension — UIENC / Civilization 3.0</p>
+    </header>
+
+    <main class="main-grid">
+      <section class="form-panel">
+        <h2>Parent & Family Profile</h2>
+        <div class="grid two">
+          <label>Parent / Guardian Name
+            <input id="parentName" type="text" placeholder="Full name" />
+          </label>
+          <label>Family / ULP ID
+            <input id="ulpID" type="text" placeholder="ULP-FAM-0x..." />
+          </label>
+        </div>
+
+        <div class="grid two">
+          <label>Associated Learner(s) (ULP IDs)
+            <input id="linkedLearners" type="text" placeholder="U-001, U-002 (comma separated)" />
+          </label>
+          <label>Community / Hub
+            <input id="communityHub" type="text" placeholder="Hub name / node" />
+          </label>
+        </div>
+
+        <h3>Engagement & Support Dimensions (score 1–4)</h3>
+        <table class="assessment-table">
+          <thead><tr><th>Dimension</th><th>What we measure</th><th>Score (1-4)</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Emotional Support</td>
+              <td>Encourages, scaffolds, promotes resilience</td>
+              <td><input id="emotionalSupport" type="number" min="1" max="4" /></td>
+            </tr>
+            <tr>
+              <td>Communication & Feedback</td>
+              <td>Dialogue with mentor, participation in meetings</td>
+              <td><input id="communication" type="number" min="1" max="4" /></td>
+            </tr>
+            <tr>
+              <td>Learning Environment</td>
+              <td>Dedicated space, routines, curiosity culture</td>
+              <td><input id="environment" type="number" min="1" max="4" /></td>
+            </tr>
+            <tr>
+              <td>Ethical Modeling</td>
+              <td>Honesty, fairness, community values at home</td>
+              <td><input id="ethics" type="number" min="1" max="4" /></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Reflections</h3>
+        <label>Parent Reflection
+          <textarea id="parentReflection" placeholder="Parent's self-reflection on support, challenges..."></textarea>
+        </label>
+        <label>Mentor Feedback
+          <textarea id="mentorFeedback" placeholder="Mentor notes about parent collaboration..."></textarea>
+        </label>
+        <label>Learner Feedback (optional)
+          <textarea id="learnerFeedback" placeholder="Learner's view on home support..."></textarea>
+        </label>
+
+        <div class="actions-row">
+          <button id="calcFei" class="btn primary">Calculate FEI</button>
+          <button id="saveBtn" class="btn">Save to Firestore</button>
+          <button id="loadBtn" class="btn">Load by ULP</button>
+          <button id="downloadPdf" class="btn">Download PDF</button>
+          <button id="clearBtn" class="btn danger">Clear</button>
+        </div>
+
+        <div class="summary">
+          <strong>Family Ecosystem Index (FEI):</strong>
+          <span id="feiScore">—</span> / 100
+          <div class="muted small">FEI is normalized: sum(scores)/16 × 100</div>
+        </div>
+
+        <div id="status" class="status muted"></div>
+      </section>
+
+      <aside class="preview-panel">
+        <h2>Preview — Report Card</h2>
+        <div id="reportPreview" class="report-card">
+          <div class="rc-head">
+            <div>
+              <h3>Parents Holistic Assessment Report Card</h3>
+              <div class="muted">UHAN 360° — Family Engagement Dimension</div>
+            </div>
+            <div class="meta">
+              <div><strong>Family ULP:</strong> <span id="pv-ulp">—</span></div>
+              <div><strong>Date:</strong> <span id="pv-date">—</span></div>
+            </div>
+          </div>
+
+          <section class="rc-section">
+            <div><strong>Parent:</strong> <span id="pv-parent">—</span></div>
+            <div><strong>Learner(s):</strong> <span id="pv-learners">—</span></div>
+            <div><strong>Hub:</strong> <span id="pv-hub">—</span></div>
+          </section>
+
+          <section class="rc-section">
+            <h4>Engagement Scores</h4>
+            <ul class="pv-list">
+              <li>Emotional Support: <span id="pv-emotional">—</span></li>
+              <li>Communication: <span id="pv-communication">—</span></li>
+              <li>Environment: <span id="pv-environment">—</span></li>
+              <li>Ethical Modeling: <span id="pv-ethics">—</span></li>
+            </ul>
+            <div class="fei-box">FEI: <span id="pv-fei">—</span>/100</div>
+          </section>
+
+          <section class="rc-section">
+            <h4>Reflections</h4>
+            <div><strong>Parent:</strong><p id="pv-parentRef">—</p></div>
+            <div><strong>Mentor:</strong><p id="pv-mentorRef">—</p></div>
+            <div><strong>Learner:</strong><p id="pv-learnerRef">—</p></div>
+          </section>
+
+          <div class="rc-footer">
+            <div>Saved by: <span id="pv-savedBy">—</span></div>
+            <div class="ts">Generated: <span id="pv-ts">—</span></div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="foot muted">
+      UHAN 360° — Family Engagement Dimension • Managed by UIENC
+    </footer>
+  </div>
+
+  <!-- main script (module) -->
+  <script type="module" src="parents-assessment.js"></script>
+</body>
+</html>
