@@ -1,496 +1,525 @@
-// DOM Elements - Form Fields
-const form = {
-  parentName: document.getElementById('parentName'),
-  ulpID: document.getElementById('ulpID'),
-  contactNumber: document.getElementById('contactNumber'),
-  emailID: document.getElementById('emailID'),
-  address: document.getElementById('address'),
-  linkedLearners: document.getElementById('linkedLearners'),
-  communityHub: document.getElementById('communityHub'),
-  emotionalSupport: document.getElementById('emotionalSupport'),
-  communication: document.getElementById('communication'),
-  environment: document.getElementById('environment'),
-  ethics: document.getElementById('ethics'),
-  parentReflection: document.getElementById('parentReflection'),
-  mentorFeedback: document.getElementById('mentorFeedback'),
-  learnerFeedback: document.getElementById('learnerFeedback'),
-  profilePhoto: document.getElementById('profilePhoto'),
-  signature: document.getElementById('signature')
-};
-
-// DOM Elements - Report Preview
-const report = {
-  parentName: document.getElementById('rpParentName'),
-  ulpID: document.getElementById('rpUlpID'),
-  contact: document.getElementById('rpContact'),
-  email: document.getElementById('rpEmail'),
-  address: document.getElementById('rpAddress'),
-  learners: document.getElementById('rpLearners'),
-  hub: document.getElementById('rpHub'),
-  date: document.getElementById('rpDate'),
-  emotional: document.getElementById('rpEmotional'),
-  communication: document.getElementById('rpCommunication'),
-  environment: document.getElementById('rpEnvironment'),
-  ethics: document.getElementById('rpEthics'),
-  fei: document.getElementById('rpFEI'),
-  parentRef: document.getElementById('rpParentRef'),
-  mentorRef: document.getElementById('rpMentorRef'),
-  learnerRef: document.getElementById('rpLearnerRef'),
-  timestamp: document.getElementById('rpTimestamp'),
-  profilePic: document.getElementById('reportProfilePic'),
-  signature: document.getElementById('reportSignature')
-};
-
-// Other DOM Elements
-const feiScore = document.getElementById('feiScore');
-const statusMsg = document.getElementById('statusMsg');
-const qrCodeContainer = document.getElementById('qrCodeContainer');
-const calculateBtn = document.getElementById('calculateBtn');
-const downloadBtn = document.getElementById('downloadBtn');
-const clearBtn = document.getElementById('clearBtn');
-
-// State Management
-let profilePhotoData = '';
-let signatureData = '';
-let currentFEI = 0;
-
-// Initialize
-function init() {
-  setupEventListeners();
-  updateReport();
-  setInitialDates();
-}
-
-// Setup All Event Listeners
-function setupEventListeners() {
-  // Live update listeners for all form fields
-  Object.values(form).forEach(field => {
-    if (field.tagName === 'INPUT' || field.tagName === 'TEXTAREA') {
-      field.addEventListener('input', updateReport);
-      field.addEventListener('change', updateReport);
+document.addEventListener('DOMContentLoaded', function() {
+  // Tab functionality
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const targetTab = tab.getAttribute('data-tab');
+      
+      // Update active tab
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      
+      // Update active content
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(targetTab).classList.add('active');
+      
+      // If switching to report tab, update the report
+      if (targetTab === 'growth-report') {
+        updateGrowthReport();
+        updateReportCard();
+      }
+    });
+  });
+  
+  // Initialize slider value displays
+  const sliders = document.querySelectorAll('input[type="range"]');
+  sliders.forEach(slider => {
+    const valueDisplay = document.getElementById(slider.id + 'Value');
+    valueDisplay.textContent = slider.value;
+    
+    slider.addEventListener('input', function() {
+      valueDisplay.textContent = this.value;
+      // Update report if we're on the report tab
+      if (document.getElementById('growth-report').classList.contains('active')) {
+        updateGrowthReport();
+        updateReportCard();
+      }
+    });
+  });
+  
+  // Update report when form inputs change
+  document.querySelectorAll('#mentorForm input, textarea').forEach(input => {
+    input.addEventListener('input', function() {
+      if (document.getElementById('growth-report').classList.contains('active')) {
+        updateGrowthReport();
+        updateReportCard();
+      }
+    });
+  });
+  
+  // Handle profile photo upload
+  document.getElementById('profilePhoto').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const profilePhotoContainer = document.getElementById('profilePhotoContainer');
+        profilePhotoContainer.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        profilePhotoContainer.appendChild(img);
+      };
+      reader.readAsDataURL(file);
     }
   });
-
-  // File upload listeners
-  form.profilePhoto.addEventListener('change', handleProfilePhotoUpload);
-  form.signature.addEventListener('change', handleSignatureUpload);
-
-  // Button listeners
-  calculateBtn.addEventListener('click', calculateFEI);
-  downloadBtn.addEventListener('click', downloadPDF);
-  clearBtn.addEventListener('click', clearForm);
-}
-
-// Live Update Report Preview
-function updateReport() {
-  // Basic Information
-  report.parentName.textContent = form.parentName.value || '—';
-  report.ulpID.textContent = form.ulpID.value || '—';
-  report.contact.textContent = form.contactNumber.value || '—';
-  report.email.textContent = form.emailID.value || '—';
-  report.address.textContent = form.address.value || '—';
-  report.learners.textContent = form.linkedLearners.value || '—';
-  report.hub.textContent = form.communityHub.value || '—';
-
-  // Scores
-  report.emotional.textContent = form.emotionalSupport.value || '—';
-  report.communication.textContent = form.communication.value || '—';
-  report.environment.textContent = form.environment.value || '—';
-  report.ethics.textContent = form.ethics.value || '—';
-
-  // Reflections
-  report.parentRef.textContent = form.parentReflection.value || '—';
-  report.mentorRef.textContent = form.mentorFeedback.value || '—';
-  report.learnerRef.textContent = form.learnerFeedback.value || '—';
-
-  // Update timestamp
-  report.timestamp.textContent = new Date().toLocaleString();
-}
-
-// Handle Profile Photo Upload
-function handleProfilePhotoUpload(e) {
-  const file = e.target.files[0];
-  if (file) {
-    if (!file.type.startsWith('image/')) {
-      showStatus('Please select a valid image file', 'error');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = function(event) {
-      profilePhotoData = event.target.result;
-      
-      // Update preview
-      const preview = document.getElementById('profilePreview');
-      preview.src = profilePhotoData;
-      preview.classList.add('show');
-      
-      // Update report
-      report.profilePic.src = profilePhotoData;
-      
-      showStatus('Profile photo uploaded successfully', 'success');
-    };
-    reader.onerror = function() {
-      showStatus('Error reading profile photo', 'error');
-    };
-    reader.readAsDataURL(file);
-  }
-}
-
-// Handle Signature Upload
-function handleSignatureUpload(e) {
-  const file = e.target.files[0];
-  if (file) {
-    if (!file.type.startsWith('image/')) {
-      showStatus('Please select a valid image file', 'error');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = function(event) {
-      signatureData = event.target.result;
-      
-      // Update preview
-      const preview = document.getElementById('signaturePreview');
-      preview.src = signatureData;
-      preview.classList.add('show');
-      
-      // Update report
-      report.signature.src = signatureData;
-      
-      showStatus('Signature uploaded successfully', 'success');
-    };
-    reader.onerror = function() {
-      showStatus('Error reading signature', 'error');
-    };
-    reader.readAsDataURL(file);
-  }
-}
-
-// Calculate FEI Score
-function calculateFEI() {
-  // Validate scores
-  const scores = [
-    parseInt(form.emotionalSupport.value) || 0,
-    parseInt(form.communication.value) || 0,
-    parseInt(form.environment.value) || 0,
-    parseInt(form.ethics.value) || 0
-  ];
-
-  // Check if all scores are valid
-  const allScoresValid = scores.every(score => score >= 1 && score <= 4);
   
-  if (!allScoresValid) {
-    showStatus('Please enter valid scores (1-4) for all dimensions', 'error');
-    return;
+  // Handle signature upload
+  document.getElementById('signature').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const signatureContainer = document.getElementById('signatureContainer');
+        signatureContainer.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.style.maxWidth = '100%';
+        img.style.maxHeight = '100%';
+        signatureContainer.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+  
+  // Save Report functionality
+  document.getElementById('saveBtn').addEventListener('click', function() {
+    const mentorData = collectFormData();
+    localStorage.setItem('mentorAssessment', JSON.stringify(mentorData));
+    alert('Assessment saved successfully!');
+  });
+  
+  // Submit to Google Drive (simulated)
+  document.getElementById('submitBtn').addEventListener('click', function() {
+    const mentorData = collectFormData();
+    // In a real implementation, this would send data to Google Apps Script
+    alert('Data submitted to Google Drive (simulated). In a real implementation, this would save to Google Drive.');
+  });
+  
+  // New Entry functionality
+  document.getElementById('newEntryBtn').addEventListener('click', function() {
+    if (confirm('Are you sure you want to start a new assessment? Unsaved changes will be lost.')) {
+      document.getElementById('mentorForm').reset();
+      document.querySelectorAll('input[type="range"]').forEach(slider => {
+        slider.value = 3;
+        document.getElementById(slider.id + 'Value').textContent = '3';
+      });
+      document.querySelectorAll('textarea').forEach(textarea => {
+        textarea.value = '';
+      });
+      // Reset profile photo and signature
+      document.getElementById('profilePhotoContainer').innerHTML = '<div class="profile-photo-placeholder"><i class="fas fa-user"></i></div>';
+      document.getElementById('signatureContainer').innerHTML = '<div class="signature-placeholder">Signature will appear here</div>';
+      updateGrowthReport();
+      updateReportCard();
+    }
+  });
+  
+  // PDF Download functionality
+  document.getElementById('downloadBtn').addEventListener('click', function() {
+    generatePDF();
+  });
+  
+  document.getElementById('downloadReportBtn').addEventListener('click', function() {
+    generatePDF();
+  });
+  
+  // Update Report functionality
+  document.getElementById('updateReportBtn').addEventListener('click', function() {
+    updateGrowthReport();
+    updateReportCard();
+    alert('Report updated with latest data!');
+  });
+  
+  // Helper function to collect all form data
+  function collectFormData() {
+    const data = {};
+    
+    // Collect text inputs
+    const textInputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], textarea');
+    textInputs.forEach(input => {
+      data[input.id] = input.value;
+    });
+    
+    // Collect slider values
+    sliders.forEach(slider => {
+      data[slider.id] = slider.value;
+    });
+    
+    return data;
   }
-
-  // Calculate FEI: (sum of scores / max possible score) * 100
-  const sum = scores.reduce((a, b) => a + b, 0);
-  const maxScore = 16; // 4 dimensions × 4 max score
-  const fei = ((sum / maxScore) * 100).toFixed(1);
-
-  // Update FEI displays
-  currentFEI = fei;
-  feiScore.textContent = fei;
-  report.fei.textContent = fei;
-
-  // Generate QR Code
-  generateQRCode(fei);
-
-  showStatus('FEI calculated successfully!', 'success');
-}
-
-// Generate QR Code
-function generateQRCode(fei) {
-  // Clear existing QR code
-  qrCodeContainer.innerHTML = '';
-
-  // Create QR data string
-  const qrData = `UHAN-360-PARENTS|ULP:${form.ulpID.value || 'N/A'}|Name:${form.parentName.value || 'N/A'}|FEI:${fei}|Date:${new Date().toLocaleDateString()}`;
-
-  // Generate QR code
-  try {
-    new QRCode(qrCodeContainer, {
-      text: qrData,
-      width: 80,
-      height: 80,
-      colorDark: "#000000",
-      colorLight: "#ffffff",
+  
+  // Update Report Card
+  function updateReportCard() {
+    const data = collectFormData();
+    
+    // Update mentor info
+    document.getElementById('reportMentorName').textContent = data.mentorName || 'Not specified';
+    document.getElementById('reportInstitution').textContent = data.institution || 'Not specified';
+    
+    // Calculate overall score
+    let totalScore = 0;
+    let scoreCount = 0;
+    
+    sliders.forEach(slider => {
+      totalScore += parseInt(slider.value);
+      scoreCount++;
+    });
+    
+    const overallScore = (totalScore / scoreCount).toFixed(1);
+    document.getElementById('reportOverallScore').textContent = overallScore;
+    
+    // Set performance level
+    let performanceLevel = 'Developing';
+    if (overallScore >= 4.5) performanceLevel = 'Exemplary';
+    else if (overallScore >= 4.0) performanceLevel = 'Proficient';
+    else if (overallScore >= 3.0) performanceLevel = 'Competent';
+    
+    document.getElementById('reportPerformanceLevel').textContent = performanceLevel;
+    
+    // Set progress percentage (simulated)
+    const progressPercent = Math.min(100, Math.round((overallScore / 5) * 100));
+    document.getElementById('reportProgress').textContent = `${progressPercent}%`;
+    
+    // Set ranking (simulated)
+    const rankings = ['Top 5%', 'Top 10%', 'Top 25%', 'Average', 'Below Average'];
+    let rankingIndex = 4;
+    if (overallScore >= 4.5) rankingIndex = 0;
+    else if (overallScore >= 4.0) rankingIndex = 1;
+    else if (overallScore >= 3.5) rankingIndex = 2;
+    else if (overallScore >= 3.0) rankingIndex = 3;
+    
+    document.getElementById('reportRanking').textContent = rankings[rankingIndex];
+    
+    // Update dimension scores
+    updateReportDimensionScores();
+    
+    // Update dates
+    const now = new Date();
+    document.getElementById('reportIssueDate').textContent = `Issued: ${now.toLocaleDateString()}`;
+    
+    const validUntil = new Date();
+    validUntil.setFullYear(validUntil.getFullYear() + 1);
+    document.getElementById('reportValidUntil').textContent = `Valid Until: ${validUntil.toLocaleDateString()}`;
+    
+    // Generate report ID
+    document.getElementById('reportId').textContent = `UHAN-${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2, '0')}${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+    
+    // Generate QR code for report
+    generateReportQRCode();
+  }
+  
+  // Update Report Dimension Scores
+  function updateReportDimensionScores() {
+    const container = document.getElementById('reportDimensionScores');
+    container.innerHTML = '';
+    
+    const dimensions = [
+      { id: 'facilitation', label: 'Facilitation & Learning Design' },
+      { id: 'guidance', label: 'Mentorship & Guidance' },
+      { id: 'innovation', label: 'Innovation & Impact' },
+      { id: 'ethics', label: 'Ethical Conduct' },
+      { id: 'community', label: 'Community Contribution' },
+      { id: 'teachingMethods', label: 'Teaching Methods' },
+      { id: 'strategy', label: 'Teaching Strategy' },
+      { id: 'lessonPlan', label: 'Lesson Plan Quality' },
+      { id: 'ict', label: 'Use of ICT' }
+    ];
+    
+    dimensions.forEach(dim => {
+      const value = document.getElementById(dim.id).value;
+      
+      const item = document.createElement('div');
+      item.className = 'dimension-item';
+      
+      const name = document.createElement('div');
+      name.className = 'dimension-name';
+      name.textContent = dim.label;
+      
+      const rating = document.createElement('div');
+      rating.className = 'dimension-rating';
+      
+      const stars = document.createElement('div');
+      stars.className = 'rating-stars';
+      stars.innerHTML = '★'.repeat(value) + '☆'.repeat(5-value);
+      
+      const valueDisplay = document.createElement('div');
+      valueDisplay.className = 'rating-value';
+      valueDisplay.textContent = `${value}/5`;
+      
+      rating.appendChild(stars);
+      rating.appendChild(valueDisplay);
+      
+      item.appendChild(name);
+      item.appendChild(rating);
+      
+      container.appendChild(item);
+    });
+  }
+  
+  // Generate QR Code for Report
+  function generateReportQRCode() {
+    const container = document.getElementById('reportQrCode');
+    container.innerHTML = '';
+    
+    const reportData = {
+      mentorName: document.getElementById('mentorName').value,
+      ulcId: document.getElementById('ulcId').value,
+      institution: document.getElementById('institution').value,
+      issueDate: new Date().toLocaleDateString(),
+      reportId: document.getElementById('reportId').textContent
+    };
+    
+    const dataString = JSON.stringify(reportData);
+    
+    // Generate QR code
+    const qrcode = new QRCode(container, {
+      text: dataString,
+      width: 120,
+      height: 120,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
       correctLevel: QRCode.CorrectLevel.H
     });
-  } catch (error) {
-    console.error('Error generating QR code:', error);
-    showStatus('Error generating QR code', 'error');
   }
-}
-
-// Download Report as PDF
-async function downloadPDF() {
-  // Validate that FEI has been calculated
-  if (currentFEI === 0) {
-    showStatus('Please calculate FEI before downloading PDF', 'error');
-    return;
-  }
-
-  showStatus('Generating PDF... Please wait', 'success');
-
-  try {
-    const reportCard = document.getElementById('reportCard');
+  
+  // Update Growth Report
+  function updateGrowthReport() {
+    const data = collectFormData();
     
-    // Generate canvas from report card
-    const canvas = await html2canvas(reportCard, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#ffffff',
-      logging: false,
-      windowWidth: reportCard.scrollWidth,
-      windowHeight: reportCard.scrollHeight
+    // Calculate overall score
+    let totalScore = 0;
+    let scoreCount = 0;
+    
+    sliders.forEach(slider => {
+      totalScore += parseInt(slider.value);
+      scoreCount++;
     });
-
-    // Convert to image
-    const imgData = canvas.toDataURL('image/png');
     
-    // Create PDF
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('p', 'mm', 'a4');
+    const overallScore = (totalScore / scoreCount).toFixed(1);
+    document.getElementById('overallScore').textContent = overallScore;
     
-    // Calculate dimensions
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
-    const imgWidth = pdfWidth;
-    const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+    // Set performance level
+    let performanceLevel = 'Developing';
+    if (overallScore >= 4.5) performanceLevel = 'Exemplary';
+    else if (overallScore >= 4.0) performanceLevel = 'Proficient';
+    else if (overallScore >= 3.0) performanceLevel = 'Competent';
     
-    // Add image to PDF
-    let heightLeft = imgHeight;
-    let position = 0;
+    document.getElementById('performanceLevel').textContent = performanceLevel;
     
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= pdfHeight;
+    // Set progress percentage (simulated)
+    const progressPercent = Math.min(100, Math.round((overallScore / 5) * 100));
+    document.getElementById('progressPercent').textContent = `${progressPercent}%`;
     
-    // Add additional pages if content is longer
-    while (heightLeft > 0) {
-      position = heightLeft - imgHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pdfHeight;
-    }
+    // Set ranking (simulated)
+    const rankings = ['Top 5%', 'Top 10%', 'Top 25%', 'Average', 'Below Average'];
+    let rankingIndex = 4;
+    if (overallScore >= 4.5) rankingIndex = 0;
+    else if (overallScore >= 4.0) rankingIndex = 1;
+    else if (overallScore >= 3.5) rankingIndex = 2;
+    else if (overallScore >= 3.0) rankingIndex = 3;
     
-    // Generate filename
-    const filename = `UHAN-Parents-Report-${form.ulpID.value || 'assessment'}-${Date.now()}.pdf`;
+    document.getElementById('ranking').textContent = rankings[rankingIndex];
     
-    // Save PDF
-    pdf.save(filename);
+    // Update dimension chart
+    updateDimensionChart();
     
-    showStatus('PDF downloaded successfully!', 'success');
-  } catch (error) {
-    console.error('Error generating PDF:', error);
-    showStatus('Error generating PDF. Please try again.', 'error');
+    // Update strengths and improvements
+    updateStrengthsAndImprovements(data);
   }
-}
-
-// Clear Form
-function clearForm() {
-  if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
-    // Reset text and number inputs
-    Object.values(form).forEach(field => {
-      if (field.tagName === 'INPUT') {
-        if (field.type === 'number') {
-          field.value = 1;
-        } else if (field.type === 'file') {
-          field.value = '';
-        } else {
-          field.value = '';
-        }
-      } else if (field.tagName === 'TEXTAREA') {
-        field.value = '';
+  
+  // Update Dimension Chart
+  function updateDimensionChart() {
+    const chart = document.getElementById('dimensionChart');
+    chart.innerHTML = '';
+    
+    const dimensions = [
+      { id: 'facilitation', label: 'Facilitation' },
+      { id: 'guidance', label: 'Guidance' },
+      { id: 'innovation', label: 'Innovation' },
+      { id: 'ethics', label: 'Ethics' },
+      { id: 'community', label: 'Community' },
+      { id: 'teachingMethods', label: 'Methods' },
+      { id: 'strategy', label: 'Strategy' },
+      { id: 'lessonPlan', label: 'Lesson Plan' },
+      { id: 'ict', label: 'ICT' }
+    ];
+    
+    dimensions.forEach(dim => {
+      const value = document.getElementById(dim.id).value;
+      const height = (value / 5) * 100;
+      
+      const bar = document.createElement('div');
+      bar.className = 'chart-bar';
+      bar.style.height = `${height}%`;
+      
+      const valueLabel = document.createElement('div');
+      valueLabel.className = 'chart-bar-value';
+      valueLabel.textContent = value;
+      
+      const dimLabel = document.createElement('div');
+      dimLabel.className = 'chart-bar-label';
+      dimLabel.textContent = dim.label;
+      
+      bar.appendChild(valueLabel);
+      bar.appendChild(dimLabel);
+      chart.appendChild(bar);
+    });
+  }
+  
+  // Update Strengths and Improvements
+  function updateStrengthsAndImprovements(data) {
+    const strengthsList = document.getElementById('strengthsList');
+    const improvementsList = document.getElementById('improvementsList');
+    
+    strengthsList.innerHTML = '';
+    improvementsList.innerHTML = '';
+    
+    // Find dimensions with high scores (4 or 5)
+    const highScores = [];
+    const lowScores = [];
+    
+    sliders.forEach(slider => {
+      const value = parseInt(slider.value);
+      const label = document.querySelector(`label[for="${slider.id}"] span`).textContent;
+      
+      if (value >= 4) {
+        highScores.push({ label, value });
+      } else if (value <= 2) {
+        lowScores.push({ label, value });
       }
     });
-
-    // Clear image previews
-    document.getElementById('profilePreview').classList.remove('show');
-    document.getElementById('signaturePreview').classList.remove('show');
     
-    // Reset image data
-    profilePhotoData = '';
-    signatureData = '';
-    report.profilePic.src = '';
-    report.signature.src = '';
+    // Add strengths
+    if (highScores.length > 0) {
+      highScores.forEach(item => {
+        const li = document.createElement('div');
+        li.textContent = `${item.label} (${item.value}/5)`;
+        li.style.padding = '5px 0';
+        li.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+        strengthsList.appendChild(li);
+      });
+    } else {
+      strengthsList.innerHTML = '<p>No standout strengths identified. Focus on improving all dimensions.</p>';
+    }
     
-    // Reset FEI
-    currentFEI = 0;
-    feiScore.textContent = '—';
-    report.fei.textContent = '—';
+    // Add improvements
+    if (lowScores.length > 0) {
+      lowScores.forEach(item => {
+        const li = document.createElement('div');
+        li.textContent = `${item.label} (${item.value}/5)`;
+        li.style.padding = '5px 0';
+        li.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+        improvementsList.appendChild(li);
+      });
+    } else {
+      improvementsList.innerHTML = '<p>All dimensions are at satisfactory levels. Focus on maintaining excellence.</p>';
+    }
     
-    // Clear QR code
-    qrCodeContainer.innerHTML = '';
-    
-    // Update report
-    updateReport();
-    
-    showStatus('Form cleared successfully', 'success');
-  }
-}
-
-// Show Status Message
-function showStatus(message, type) {
-  statusMsg.textContent = message;
-  statusMsg.className = `status show ${type}`;
-  
-  // Auto-hide after 3 seconds
-  setTimeout(() => {
-    statusMsg.classList.remove('show');
-  }, 3000);
-}
-
-// Set Initial Dates
-function setInitialDates() {
-  const currentDate = new Date().toLocaleDateString();
-  const currentDateTime = new Date().toLocaleString();
-  
-  report.date.textContent = currentDate;
-  report.timestamp.textContent = currentDateTime;
-}
-
-// Validate Form Data
-function validateForm() {
-  const requiredFields = [
-    { field: form.parentName, name: 'Parent Name' },
-    { field: form.ulpID, name: 'ULP ID' },
-    { field: form.contactNumber, name: 'Contact Number' },
-    { field: form.emailID, name: 'Email ID' }
-  ];
-
-  for (let item of requiredFields) {
-    if (!item.field.value.trim()) {
-      showStatus(`${item.name} is required`, 'error');
-      item.field.focus();
-      return false;
+    // Add SWOT data if available
+    if (data.strengths) {
+      const li = document.createElement('div');
+      li.textContent = data.strengths;
+      li.style.padding = '5px 0';
+      li.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+      li.style.fontStyle = 'italic';
+      strengthsList.appendChild(li);
     }
   }
-
-  return true;
-}
-
-// Export/Save Data to JSON
-function exportData() {
-  const data = {
-    parentName: form.parentName.value,
-    ulpID: form.ulpID.value,
-    contactNumber: form.contactNumber.value,
-    emailID: form.emailID.value,
-    address: form.address.value,
-    linkedLearners: form.linkedLearners.value,
-    communityHub: form.communityHub.value,
-    scores: {
-      emotionalSupport: form.emotionalSupport.value,
-      communication: form.communication.value,
-      environment: form.environment.value,
-      ethics: form.ethics.value
-    },
-    reflections: {
-      parent: form.parentReflection.value,
-      mentor: form.mentorFeedback.value,
-      learner: form.learnerFeedback.value
-    },
-    fei: currentFEI,
-    profilePhoto: profilePhotoData,
-    signature: signatureData,
-    timestamp: new Date().toISOString()
-  };
-
-  return data;
-}
-
-// Load Data from JSON
-function loadData(data) {
-  if (!data) return;
-
-  form.parentName.value = data.parentName || '';
-  form.ulpID.value = data.ulpID || '';
-  form.contactNumber.value = data.contactNumber || '';
-  form.emailID.value = data.emailID || '';
-  form.address.value = data.address || '';
-  form.linkedLearners.value = data.linkedLearners || '';
-  form.communityHub.value = data.communityHub || '';
-
-  if (data.scores) {
-    form.emotionalSupport.value = data.scores.emotionalSupport || 1;
-    form.communication.value = data.scores.communication || 1;
-    form.environment.value = data.scores.environment || 1;
-    form.ethics.value = data.scores.ethics || 1;
-  }
-
-  if (data.reflections) {
-    form.parentReflection.value = data.reflections.parent || '';
-    form.mentorFeedback.value = data.reflections.mentor || '';
-    form.learnerFeedback.value = data.reflections.learner || '';
-  }
-
-  if (data.profilePhoto) {
-    profilePhotoData = data.profilePhoto;
-    document.getElementById('profilePreview').src = profilePhotoData;
-    document.getElementById('profilePreview').classList.add('show');
-    report.profilePic.src = profilePhotoData;
-  }
-
-  if (data.signature) {
-    signatureData = data.signature;
-    document.getElementById('signaturePreview').src = signatureData;
-    document.getElementById('signaturePreview').classList.add('show');
-    report.signature.src = signatureData;
-  }
-
-  updateReport();
   
-  if (data.fei) {
-    currentFEI = data.fei;
-    feiScore.textContent = data.fei;
-    report.fei.textContent = data.fei;
-    generateQRCode(data.fei);
+  // Generate PDF
+  function generatePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Add content to PDF
+    doc.setFontSize(20);
+    doc.setTextColor(106, 13, 173);
+    doc.text('UHAN 360° Mentor Assessment', 20, 30);
+    
+    doc.setFontSize(12);
+    doc.setTextColor(0, 0, 0);
+    
+    // Mentor Info
+    doc.text(`Mentor Name: ${document.getElementById('mentorName').value}`, 20, 50);
+    doc.text(`Contact Number: ${document.getElementById('contactNumber').value}`, 20, 60);
+    doc.text(`ULC ID: ${document.getElementById('ulcId').value}`, 20, 70);
+    doc.text(`ULP Token: ${document.getElementById('ulpToken').value}`, 20, 80);
+    doc.text(`Institution: ${document.getElementById('institution').value}`, 20, 90);
+    
+    // Assessment Scores
+    let yPos = 110;
+    doc.text('Assessment Scores:', 20, yPos);
+    yPos += 10;
+    
+    sliders.forEach(slider => {
+      const label = document.querySelector(`label[for="${slider.id}"] span`).textContent;
+      doc.text(`${label}: ${slider.value}/5`, 20, yPos);
+      yPos += 7;
+    });
+    
+    // SWOT Analysis
+    yPos += 10;
+    doc.text('SWOT Analysis:', 20, yPos);
+    yPos += 10;
+    doc.text(`Strengths: ${document.getElementById('strengths').value}`, 20, yPos);
+    yPos += 20;
+    doc.text(`Weaknesses: ${document.getElementById('weaknesses').value}`, 20, yPos);
+    yPos += 20;
+    doc.text(`Opportunities: ${document.getElementById('opportunities').value}`, 20, yPos);
+    yPos += 20;
+    doc.text(`Threats: ${document.getElementById('threats').value}`, 20, yPos);
+    
+    // Way Forward
+    yPos += 30;
+    doc.text('Way Forward:', 20, yPos);
+    yPos += 10;
+    const wayForwardText = doc.splitTextToSize(document.getElementById('wayForward').value, 170);
+    doc.text(wayForwardText, 20, yPos);
+    
+    // Comments
+    yPos += wayForwardText.length * 7 + 10;
+    if (yPos > 250) {
+      doc.addPage();
+      yPos = 20;
+    }
+    doc.text('Comments:', 20, yPos);
+    yPos += 10;
+    const commentsText = doc.splitTextToSize(document.getElementById('mentorComments').value, 170);
+    doc.text(commentsText, 20, yPos);
+    
+    // Save the PDF
+    doc.save(`UHAN_Mentor_Assessment_${document.getElementById('mentorName').value || 'Unknown'}.pdf`);
   }
-
-  showStatus('Data loaded successfully', 'success');
-}
-
-// Initialize the application
-document.addEventListener('DOMContentLoaded', init);
-
-// Prevent form submission on Enter key
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
-    e.preventDefault();
+  
+  // Check if there's saved data and offer to load it
+  window.addEventListener('load', function() {
+    const savedData = localStorage.getItem('mentorAssessment');
+    if (savedData) {
+      if (confirm('Found a previously saved assessment. Would you like to load it?')) {
+        const data = JSON.parse(savedData);
+        populateForm(data);
+      }
+    }
+    
+    // Initialize the growth report and report card
+    updateGrowthReport();
+    updateReportCard();
+  });
+  
+  // Helper function to populate form with data
+  function populateForm(data) {
+    for (const key in data) {
+      const element = document.getElementById(key);
+      if (element) {
+        if (element.type === 'range') {
+          element.value = data[key];
+          document.getElementById(element.id + 'Value').textContent = data[key];
+        } else {
+          element.value = data[key];
+        }
+      }
+    }
   }
 });
-
-// Auto-save to localStorage (optional)
-function autoSave() {
-  try {
-    const data = exportData();
-    localStorage.setItem('uhan_parents_assessment', JSON.stringify(data));
-  } catch (error) {
-    console.error('Error auto-saving:', error);
-  }
-}
-
-// Auto-load from localStorage on startup (optional)
-function autoLoad() {
-  try {
-    const savedData = localStorage.getItem('uhan_parents_assessment');
-    if (savedData) {
-      const data = JSON.parse(savedData);
-      // Optionally prompt user if they want to load saved data
-      if (confirm('Found saved data. Would you like to load it?')) {
-        loadData(data);
-      }
-    }
-  } catch (error) {
-    console.error('Error auto-loading:', error);
-  }
-}
-
-// Optional: Enable auto-save every 30 seconds
-// setInterval(autoSave, 30000);
-
-// Optional: Load saved data on startup
-// autoLoad();
