@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UHAN 360° | Mentor Assessment Card</title>
+  <link rel="stylesheet" href="mentor-styles.css">
+  <script type="module" src="mentor-script.js" defer></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🌐 Universal Holistic Assessment Network 360°</h1>
+      <h2>Mentor Growth & Impact Assessment Card</h2>
+    </header>
+
+    <section class="mentor-info">
+      <h3>Mentor Profile</h3>
+      <form id="mentorForm">
+        <label>Mentor Name:</label>
+        <input type="text" id="mentorName" required>
+        
+        <label>Mentor ULP Token:</label>
+        <input type="text" id="ulpToken" required>
+        
+        <label>Institution / Hub:</label>
+        <input type="text" id="institution">
+      </form>
+    </section>
+
+    <section class="assessment-section">
+      <h3>Assessment Dimensions</h3>
+      <div id="assessmentFields">
+        <div class="dimension">
+          <label>Facilitation & Learning Design:</label>
+          <input type="range" min="1" max="5" value="3" id="facilitation">
+          <span id="facilitationValue">3</span>
+        </div>
+        <div class="dimension">
+          <label>Mentorship & Guidance Quality:</label>
+          <input type="range" min="1" max="5" value="3" id="guidance">
+          <span id="guidanceValue">3</span>
+        </div>
+        <div class="dimension">
+          <label>Innovation & Civilization Impact:</label>
+          <input type="range" min="1" max="5" value="3" id="innovation">
+          <span id="innovationValue">3</span>
+        </div>
+        <div class="dimension">
+          <label>Ethical & Professional Conduct:</label>
+          <input type="range" min="1" max="5" value="3" id="ethics">
+          <span id="ethicsValue">3</span>
+        </div>
+        <div class="dimension">
+          <label>Community Contribution:</label>
+          <input type="range" min="1" max="5" value="3" id="community">
+          <span id="communityValue">3</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="comments-section">
+      <h3>Reflection & Comments</h3>
+      <textarea id="mentorComments" placeholder="Write your reflective comments or improvement goals..."></textarea>
+    </section>
+
+    <section class="actions">
+      <button id="saveBtn">💾 Save Report</button>
+      <button id="loadBtn">📂 Load Report</button>
+    </section>
+
+    <footer>
+      <p>UHAN 360° © Universal Education Transformation Framework</p>
+    </footer>
+  </div>
+</body>
+</html>
