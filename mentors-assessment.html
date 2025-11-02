@@ -3,257 +3,392 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UHAN 360° Parents Assessment Report</title>
+  <title>UHAN 360° | Mentor Assessment System</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="parents-assessment.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>UHAN 360° Parents Assessment</h1>
-      <div class="subtitle">Family Engagement Dimension — UIENC / Civilization 3.0</div>
+      <div class="earth-logo">🌎</div>
+      <h1>Universal Holistic Assessment Network 360°</h1>
+      <h2>Advanced Mentor Assessment & Development System</h2>
     </header>
 
-    <div class="main-grid">
-      <div class="panel">
-        <h2>📋 Data Entry Form</h2>
-        
+    <div class="tabs">
+      <div class="tab active" data-tab="data-entry">Data Entry Form</div>
+      <div class="tab" data-tab="growth-report">Growth & Development Report</div>
+    </div>
+
+    <div class="tab-content active" id="data-entry">
+      <section class="mentor-info">
+        <div class="section-title">
+          <i class="fas fa-user"></i>
+          <h3>Mentor Profile</h3>
+        </div>
+        <form id="mentorForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="mentorName">Mentor Name:</label>
+              <input type="text" id="mentorName" required>
+            </div>
+            <div class="form-group">
+              <label for="contactNumber">Contact Number:</label>
+              <input type="tel" id="contactNumber" required>
+            </div>
+            <div class="form-group">
+              <label for="ulcId">Universal Life Certificate (ULC) ID:</label>
+              <input type="text" id="ulcId" required>
+            </div>
+            <div class="form-group">
+              <label for="ulpToken">Mentor ULP Token:</label>
+              <input type="text" id="ulpToken" required>
+            </div>
+            <div class="form-group">
+              <label for="institution">Institution / Hub:</label>
+              <input type="text" id="institution">
+            </div>
+            <div class="form-group">
+              <label for="email">Contact Email:</label>
+              <input type="email" id="email">
+            </div>
+            <div class="form-group">
+              <label for="address">Address:</label>
+              <textarea id="address" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="profilePhoto">Profile Photo:</label>
+              <input type="file" id="profilePhoto" accept="image/*">
+            </div>
+            <div class="form-group">
+              <label for="signature">Digital Signature:</label>
+              <input type="file" id="signature" accept="image/*">
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <section class="assessment-section">
+        <div class="section-title">
+          <i class="fas fa-chart-bar"></i>
+          <h3>Assessment Dimensions</h3>
+        </div>
+        <div id="assessmentFields">
+          <div class="dimension">
+            <label>
+              <span>Facilitation & Learning Design:</span>
+              <span id="facilitationValue">3</span>
+            </label>
+            <input type="range" min="1" max="5" value="3" id="facilitation">
+          </div>
+          <div class="dimension">
+            <label>
+              <span>Mentorship & Guidance Quality:</span>
+              <span id="guidanceValue">3</span>
+            </label>
+            <input type="range" min="1" max="5" value="3" id="guidance">
+          </div>
+          <div class="dimension">
+            <label>
+              <span>Innovation & Civilization Impact:</span>
+              <span id="innovationValue">3</span>
+            </label>
+            <input type="range" min="1" max="5" value="3" id="innovation">
+          </div>
+          <div class="dimension">
+            <label>
+              <span>Ethical & Professional Conduct:</span>
+              <span id="ethicsValue">3</span>
+            </label>
+            <input type="range" min="1" max="5" value="3" id="ethics">
+          </div>
+          <div class="dimension">
+            <label>
+              <span>Community Contribution:</span>
+              <span id="communityValue">3</span>
+            </label>
+            <input type="range" min="1" max="5" value="3" id="community">
+          </div>
+          <div class="dimension">
+            <label>
+              <span>Teaching Methods:</span>
+              <span id="teachingMethodsValue">3</span>
+            </label>
+            <input type="range" min="1" max="5" value="3" id="teachingMethods">
+          </div>
+          <div class="dimension">
+            <label>
+              <span>Teaching Strategy:</span>
+              <span id="strategyValue">3</span>
+            </label>
+            <input type="range" min="1" max="5" value="3" id="strategy">
+          </div>
+          <div class="dimension">
+            <label>
+              <span>Lesson Plan Quality:</span>
+              <span id="lessonPlanValue">3</span>
+            </label>
+            <input type="range" min="1" max="5" value="3" id="lessonPlan">
+          </div>
+          <div class="dimension">
+            <label>
+              <span>Use of ICT:</span>
+              <span id="ictValue">3</span>
+            </label>
+            <input type="range" min="1" max="5" value="3" id="ict">
+          </div>
+        </div>
+      </section>
+
+      <section class="swot-section">
+        <div class="section-title">
+          <i class="fas fa-search"></i>
+          <h3>Mentor SWOT Analysis</h3>
+        </div>
+        <div class="swot-grid">
+          <div class="form-group">
+            <label for="strengths">Strengths:</label>
+            <textarea id="strengths" rows="4" placeholder="List mentor's key strengths..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="weaknesses">Weaknesses:</label>
+            <textarea id="weaknesses" rows="4" placeholder="Identify areas for improvement..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="opportunities">Opportunities:</label>
+            <textarea id="opportunities" rows="4" placeholder="External opportunities for growth..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="threats">Threats:</label>
+            <textarea id="threats" rows="4" placeholder="External factors that could hinder progress..."></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="way-forward-section">
+        <div class="section-title">
+          <i class="fas fa-rocket"></i>
+          <h3>Way Forward & Development Plan</h3>
+        </div>
+        <div class="form-group">
+          <label for="wayForward">Strategic Development Goals:</label>
+          <textarea id="wayForward" rows="5" placeholder="Outline specific goals, timelines, and action plans for mentor development..."></textarea>
+        </div>
+      </section>
+
+      <section class="comments-section">
+        <div class="section-title">
+          <i class="fas fa-comment"></i>
+          <h3>Reflection & Comments</h3>
+        </div>
+        <div class="form-group">
+          <textarea id="mentorComments" rows="5" placeholder="Write your reflective comments, observations, or additional notes..."></textarea>
+        </div>
+      </section>
+
+      <section class="actions">
+        <button id="submitBtn"><i class="fas fa-paper-plane"></i> Submit to Google Drive</button>
+        <button id="saveBtn"><i class="fas fa-save"></i> Save Report</button>
+        <button id="downloadBtn"><i class="fas fa-file-pdf"></i> Download PDF</button>
+        <button id="newEntryBtn"><i class="fas fa-plus"></i> New Assessment</button>
+      </section>
+    </div>
+
+    <div class="tab-content" id="growth-report">
+      <section class="report-header">
+        <div class="section-title">
+          <i class="fas fa-chart-line"></i>
+          <h3>Mentor Growth & Development Report</h3>
+        </div>
+        <p>This report automatically updates based on assessment data and tracks progress over time.</p>
+      </section>
+
+      <section class="report-card-container">
+        <div class="report-card-header">
+          <div class="report-card-logo">
+            <i class="fas fa-globe-americas"></i>
+            <h2>UHAN 360° Report Card</h2>
+          </div>
+          <div class="report-card-date">
+            <div class="issue-date" id="reportIssueDate">Issued: Loading...</div>
+            <div class="valid-until" id="reportValidUntil">Valid Until: Loading...</div>
+          </div>
+        </div>
+
+        <div class="report-card-body">
+          <div class="profile-section">
+            <div class="profile-photo" id="profilePhotoContainer">
+              <div class="profile-photo-placeholder">
+                <i class="fas fa-user"></i>
+              </div>
+            </div>
+            <h4 id="reportMentorName">Mentor Name</h4>
+            <p id="reportInstitution">Institution</p>
+            
+            <div class="signature-section">
+              <h4>Signature</h4>
+              <div class="signature-box" id="signatureContainer">
+                <div class="signature-placeholder">Signature will appear here</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="report-main-content">
+            <div class="performance-summary">
+              <h3>Performance Summary</h3>
+              <div class="performance-grid">
+                <div class="performance-item">
+                  <span class="performance-label">Overall Score:</span>
+                  <span class="performance-value" id="reportOverallScore">0.0</span>
+                </div>
+                <div class="performance-item">
+                  <span class="performance-label">Performance Level:</span>
+                  <span class="performance-value" id="reportPerformanceLevel">-</span>
+                </div>
+                <div class="performance-item">
+                  <span class="performance-label">Progress:</span>
+                  <span class="performance-value" id="reportProgress">0%</span>
+                </div>
+                <div class="performance-item">
+                  <span class="performance-label">Ranking:</span>
+                  <span class="performance-value" id="reportRanking">-</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="dimension-scores">
+              <h3>Dimension Scores</h3>
+              <div id="reportDimensionScores">
+                <!-- Dimension scores will be populated here -->
+              </div>
+            </div>
+          </div>
+
+          <div class="report-qr-code">
+            <h4>Verification QR Code</h4>
+            <div class="qrcode" id="reportQrCode">
+              <!-- QR Code will be generated here -->
+            </div>
+            <p>Scan to verify authenticity</p>
+          </div>
+        </div>
+
+        <div class="report-card-footer">
+          <p>This report card is issued by UHAN 360° - Universal Holistic Assessment Network</p>
+          <p>Report ID: <span id="reportId">Loading...</span></p>
+        </div>
+      </section>
+
+      <section class="report-overview">
+        <div class="report-grid">
+          <div class="report-card">
+            <i class="fas fa-star"></i>
+            <h4>Overall Score</h4>
+            <div class="value" id="overallScore">0</div>
+            <div class="label">Out of 5.0</div>
+          </div>
+          <div class="report-card">
+            <i class="fas fa-trophy"></i>
+            <h4>Performance Level</h4>
+            <div class="value" id="performanceLevel">-</div>
+            <div class="label">Based on all dimensions</div>
+          </div>
+          <div class="report-card">
+            <i class="fas fa-chart-pie"></i>
+            <h4>Progress</h4>
+            <div class="value" id="progressPercent">0%</div>
+            <div class="label">Towards goals</div>
+          </div>
+          <div class="report-card">
+            <i class="fas fa-award"></i>
+            <h4>Ranking</h4>
+            <div class="value" id="ranking">-</div>
+            <div class="label">Among peers</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="report-charts">
+        <div class="chart-container">
+          <h4>Assessment Dimension Scores</h4>
+          <div class="chart" id="dimensionChart">
+            <!-- Chart bars will be generated by JavaScript -->
+          </div>
+        </div>
+      </section>
+
+      <section class="report-details">
         <div class="form-grid">
-          <div class="two-col">
-            <div>
-              <label>Parent/Guardian Name *</label>
-              <input type="text" id="parentName" placeholder="Full name" required>
-            </div>
-            <div>
-              <label>Family/ULP ID *</label>
-              <input type="text" id="ulpID" placeholder="ULP-FAM-0x...">
+          <div class="form-group">
+            <h4>Strengths</h4>
+            <div class="strengths-list" id="strengthsList">
+              <!-- Strengths will be listed here -->
             </div>
           </div>
-
-          <div class="two-col">
-            <div>
-              <label>Contact Number *</label>
-              <input type="tel" id="contactNumber" placeholder="+91 XXXXX XXXXX">
-            </div>
-            <div>
-              <label>Email ID *</label>
-              <input type="email" id="emailID" placeholder="parent@example.com">
-            </div>
-          </div>
-
-          <div>
-            <label>Address</label>
-            <textarea id="address" placeholder="Complete address"></textarea>
-          </div>
-
-          <div class="two-col">
-            <div>
-              <label>Associated Learner(s)</label>
-              <input type="text" id="linkedLearners" placeholder="U-001, U-002">
-            </div>
-            <div>
-              <label>Community/Hub</label>
-              <input type="text" id="communityHub" placeholder="Hub name">
-            </div>
-          </div>
-
-          <div class="two-col">
-            <div class="file-upload">
-              <label>Profile Photo</label>
-              <label class="file-label">
-                Choose Photo
-                <input type="file" id="profilePhoto" accept="image/*">
-              </label>
-              <img id="profilePreview" class="preview-img" alt="Profile">
-            </div>
-            <div class="file-upload">
-              <label>Signature</label>
-              <label class="file-label">
-                Choose Signature
-                <input type="file" id="signature" accept="image/*">
-              </label>
-              <img id="signaturePreview" class="preview-img" alt="Signature">
+          <div class="form-group">
+            <h4>Areas for Improvement</h4>
+            <div class="improvements-list" id="improvementsList">
+              <!-- Improvements will be listed here -->
             </div>
           </div>
         </div>
+      </section>
 
-        <h3>🎯 Engagement Dimensions (Score 1-4)</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Dimension</th>
-              <th>Score</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Emotional Support</td>
-              <td><input type="number" id="emotionalSupport" min="1" max="4" value="1"></td>
-            </tr>
-            <tr>
-              <td>Communication & Feedback</td>
-              <td><input type="number" id="communication" min="1" max="4" value="1"></td>
-            </tr>
-            <tr>
-              <td>Learning Environment</td>
-              <td><input type="number" id="environment" min="1" max="4" value="1"></td>
-            </tr>
-            <tr>
-              <td>Ethical Modeling</td>
-              <td><input type="number" id="ethics" min="1" max="4" value="1"></td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h3>💭 Reflections</h3>
-        <div class="form-grid">
-          <div>
-            <label>Parent Reflection</label>
-            <textarea id="parentReflection" placeholder="Self-reflection on support, challenges..."></textarea>
+      <section class="growth-timeline">
+        <h4>Development Timeline</h4>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-icon">
+              <i class="fas fa-bullseye"></i>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-date">Current Assessment</div>
+              <p>Initial assessment completed. Development plan created.</p>
+            </div>
           </div>
-          <div>
-            <label>Mentor Feedback</label>
-            <textarea id="mentorFeedback" placeholder="Mentor notes about collaboration..."></textarea>
+          <div class="timeline-item">
+            <div class="timeline-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-date">Next 30 Days</div>
+              <p>Focus on improving teaching methods and ICT integration.</p>
+            </div>
           </div>
-          <div>
-            <label>Learner Feedback</label>
-            <textarea id="learnerFeedback" placeholder="Learner's view on home support..."></textarea>
+          <div class="timeline-item">
+            <div class="timeline-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-date">Next 90 Days</div>
+              <p>Participate in peer mentoring and community contribution activities.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-icon">
+              <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-date">Next 6 Months</div>
+              <p>Achieve advanced certification in mentorship and learning design.</p>
+            </div>
           </div>
         </div>
+      </section>
 
-        <div class="fei-display">
-          <div class="fei-score" id="feiScore">—</div>
-          <div class="fei-label">Family Ecosystem Index (FEI)</div>
-        </div>
-
-        <div class="actions">
-          <button class="btn-primary" id="calculateBtn">Calculate FEI</button>
-          <button class="btn-secondary" id="downloadBtn">Download PDF</button>
-          <button class="btn-danger" id="clearBtn">Clear Form</button>
-        </div>
-
-        <div id="statusMsg" class="status"></div>
-      </div>
-
-      <div class="panel">
-        <h2>📄 Live Report Card Preview</h2>
-        <div class="report-card" id="reportCard">
-          <div class="report-header">
-            <div class="report-title">
-              <h2>Parents Holistic Assessment Report</h2>
-              <div class="report-subtitle">UHAN 360° — Family Engagement Dimension</div>
-            </div>
-            <div class="profile-section">
-              <img id="reportProfilePic" class="profile-pic" src="" alt="Profile">
-              <div id="qrCodeContainer" class="qr-code"></div>
-            </div>
-          </div>
-
-          <div class="info-grid">
-            <div class="info-item">
-              <div class="info-label">Parent Name</div>
-              <div class="info-value" id="rpParentName">—</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">ULP ID</div>
-              <div class="info-value" id="rpUlpID">—</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Contact</div>
-              <div class="info-value" id="rpContact">—</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Email</div>
-              <div class="info-value" id="rpEmail">—</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Address</div>
-              <div class="info-value" id="rpAddress">—</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Learners</div>
-              <div class="info-value" id="rpLearners">—</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Community Hub</div>
-              <div class="info-value" id="rpHub">—</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Assessment Date</div>
-              <div class="info-value" id="rpDate">—</div>
-            </div>
-          </div>
-
-          <div class="scores-section">
-            <h3>Engagement Scores</h3>
-            <div class="score-grid">
-              <div class="score-card">
-                <div class="score-title">Emotional Support</div>
-                <div class="score-value" id="rpEmotional">—</div>
-              </div>
-              <div class="score-card">
-                <div class="score-title">Communication</div>
-                <div class="score-value" id="rpCommunication">—</div>
-              </div>
-              <div class="score-card">
-                <div class="score-title">Environment</div>
-                <div class="score-value" id="rpEnvironment">—</div>
-              </div>
-              <div class="score-card">
-                <div class="score-title">Ethical Modeling</div>
-                <div class="score-value" id="rpEthics">—</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="fei-highlight">
-            <div>Family Ecosystem Index</div>
-            <div class="fei-score" id="rpFEI">—</div>
-            <div>Out of 100</div>
-          </div>
-
-          <div class="reflections">
-            <h3>Reflections & Feedback</h3>
-            <div class="reflection-item">
-              <div class="reflection-title">Parent Reflection</div>
-              <div class="reflection-text" id="rpParentRef">—</div>
-            </div>
-            <div class="reflection-item">
-              <div class="reflection-title">Mentor Feedback</div>
-              <div class="reflection-text" id="rpMentorRef">—</div>
-            </div>
-            <div class="reflection-item">
-              <div class="reflection-title">Learner Feedback</div>
-              <div class="reflection-text" id="rpLearnerRef">—</div>
-            </div>
-          </div>
-
-          <div class="signature-section">
-            <div class="signature-box">
-              <img id="reportSignature" class="signature-img" src="" alt="Signature">
-              <div class="signature-label">Parent/Guardian Signature</div>
-            </div>
-            <div class="signature-box">
-              <div style="height: 60px; border-bottom: 2px solid #333; margin-bottom: 5px;"></div>
-              <div class="signature-label">Mentor Signature</div>
-            </div>
-          </div>
-
-          <div class="report-footer">
-            <div>Generated by UHAN 360° System</div>
-            <div id="rpTimestamp">—</div>
-          </div>
-        </div>
-      </div>
+      <section class="actions">
+        <button id="downloadReportBtn"><i class="fas fa-file-pdf"></i> Download Full Report</button>
+        <button id="updateReportBtn"><i class="fas fa-sync"></i> Update Report</button>
+      </section>
     </div>
 
     <footer>
-      UHAN 360° — Family Engagement Dimension • Managed by UIENC
+      <p>UHAN 360° © Universal Education Transformation Framework | Advanced Mentor Assessment System</p>
     </footer>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="parents-assessment.js"></script>
 </body>
 </html>
