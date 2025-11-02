@@ -3,323 +3,327 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UHAN 360° | Facilitator Assessment System</title>
+    <title>UHAN 360° | Facilitator Assessment</title>
     <link rel="stylesheet" href="facilitators-assessment.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
 
     <div class="container">
-        <!-- Header -->
-        <div class="card full-width">
-            <header>
-                <h1>🌐 Universal Holistic Assessment Network 360°</h1>
-                <h2>Facilitator Growth & Learning Excellence Card</h2>
-                <div class="quantum-badge">
-                    <i class="fas fa-atom"></i> Quantum Blockchain Secured
-                </div>
-            </header>
+        <!-- Header Card -->
+        <div class="header-card">
+            <h1>🌐 UHAN 360°</h1>
+            <h2>Universal Holistic Assessment Network</h2>
+            <h3>Facilitator Growth & Learning Excellence Card</h3>
+            <span class="badge">🔐 Quantum Blockchain Secured</span>
         </div>
 
-        <!-- Data Entry Form -->
-        <div class="card full-width">
-            <h3 class="section-title"><i class="fas fa-user-circle"></i> Facilitator Profile</h3>
-            
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="facilitatorName">Facilitator Name: *</label>
-                    <input type="text" id="facilitatorName" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="uhanId">UHAN ID: *</label>
-                    <input type="text" id="uhanId" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="ulpToken">Universal Life Passport (ULP) ID:</label>
-                    <input type="text" id="ulpToken">
-                </div>
-                
-                <div class="form-group">
-                    <label for="ulciId">ULCI ID:</label>
-                    <input type="text" id="ulciId">
-                </div>
-                
-                <div class="form-group">
-                    <label for="email">Email ID: *</label>
-                    <input type="email" id="email" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="contact">Contact Number:</label>
-                    <input type="tel" id="contact">
-                </div>
+        <!-- Profile Form Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3>👤 Facilitator Profile</h3>
             </div>
-            
-            <div class="form-group">
-                <label for="institution">Institution / Learning Hub:</label>
-                <input type="text" id="institution">
-            </div>
-            
-            <div class="form-group">
-                <label for="address">Address:</label>
-                <textarea id="address" rows="3"></textarea>
-            </div>
-            
-            <div class="photo-signature-container">
-                <div class="upload-section">
-                    <label>Profile Photo:</label>
-                    <div class="preview-box" id="photoPreview">
-                        <i class="fas fa-camera fa-3x"></i>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Facilitator Name *</label>
+                        <input type="text" id="name" placeholder="Enter full name">
                     </div>
-                    <input type="file" id="photoUpload" accept="image/*" hidden>
-                    <button class="btn-secondary" onclick="document.getElementById('photoUpload').click()">
-                        <i class="fas fa-upload"></i> Upload Photo
-                    </button>
-                </div>
-                
-                <div class="upload-section">
-                    <label>Digital Signature:</label>
-                    <div class="preview-box" id="signaturePreview">
-                        <i class="fas fa-signature fa-3x"></i>
+                    <div class="form-group">
+                        <label>UHAN ID *</label>
+                        <input type="text" id="uhanId" placeholder="UHAN-XXXX">
                     </div>
-                    <button class="btn-secondary" id="signatureBtn">
-                        <i class="fas fa-pen"></i> Create Signature
-                    </button>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Universal Life Passport (ULP) ID</label>
+                        <input type="text" id="ulpId" placeholder="ULP-XXXX">
+                    </div>
+                    <div class="form-group">
+                        <label>ULCI ID</label>
+                        <input type="text" id="ulciId" placeholder="ULCI-XXXX">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email ID *</label>
+                        <input type="email" id="email" placeholder="email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Number</label>
+                        <input type="tel" id="contact" placeholder="+91-XXXXXXXXXX">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Institution / Learning Hub</label>
+                    <input type="text" id="institution" placeholder="Institution name">
+                </div>
+
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea id="address" rows="3" placeholder="Full address"></textarea>
+                </div>
+
+                <div class="upload-section">
+                    <div class="upload-box">
+                        <label>📸 Profile Photo</label>
+                        <div class="preview" id="photoPreview">
+                            <span>Click Upload</span>
+                        </div>
+                        <input type="file" id="photoInput" accept="image/*" style="display:none">
+                        <button class="btn" onclick="document.getElementById('photoInput').click()">
+                            📤 Upload Photo
+                        </button>
+                    </div>
+
+                    <div class="upload-box">
+                        <label>✍️ Digital Signature</label>
+                        <div class="preview" id="signaturePreview">
+                            <span>Click Create</span>
+                        </div>
+                        <button class="btn" onclick="openSignaturePad()">
+                            ✏️ Create Signature
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Assessment Dimensions -->
-        <div class="card full-width">
-            <h3 class="section-title"><i class="fas fa-chart-bar"></i> Assessment Dimensions</h3>
-            
-            <div class="dimension">
-                <label>
-                    Learning Engagement & Interaction:
-                    <span class="dimension-value" id="engagementValue">3</span>
-                </label>
-                <input type="range" min="1" max="5" value="3" id="engagement" class="slider">
-                <div class="score-bar">
-                    <div class="score-fill" id="engagementFill"></div>
-                </div>
+        <!-- Assessment Dimensions Card -->
+        <div class="card">
+            <div class="card-header">
+                <h3>📊 Assessment Dimensions</h3>
             </div>
-            
-            <div class="dimension">
-                <label>
-                    Universal Design for Learning (UDL) Integration:
-                    <span class="dimension-value" id="udlValue">3</span>
-                </label>
-                <input type="range" min="1" max="5" value="3" id="udl" class="slider">
-                <div class="score-bar">
-                    <div class="score-fill" id="udlFill"></div>
+            <div class="card-body">
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Learning Engagement & Interaction</span>
+                        <span class="slider-value" id="val1">3</span>
+                    </div>
+                    <input type="range" min="1" max="5" value="3" id="slider1" oninput="updateSlider(1)">
+                    <div class="score-bar">
+                        <div class="score-fill" id="bar1" style="width:60%"></div>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="dimension">
-                <label>
-                    Pedagogical Innovation & Adaptive Teaching:
-                    <span class="dimension-value" id="pedagogyValue">3</span>
-                </label>
-                <input type="range" min="1" max="5" value="3" id="pedagogy" class="slider">
-                <div class="score-bar">
-                    <div class="score-fill" id="pedagogyFill"></div>
-                </div>
-            </div>
-            
-            <div class="dimension">
-                <label>
-                    Assessment & Feedback Quality:
-                    <span class="dimension-value" id="feedbackValue">3</span>
-                </label>
-                <input type="range" min="1" max="5" value="3" id="feedback" class="slider">
-                <div class="score-bar">
-                    <div class="score-fill" id="feedbackFill"></div>
-                </div>
-            </div>
-            
-            <div class="dimension">
-                <label>
-                    Ethics, Professionalism & Collaboration:
-                    <span class="dimension-value" id="ethicsValue">3</span>
-                </label>
-                <input type="range" min="1" max="5" value="3" id="ethics" class="slider">
-                <div class="score-bar">
-                    <div class="score-fill" id="ethicsFill"></div>
-                </div>
-            </div>
 
-            <!-- ULCI Total Score -->
-            <div class="dimension total-score">
-                <label>
-                    <strong>ULCI Total Score:</strong>
-                    <span class="dimension-value" id="ulciTotalValue">15/25</span>
-                </label>
-                <div class="score-bar">
-                    <div class="score-fill total" id="ulciTotalFill"></div>
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Universal Design for Learning (UDL) Integration</span>
+                        <span class="slider-value" id="val2">3</span>
+                    </div>
+                    <input type="range" min="1" max="5" value="3" id="slider2" oninput="updateSlider(2)">
+                    <div class="score-bar">
+                        <div class="score-fill" id="bar2" style="width:60%"></div>
+                    </div>
                 </div>
-                <div class="score-percentage" id="ulciPercentage">60%</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="facilitatorComments">Reflection & Improvement Goals:</label>
-                <textarea id="facilitatorComments" rows="4" placeholder="Reflect on your facilitation experience, strengths, and next steps..."></textarea>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Pedagogical Innovation & Adaptive Teaching</span>
+                        <span class="slider-value" id="val3">3</span>
+                    </div>
+                    <input type="range" min="1" max="5" value="3" id="slider3" oninput="updateSlider(3)">
+                    <div class="score-bar">
+                        <div class="score-fill" id="bar3" style="width:60%"></div>
+                    </div>
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Assessment & Feedback Quality</span>
+                        <span class="slider-value" id="val4">3</span>
+                    </div>
+                    <input type="range" min="1" max="5" value="3" id="slider4" oninput="updateSlider(4)">
+                    <div class="score-bar">
+                        <div class="score-fill" id="bar4" style="width:60%"></div>
+                    </div>
+                </div>
+
+                <div class="slider-group">
+                    <div class="slider-label">
+                        <span>Ethics, Professionalism & Collaboration</span>
+                        <span class="slider-value" id="val5">3</span>
+                    </div>
+                    <input type="range" min="1" max="5" value="3" id="slider5" oninput="updateSlider(5)">
+                    <div class="score-bar">
+                        <div class="score-fill" id="bar5" style="width:60%"></div>
+                    </div>
+                </div>
+
+                <div class="total-score">
+                    <div class="total-label">ULCI Total Score</div>
+                    <div id="totalScore" class="total-number">15/25</div>
+                    <div id="percentage" class="total-percent">60.0%</div>
+                </div>
+
+                <div class="form-group">
+                    <label>💭 Reflection & Improvement Goals</label>
+                    <textarea id="comments" rows="4" placeholder="Reflect on your facilitation experience, strengths, and next steps..."></textarea>
+                </div>
             </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="card full-width">
-            <div class="actions">
-                <button id="saveBtn" class="btn-primary">
-                    <i class="fas fa-save"></i> Save Assessment
+        <!-- Action Buttons Card -->
+        <div class="card">
+            <div class="card-body action-buttons">
+                <button class="btn btn-primary" onclick="saveData()">
+                    💾 Save Assessment
                 </button>
-                <button id="loadBtn" class="btn-secondary">
-                    <i class="fas fa-folder-open"></i> Load Assessment
+                <button class="btn btn-secondary" onclick="loadData()">
+                    📂 Load Assessment
                 </button>
             </div>
         </div>
 
-        <!-- Report Card Preview -->
-        <div class="card full-width report-card">
-            <div class="report-header">
+        <!-- Report Card -->
+        <div class="card report-card">
+            <div class="card-header report-header">
                 <h2>🌎 UHAN 360° Facilitator Assessment Report</h2>
                 <p>Comprehensive Growth & Development Analysis</p>
             </div>
-            
-            <div class="report-content">
-                <div class="report-profile">
-                    <div class="report-photo" id="reportPhoto">
-                        <i class="fas fa-user fa-3x"></i>
-                    </div>
-                    <h3 id="reportName">Facilitator Name</h3>
-                    <p id="reportInstitution">Institution</p>
-                    
-                    <div class="report-details">
-                        <h4>Identification</h4>
-                        <p><strong>UHAN ID:</strong> <span id="reportUhanId">N/A</span></p>
-                        <p><strong>ULP ID:</strong> <span id="reportUlpId">N/A</span></p>
-                        <p><strong>ULCI ID:</strong> <span id="reportUlciId">N/A</span></p>
-                        <p><strong>Email:</strong> <span id="reportEmail">N/A</span></p>
-                        <p><strong>Contact:</strong> <span id="reportContact">N/A</span></p>
-                    </div>
-                    
-                    <div class="report-signature">
-                        <p><strong>Digital Signature</strong></p>
-                        <div id="reportSignature">
-                            <i class="fas fa-signature fa-2x"></i>
+            <div class="card-body">
+                <div class="report-content">
+                    <div class="profile-section">
+                        <div class="profile-photo" id="reportPhoto">
+                            <span>📷</span>
                         </div>
-                    </div>
+                        <h3 id="reportName">Facilitator Name</h3>
+                        <p id="reportInst" class="institution-name">Institution</p>
 
-                    <div class="qr-container">
-                        <div id="qrCode"></div>
-                        <p class="blockchain-status">
-                            <i class="fas fa-shield-alt"></i> Blockchain Secured
-                        </p>
-                    </div>
-                </div>
-                
-                <div class="report-assessment">
-                    <h4>Assessment Results</h4>
-                    
-                    <div class="assessment-results">
-                        <div class="result-item">
-                            <span class="result-label">Learning Engagement & Interaction:</span>
-                            <span class="result-value" id="reportEngagement">3/5</span>
-                        </div>
-                        <div class="result-item">
-                            <span class="result-label">UDL Integration:</span>
-                            <span class="result-value" id="reportUdl">3/5</span>
-                        </div>
-                        <div class="result-item">
-                            <span class="result-label">Pedagogical Innovation:</span>
-                            <span class="result-value" id="reportPedagogy">3/5</span>
-                        </div>
-                        <div class="result-item">
-                            <span class="result-label">Assessment & Feedback:</span>
-                            <span class="result-value" id="reportFeedback">3/5</span>
-                        </div>
-                        <div class="result-item">
-                            <span class="result-label">Ethics & Professionalism:</span>
-                            <span class="result-value" id="reportEthics">3/5</span>
-                        </div>
-                    </div>
-                    
-                    <div class="result-item total-score-item">
-                        <span class="result-label">ULCI Total Score:</span>
-                        <span class="result-value" id="reportUlciTotal">15/25 (60%)</span>
-                    </div>
-                    
-                    <!-- ULCI Formula Display -->
-                    <div class="ulci-formula">
-                        <h4>📐 ULCI Calculation Formula</h4>
-                        <p class="formula-main"><strong>ULCI = (E × 0.25) + (S × 0.20) + (C × 0.15) + (H × 0.20) + (I × 0.20)</strong></p>
-                        <p class="formula-details">
-                            E = Engagement (<span id="formulaEngagement">3</span>) | 
-                            S = UDL (<span id="formulaUdl">3</span>) | 
-                            C = Pedagogy (<span id="formulaPedagogy">3</span>) | 
-                            H = Feedback (<span id="formulaFeedback">3</span>) | 
-                            I = Ethics (<span id="formulaEthics">3</span>)
-                        </p>
-                        <p class="formula-result">
-                            Total Score: <span id="formulaTotal">15/25</span> = <span id="formulaPercentage">60%</span>
-                        </p>
-                    </div>
-
-                    <!-- Score Visualization -->
-                    <div class="score-visualization">
-                        <div class="gauge">
-                            <div class="gauge-fill" id="gaugeFill"></div>
-                            <div class="gauge-center">
-                                <span id="gaugePercentage">60%</span>
+                        <div class="info-section">
+                            <h4>🆔 Identification</h4>
+                            <div class="info-item">
+                                <strong>UHAN ID:</strong> 
+                                <span id="reportUhan">N/A</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>ULP ID:</strong> 
+                                <span id="reportUlp">N/A</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>ULCI ID:</strong> 
+                                <span id="reportUlci">N/A</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Email:</strong> 
+                                <span id="reportEmail">N/A</span>
+                            </div>
+                            <div class="info-item">
+                                <strong>Contact:</strong> 
+                                <span id="reportContact">N/A</span>
                             </div>
                         </div>
-                        <div class="gauge-labels">
-                            <span>0%</span>
-                            <span>50%</span>
-                            <span>100%</span>
+
+                        <div class="signature-section">
+                            <h4>✍️ Digital Signature</h4>
+                            <div class="signature-box" id="reportSignature">
+                                <span>-</span>
+                            </div>
+                        </div>
+
+                        <div class="qr-section">
+                            <div class="qr-code" id="qrcode"></div>
+                            <p class="qr-label">🔐 Blockchain Secured</p>
                         </div>
                     </div>
-                    
-                    <div class="reflection-section">
-                        <h4>💭 Reflection & Goals</h4>
-                        <p id="reportComments">No comments provided.</p>
+
+                    <div class="assessment-section">
+                        <h3 class="section-heading">📊 Assessment Results</h3>
+                        
+                        <div class="result-row">
+                            <span>Learning Engagement & Interaction</span>
+                            <span class="result-value" id="r1">3/5</span>
+                        </div>
+                        <div class="result-row">
+                            <span>UDL Integration</span>
+                            <span class="result-value" id="r2">3/5</span>
+                        </div>
+                        <div class="result-row">
+                            <span>Pedagogical Innovation</span>
+                            <span class="result-value" id="r3">3/5</span>
+                        </div>
+                        <div class="result-row">
+                            <span>Assessment & Feedback Quality</span>
+                            <span class="result-value" id="r4">3/5</span>
+                        </div>
+                        <div class="result-row">
+                            <span>Ethics & Professionalism</span>
+                            <span class="result-value" id="r5">3/5</span>
+                        </div>
+
+                        <div class="result-row total-row">
+                            <span><strong>ULCI Total Score</strong></span>
+                            <span id="reportTotal"><strong>15/25 (60%)</strong></span>
+                        </div>
+
+                        <div class="formula-box">
+                            <h4>📐 ULCI Calculation Formula</h4>
+                            <p class="formula-main">
+                                <strong>ULCI = (E × 0.25) + (S × 0.20) + (C × 0.15) + (H × 0.20) + (I × 0.20)</strong>
+                            </p>
+                            <p id="formulaDetail" class="formula-detail">
+                                E = Engagement (3) | S = UDL (3) | C = Pedagogy (3) | H = Feedback (3) | I = Ethics (3)
+                            </p>
+                            <p id="formulaResult" class="formula-result">
+                                Total Score: 15/25 = 60.0%
+                            </p>
+                        </div>
+
+                        <div class="gauge-container">
+                            <div class="gauge" id="gaugeChart">
+                                <div class="gauge-circle" style="--percentage: 60%">
+                                    <div class="gauge-inner" id="gaugeValue">60%</div>
+                                </div>
+                            </div>
+                            <p class="gauge-label">Performance Level</p>
+                        </div>
+
+                        <div class="reflection-box">
+                            <h4>💭 Reflection & Improvement Goals</h4>
+                            <p id="reportComments">No comments provided.</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="actions">
-                <button id="downloadPdfBtn" class="btn-primary">
-                    <i class="fas fa-download"></i> Download PDF Report
-                </button>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="window.print()">
+                        📥 Download PDF Report
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- Contact Information Footer -->
-        <div class="card full-width footer-card">
-            <h3 class="section-title"><i class="fas fa-phone-alt"></i> Contact & Support</h3>
-            <div class="contact-grid">
-                <div class="contact-item">
-                    <p class="contact-label">Helpline Number:</p>
-                    <p class="contact-value">+91-XXXX-XXXXXX</p>
+        <!-- Contact Footer Card -->
+        <div class="card footer-card">
+            <div class="card-header">
+                <h3>📞 Contact & Support</h3>
+            </div>
+            <div class="card-body">
+                <div class="contact-grid">
+                    <div class="contact-item">
+                        <div class="contact-icon">📱</div>
+                        <div class="contact-label">Helpline Number</div>
+                        <div class="contact-value">+91-XXXX-XXXXXX</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📧</div>
+                        <div class="contact-label">Official Email ID</div>
+                        <div class="contact-value">support@uhan.org</div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">🌐</div>
+                        <div class="contact-label">Website</div>
+                        <div class="contact-value">uhan.onsnc.org</div>
+                    </div>
                 </div>
-                <div class="contact-item">
-                    <p class="contact-label">Official Email ID:</p>
-                    <p class="contact-value">support@uhan.org</p>
-                </div>
-                <div class="contact-item">
-                    <p class="contact-label">Website:</p>
-                    <p class="contact-value">uhan.onsnc.org</p>
+                <div class="footer-text">
+                    <p><strong>UHAN 360°</strong> © Universal Education Transformation Framework</p>
+                    <p class="footer-status">🔐 Quantum Blockchain Secured | Live Update System Active</p>
                 </div>
             </div>
-            <footer>
-                <p>UHAN 360° © Universal Education Transformation Framework</p>
-                <p class="blockchain-status">
-                    <i class="fas fa-sync-alt"></i> Quantum Blockchain Secured | Live Update System Active
-                </p>
-            </footer>
         </div>
     </div>
 
@@ -327,22 +331,15 @@
     <div id="signatureModal" class="modal">
         <div class="modal-content">
             <h3>✍️ Create Your Digital Signature</h3>
-            <canvas id="signaturePad" width="500" height="200"></canvas>
+            <canvas id="signatureCanvas" width="500" height="200"></canvas>
             <div class="modal-actions">
-                <button id="saveSignature" class="btn-primary">
-                    <i class="fas fa-check"></i> Save Signature
-                </button>
-                <button id="clearSignature" class="btn-secondary">
-                    <i class="fas fa-eraser"></i> Clear
-                </button>
-                <button id="cancelSignature" class="btn-secondary">
-                    <i class="fas fa-times"></i> Cancel
-                </button>
+                <button class="btn btn-primary" onclick="saveSignature()">✅ Save Signature</button>
+                <button class="btn btn-secondary" onclick="clearCanvas()">🗑️ Clear</button>
+                <button class="btn btn-secondary" onclick="closeModal()">❌ Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Include QRCode Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="facilitators-assessment.js"></script>
 </body>
