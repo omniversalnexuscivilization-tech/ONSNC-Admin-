@@ -94,3 +94,59 @@ document.addEventListener('DOMContentLoaded', function() {
   // Now explore links will work normally
 });
 
+
+// Firebase Initialization (replace with your Firebase credentials)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Firestore document structure example:
+// collection: "uhan_analytics"
+// doc: "active_counts"
+// fields: { learners: 125, mentors: 24, facilitators: 17, parents: 32, ueiniti: 4 }
+
+async function loadStats() {
+  try {
+    const docRef = doc(db, "uhan_analytics", "active_counts");
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      updateCounter("learners-count", data.learners);
+      updateCounter("mentors-count", data.mentors);
+      updateCounter("facilitators-count", data.facilitators);
+      updateCounter("parents-count", data.parents);
+      updateCounter("ueiniti-count", data.ueiniti);
+    } else {
+      console.log("No such document!");
+    }
+  } catch (e) {
+    console.error("Error fetching UHAN stats:", e);
+  }
+}
+
+// Smooth number animation
+function updateCounter(id, endValue) {
+  const element = document.getElementById(id);
+  let startValue = 0;
+  const duration = 1500;
+  const stepTime = Math.abs(Math.floor(duration / endValue));
+  const counter = setInterval(() => {
+    startValue += 1;
+    element.textContent = startValue;
+    if (startValue >= endValue) clearInterval(counter);
+  }, stepTime);
+}
+
+loadStats();
