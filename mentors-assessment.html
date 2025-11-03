@@ -3,392 +3,420 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>UHAN 360° | Mentor Assessment System</title>
+  <title>UHAN 360° | Enhanced Mentor Assessment System</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="mentors-assessment.css">
 </head>
 <body>
   <div class="container">
+    <!-- Header -->
     <header>
-      <div class="earth-logo">🌎</div>
-      <h1>Universal Holistic Assessment Network 360°</h1>
-      <h2>Advanced Mentor Assessment & Development System</h2>
+      <div class="earth-logo">🌍</div>
+      <h1>UHAN 360° Assessment System</h1>
+      <h2>Universal Holistic Assessment Network</h2>
+      <div class="header-badge">
+        <i class="fas fa-certificate"></i> Education 5.0 Certified Platform
+      </div>
     </header>
 
-    <div class="tabs">
-      <div class="tab active" data-tab="data-entry">Data Entry Form</div>
-      <div class="tab" data-tab="growth-report">Growth & Development Report</div>
-    </div>
+    <!-- DATA ENTRY FORM SECTION -->
+    <div class="data-entry-container">
+      <div class="section-header">
+        <i class="fas fa-edit"></i>
+        <h3>Mentor Assessment Data Entry Form</h3>
+      </div>
 
-    <div class="tab-content active" id="data-entry">
-      <section class="mentor-info">
-        <div class="section-title">
-          <i class="fas fa-user"></i>
-          <h3>Mentor Profile</h3>
-        </div>
-        <form id="mentorForm">
-          <div class="form-grid">
-            <div class="form-group">
-              <label for="mentorName">Mentor Name:</label>
-              <input type="text" id="mentorName" required>
-            </div>
-            <div class="form-group">
-              <label for="contactNumber">Contact Number:</label>
-              <input type="tel" id="contactNumber" required>
-            </div>
-            <div class="form-group">
-              <label for="ulcId">Universal Life Certificate (ULC) ID:</label>
-              <input type="text" id="ulcId" required>
-            </div>
-            <div class="form-group">
-              <label for="ulpToken">Mentor ULP Token:</label>
-              <input type="text" id="ulpToken" required>
-            </div>
-            <div class="form-group">
-              <label for="institution">Institution / Hub:</label>
-              <input type="text" id="institution">
-            </div>
-            <div class="form-group">
-              <label for="email">Contact Email:</label>
-              <input type="email" id="email">
-            </div>
-            <div class="form-group">
-              <label for="address">Address:</label>
-              <textarea id="address" rows="3"></textarea>
-            </div>
-            <div class="form-group">
-              <label for="profilePhoto">Profile Photo:</label>
-              <input type="file" id="profilePhoto" accept="image/*">
-            </div>
-            <div class="form-group">
-              <label for="signature">Digital Signature:</label>
-              <input type="file" id="signature" accept="image/*">
-            </div>
-          </div>
-        </form>
-      </section>
-
-      <section class="assessment-section">
-        <div class="section-title">
-          <i class="fas fa-chart-bar"></i>
-          <h3>Assessment Dimensions</h3>
-        </div>
-        <div id="assessmentFields">
-          <div class="dimension">
-            <label>
-              <span>Facilitation & Learning Design:</span>
-              <span id="facilitationValue">3</span>
-            </label>
-            <input type="range" min="1" max="5" value="3" id="facilitation">
-          </div>
-          <div class="dimension">
-            <label>
-              <span>Mentorship & Guidance Quality:</span>
-              <span id="guidanceValue">3</span>
-            </label>
-            <input type="range" min="1" max="5" value="3" id="guidance">
-          </div>
-          <div class="dimension">
-            <label>
-              <span>Innovation & Civilization Impact:</span>
-              <span id="innovationValue">3</span>
-            </label>
-            <input type="range" min="1" max="5" value="3" id="innovation">
-          </div>
-          <div class="dimension">
-            <label>
-              <span>Ethical & Professional Conduct:</span>
-              <span id="ethicsValue">3</span>
-            </label>
-            <input type="range" min="1" max="5" value="3" id="ethics">
-          </div>
-          <div class="dimension">
-            <label>
-              <span>Community Contribution:</span>
-              <span id="communityValue">3</span>
-            </label>
-            <input type="range" min="1" max="5" value="3" id="community">
-          </div>
-          <div class="dimension">
-            <label>
-              <span>Teaching Methods:</span>
-              <span id="teachingMethodsValue">3</span>
-            </label>
-            <input type="range" min="1" max="5" value="3" id="teachingMethods">
-          </div>
-          <div class="dimension">
-            <label>
-              <span>Teaching Strategy:</span>
-              <span id="strategyValue">3</span>
-            </label>
-            <input type="range" min="1" max="5" value="3" id="strategy">
-          </div>
-          <div class="dimension">
-            <label>
-              <span>Lesson Plan Quality:</span>
-              <span id="lessonPlanValue">3</span>
-            </label>
-            <input type="range" min="1" max="5" value="3" id="lessonPlan">
-          </div>
-          <div class="dimension">
-            <label>
-              <span>Use of ICT:</span>
-              <span id="ictValue">3</span>
-            </label>
-            <input type="range" min="1" max="5" value="3" id="ict">
-          </div>
-        </div>
-      </section>
-
-      <section class="swot-section">
-        <div class="section-title">
-          <i class="fas fa-search"></i>
-          <h3>Mentor SWOT Analysis</h3>
-        </div>
-        <div class="swot-grid">
-          <div class="form-group">
-            <label for="strengths">Strengths:</label>
-            <textarea id="strengths" rows="4" placeholder="List mentor's key strengths..."></textarea>
-          </div>
-          <div class="form-group">
-            <label for="weaknesses">Weaknesses:</label>
-            <textarea id="weaknesses" rows="4" placeholder="Identify areas for improvement..."></textarea>
-          </div>
-          <div class="form-group">
-            <label for="opportunities">Opportunities:</label>
-            <textarea id="opportunities" rows="4" placeholder="External opportunities for growth..."></textarea>
-          </div>
-          <div class="form-group">
-            <label for="threats">Threats:</label>
-            <textarea id="threats" rows="4" placeholder="External factors that could hinder progress..."></textarea>
-          </div>
-        </div>
-      </section>
-
-      <section class="way-forward-section">
-        <div class="section-title">
-          <i class="fas fa-rocket"></i>
-          <h3>Way Forward & Development Plan</h3>
+      <!-- Personal Information -->
+      <div class="section-header" style="margin-top: 30px;">
+        <i class="fas fa-user-circle"></i>
+        <h3 style="font-size: 1.4rem;">Personal Information</h3>
+      </div>
+      
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Full Name <span class="required">*</span></label>
+          <input type="text" id="mentorName" placeholder="Enter full name" required>
         </div>
         <div class="form-group">
-          <label for="wayForward">Strategic Development Goals:</label>
-          <textarea id="wayForward" rows="5" placeholder="Outline specific goals, timelines, and action plans for mentor development..."></textarea>
-        </div>
-      </section>
-
-      <section class="comments-section">
-        <div class="section-title">
-          <i class="fas fa-comment"></i>
-          <h3>Reflection & Comments</h3>
+          <label>Contact Number <span class="required">*</span></label>
+          <input type="tel" id="contactNumber" placeholder="+91 XXXXX XXXXX" required>
         </div>
         <div class="form-group">
-          <textarea id="mentorComments" rows="5" placeholder="Write your reflective comments, observations, or additional notes..."></textarea>
+          <label>Email Address</label>
+          <input type="email" id="email" placeholder="mentor@example.com">
         </div>
-      </section>
+        <div class="form-group">
+          <label>Institution / Hub</label>
+          <input type="text" id="institution" placeholder="Enter institution name">
+        </div>
+        <div class="form-group">
+          <label>ULC ID (Universal Life Certificate) <span class="required">*</span></label>
+          <input type="text" id="ulcId" placeholder="ULC-XXXX-XXXX" required>
+        </div>
+        <div class="form-group">
+          <label>ULP Token (Universal Life Points) <span class="required">*</span></label>
+          <input type="text" id="ulpToken" placeholder="ULP-TOKEN-XXXXX" required>
+        </div>
+        <div class="form-group">
+          <label>Address</label>
+          <textarea id="address" rows="3" placeholder="Complete address"></textarea>
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-camera"></i> Profile Photo Upload</label>
+          <input type="file" id="profilePhoto" accept="image/*">
+        </div>
+        <div class="form-group">
+          <label><i class="fas fa-pen-fancy"></i> Digital Signature Upload</label>
+          <input type="file" id="signature" accept="image/*">
+        </div>
+      </div>
 
-      <section class="actions">
-        <button id="submitBtn"><i class="fas fa-paper-plane"></i> Submit to Google Drive</button>
-        <button id="saveBtn"><i class="fas fa-save"></i> Save Report</button>
-        <button id="downloadBtn"><i class="fas fa-file-pdf"></i> Download PDF</button>
-        <button id="newEntryBtn"><i class="fas fa-plus"></i> New Assessment</button>
-      </section>
+      <!-- Assessment Dimensions -->
+      <div class="section-header" style="margin-top: 40px;">
+        <i class="fas fa-sliders-h"></i>
+        <h3 style="font-size: 1.4rem;">Assessment Dimensions (Rate 1-5)</h3>
+      </div>
+
+      <div id="dimensionsContainer">
+        <div class="dimension-card">
+          <div class="dimension-label">
+            <span class="dimension-name">🎓 Facilitation & Learning Design</span>
+            <span class="dimension-value" id="facilitationValue">3</span>
+          </div>
+          <input type="range" min="1" max="5" value="3" id="facilitation">
+        </div>
+
+        <div class="dimension-card">
+          <div class="dimension-label">
+            <span class="dimension-name">👥 Mentorship & Guidance</span>
+            <span class="dimension-value" id="guidanceValue">3</span>
+          </div>
+          <input type="range" min="1" max="5" value="3" id="guidance">
+        </div>
+
+        <div class="dimension-card">
+          <div class="dimension-label">
+            <span class="dimension-name">💡 Innovation & Impact</span>
+            <span class="dimension-value" id="innovationValue">3</span>
+          </div>
+          <input type="range" min="1" max="5" value="3" id="innovation">
+        </div>
+
+        <div class="dimension-card">
+          <div class="dimension-label">
+            <span class="dimension-name">⚖️ Ethical Conduct</span>
+            <span class="dimension-value" id="ethicsValue">3</span>
+          </div>
+          <input type="range" min="1" max="5" value="3" id="ethics">
+        </div>
+
+        <div class="dimension-card">
+          <div class="dimension-label">
+            <span class="dimension-name">🌍 Community Contribution</span>
+            <span class="dimension-value" id="communityValue">3</span>
+          </div>
+          <input type="range" min="1" max="5" value="3" id="community">
+        </div>
+
+        <div class="dimension-card">
+          <div class="dimension-label">
+            <span class="dimension-name">📚 Teaching Methods</span>
+            <span class="dimension-value" id="teachingMethodsValue">3</span>
+          </div>
+          <input type="range" min="1" max="5" value="3" id="teachingMethods">
+        </div>
+
+        <div class="dimension-card">
+          <div class="dimension-label">
+            <span class="dimension-name">🗺️ Teaching Strategy</span>
+            <span class="dimension-value" id="strategyValue">3</span>
+          </div>
+          <input type="range" min="1" max="5" value="3" id="strategy">
+        </div>
+
+        <div class="dimension-card">
+          <div class="dimension-label">
+            <span class="dimension-name">📝 Lesson Plan Quality</span>
+            <span class="dimension-value" id="lessonPlanValue">3</span>
+          </div>
+          <input type="range" min="1" max="5" value="3" id="lessonPlan">
+        </div>
+
+        <div class="dimension-card">
+          <div class="dimension-label">
+            <span class="dimension-name">💻 Use of ICT (Technology Integration)</span>
+            <span class="dimension-value" id="ictValue">3</span>
+          </div>
+          <input type="range" min="1" max="5" value="3" id="ict">
+        </div>
+      </div>
+
+      <!-- SWOT Analysis -->
+      <div class="section-header" style="margin-top: 40px;">
+        <i class="fas fa-search-plus"></i>
+        <h3 style="font-size: 1.4rem;">SWOT Analysis</h3>
+      </div>
+
+      <div class="swot-grid">
+        <div class="swot-box strengths">
+          <h4>💪 Strengths</h4>
+          <textarea id="strengths" rows="5" placeholder="List key strengths and exceptional qualities..."></textarea>
+        </div>
+        <div class="swot-box weaknesses">
+          <h4>⚠️ Weaknesses</h4>
+          <textarea id="weaknesses" rows="5" placeholder="Identify areas needing improvement..."></textarea>
+        </div>
+        <div class="swot-box opportunities">
+          <h4>🌟 Opportunities</h4>
+          <textarea id="opportunities" rows="5" placeholder="External opportunities for growth..."></textarea>
+        </div>
+        <div class="swot-box threats">
+          <h4>🚧 Threats</h4>
+          <textarea id="threats" rows="5" placeholder="External challenges or obstacles..."></textarea>
+        </div>
+      </div>
+
+      <!-- Way Forward -->
+      <div class="section-header" style="margin-top: 40px;">
+        <i class="fas fa-route"></i>
+        <h3 style="font-size: 1.4rem;">Way Forward & Development Plan</h3>
+      </div>
+      <div class="form-group">
+        <textarea id="wayForward" rows="5" placeholder="Outline specific goals, timelines, training needs, and strategic action plans..."></textarea>
+      </div>
+
+      <!-- Comments -->
+      <div class="section-header" style="margin-top: 40px;">
+        <i class="fas fa-comments"></i>
+        <h3 style="font-size: 1.4rem;">Additional Comments & Reflections</h3>
+      </div>
+      <div class="form-group">
+        <textarea id="comments" rows="5" placeholder="Write reflective comments, observations, recommendations..."></textarea>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button class="btn-primary" id="saveBtn">
+          <i class="fas fa-save"></i> Save Assessment
+        </button>
+        <button class="btn-primary" id="generateBtn">
+          <i class="fas fa-sync-alt"></i> Generate Report Card
+        </button>
+        <button class="btn-secondary" id="downloadBtn">
+          <i class="fas fa-file-pdf"></i> Download PDF
+        </button>
+        <button class="btn-secondary" id="newBtn">
+          <i class="fas fa-plus-circle"></i> New Entry
+        </button>
+      </div>
     </div>
 
-    <div class="tab-content" id="growth-report">
-      <section class="report-header">
-        <div class="section-title">
-          <i class="fas fa-chart-line"></i>
-          <h3>Mentor Growth & Development Report</h3>
-        </div>
-        <p>This report automatically updates based on assessment data and tracks progress over time.</p>
-      </section>
+    <!-- REPORT CARD SECTION -->
+    <div class="report-card-section">
+      <div class="section-header">
+        <i class="fas fa-certificate"></i>
+        <h3>Auto-Generated Report Card</h3>
+      </div>
 
-      <section class="report-card-container">
-        <div class="report-card-header">
-          <div class="report-card-logo">
+      <div class="report-card">
+        <!-- Report Header -->
+        <div class="report-header">
+          <div class="report-logo">
             <i class="fas fa-globe-americas"></i>
-            <h2>UHAN 360° Report Card</h2>
+            <div class="report-title">
+              <h2>UHAN 360° Report Card</h2>
+              <p class="report-subtitle">Universal Holistic Assessment Network • Education 5.0</p>
+            </div>
           </div>
-          <div class="report-card-date">
-            <div class="issue-date" id="reportIssueDate">Issued: Loading...</div>
-            <div class="valid-until" id="reportValidUntil">Valid Until: Loading...</div>
+          <div class="report-dates">
+            <div class="issue-date" id="issueDate">Issue Date: Loading...</div>
+            <div class="valid-date" id="validDate">Valid Until: Loading...</div>
           </div>
         </div>
 
-        <div class="report-card-body">
-          <div class="profile-section">
-            <div class="profile-photo" id="profilePhotoContainer">
-              <div class="profile-photo-placeholder">
+        <!-- Report Body -->
+        <div class="report-body">
+          <!-- Left Column: Profile -->
+          <div class="profile-column">
+            <div class="profile-photo-frame" id="profilePhotoDisplay">
+              <div class="profile-placeholder">
                 <i class="fas fa-user"></i>
               </div>
             </div>
-            <h4 id="reportMentorName">Mentor Name</h4>
-            <p id="reportInstitution">Institution</p>
+            <div class="profile-name" id="displayName">Mentor Name</div>
+            <div class="profile-institution" id="displayInstitution">Institution</div>
             
-            <div class="signature-section">
-              <h4>Signature</h4>
-              <div class="signature-box" id="signatureContainer">
-                <div class="signature-placeholder">Signature will appear here</div>
+            <div class="credential-box">
+              <div class="credential-label">ULC ID</div>
+              <div class="credential-value" id="displayUlcId">-</div>
+            </div>
+            
+            <div class="credential-box">
+              <div class="credential-label">ULP Token</div>
+              <div class="credential-value" id="displayUlpToken">-</div>
+            </div>
+
+            <div class="signature-area">
+              <h4>Authorized Signature</h4>
+              <div class="signature-frame" id="signatureDisplay">
+                <div class="signature-placeholder">Signature</div>
+              </div>
+              <div class="verified-badge">
+                <i class="fas fa-check-circle"></i> Digitally Verified
               </div>
             </div>
           </div>
 
-          <div class="report-main-content">
-            <div class="performance-summary">
-              <h3>Performance Summary</h3>
-              <div class="performance-grid">
-                <div class="performance-item">
-                  <span class="performance-label">Overall Score:</span>
-                  <span class="performance-value" id="reportOverallScore">0.0</span>
+          <!-- Center Column: Performance Metrics -->
+          <div class="performance-column">
+            <!-- Key Metrics -->
+            <div class="metric-section">
+              <h3><i class="fas fa-chart-line"></i> Performance Summary</h3>
+              <div class="metrics-grid">
+                <div class="metric-card">
+                  <div class="metric-label">Overall Score</div>
+                  <div class="metric-value" id="overallScore">0.0</div>
                 </div>
-                <div class="performance-item">
-                  <span class="performance-label">Performance Level:</span>
-                  <span class="performance-value" id="reportPerformanceLevel">-</span>
+                <div class="metric-card">
+                  <div class="metric-label">Performance Level</div>
+                  <div class="metric-value" id="perfLevel">-</div>
                 </div>
-                <div class="performance-item">
-                  <span class="performance-label">Progress:</span>
-                  <span class="performance-value" id="reportProgress">0%</span>
+                <div class="metric-card">
+                  <div class="metric-label">Global Ranking</div>
+                  <div class="metric-value" id="globalRank">-</div>
                 </div>
-                <div class="performance-item">
-                  <span class="performance-label">Ranking:</span>
-                  <span class="performance-value" id="reportRanking">-</span>
+                <div class="metric-card">
+                  <div class="metric-label">Progress %</div>
+                  <div class="metric-value" id="progressPct">0%</div>
+                </div>
+                <div class="metric-card">
+                  <div class="metric-label">Impact Factor</div>
+                  <div class="metric-value" id="impactFactor">0.00</div>
                 </div>
               </div>
             </div>
 
-            <div class="dimension-scores">
-              <h3>Dimension Scores</h3>
-              <div id="reportDimensionScores">
-                <!-- Dimension scores will be populated here -->
+            <!-- ULCI Score -->
+            <div class="ulci-section">
+              <div class="ulci-header">
+                <div>
+                  <h3 style="margin: 0; color: var(--gold); font-size: 1.3rem;">
+                    <i class="fas fa-trophy"></i> ULCI Score
+                  </h3>
+                  <p style="font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-top: 5px;">
+                    Universal Life Contribution Index
+                  </p>
+                  <p style="font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-top: 3px;">
+                    ID: <span id="ulciIdDisplay">Loading...</span>
+                  </p>
+                </div>
+                <div>
+                  <span class="ulci-score" id="ulciScore">0</span>
+                  <span class="ulci-max">/100</span>
+                </div>
+              </div>
+              
+              <div class="ulci-breakdown">
+                <div class="ulci-component">
+                  <span class="ulci-comp-label">🌱 Environmental (E×25%)</span>
+                  <span class="ulci-comp-value" id="ulciEnvironment">0</span>
+                </div>
+                <div class="ulci-component">
+                  <span class="ulci-comp-label">🧍‍♀️ Social & Civic (S×20%)</span>
+                  <span class="ulci-comp-value" id="ulciSocial">0</span>
+                </div>
+                <div class="ulci-component">
+                  <span class="ulci-comp-label">🎨 Cultural & Education (C×15%)</span>
+                  <span class="ulci-comp-value" id="ulciCultural">0</span>
+                </div>
+                <div class="ulci-component">
+                  <span class="ulci-comp-label">🧘 Health & Well-being (H×20%)</span>
+                  <span class="ulci-comp-value" id="ulciHealth">0</span>
+                </div>
+                <div class="ulci-component">
+                  <span class="ulci-comp-label">💡 Innovation & Ethics (I×20%)</span>
+                  <span class="ulci-comp-value" id="ulciInnovation">0</span>
+                </div>
+              </div>
+              
+              <div style="margin-top: 15px; padding: 12px; background: rgba(0, 212, 255, 0.1); border-radius: 8px; border: 1px solid var(--accent);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <span style="font-size: 0.9rem; color: rgba(255,255,255,0.8);">ULCI Total Score:</span>
+                  <span style="font-size: 1.3rem; font-weight: 800; color: var(--gold);" id="ulciTotalScore">0/100</span>
+                </div>
+                <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6); text-align: center;">
+                  <span id="ulciCategory">Calculating...</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dimension Scores -->
+            <div class="metric-section">
+              <h3><i class="fas fa-star"></i> Dimension Scores</h3>
+              <div class="dimensions-list" id="dimensionsList">
+                <!-- Auto-populated by JavaScript -->
               </div>
             </div>
           </div>
 
-          <div class="report-qr-code">
-            <h4>Verification QR Code</h4>
-            <div class="qrcode" id="reportQrCode">
-              <!-- QR Code will be generated here -->
+          <!-- Right Column: QR Code -->
+          <div class="qr-column">
+            <h4 class="qr-title">Verification QR Code</h4>
+            <div class="qr-frame" id="qrCodeContainer">
+              <!-- QR Code generated here -->
             </div>
-            <p>Scan to verify authenticity</p>
-          </div>
-        </div>
-
-        <div class="report-card-footer">
-          <p>This report card is issued by UHAN 360° - Universal Holistic Assessment Network</p>
-          <p>Report ID: <span id="reportId">Loading...</span></p>
-        </div>
-      </section>
-
-      <section class="report-overview">
-        <div class="report-grid">
-          <div class="report-card">
-            <i class="fas fa-star"></i>
-            <h4>Overall Score</h4>
-            <div class="value" id="overallScore">0</div>
-            <div class="label">Out of 5.0</div>
-          </div>
-          <div class="report-card">
-            <i class="fas fa-trophy"></i>
-            <h4>Performance Level</h4>
-            <div class="value" id="performanceLevel">-</div>
-            <div class="label">Based on all dimensions</div>
-          </div>
-          <div class="report-card">
-            <i class="fas fa-chart-pie"></i>
-            <h4>Progress</h4>
-            <div class="value" id="progressPercent">0%</div>
-            <div class="label">Towards goals</div>
-          </div>
-          <div class="report-card">
-            <i class="fas fa-award"></i>
-            <h4>Ranking</h4>
-            <div class="value" id="ranking">-</div>
-            <div class="label">Among peers</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="report-charts">
-        <div class="chart-container">
-          <h4>Assessment Dimension Scores</h4>
-          <div class="chart" id="dimensionChart">
-            <!-- Chart bars will be generated by JavaScript -->
-          </div>
-        </div>
-      </section>
-
-      <section class="report-details">
-        <div class="form-grid">
-          <div class="form-group">
-            <h4>Strengths</h4>
-            <div class="strengths-list" id="strengthsList">
-              <!-- Strengths will be listed here -->
-            </div>
-          </div>
-          <div class="form-group">
-            <h4>Areas for Improvement</h4>
-            <div class="improvements-list" id="improvementsList">
-              <!-- Improvements will be listed here -->
+            <p style="font-size: 0.9rem; color: var(--accent); font-weight: 600;">
+              <i class="fas fa-qrcode"></i> Scan to Verify
+            </p>
+            
+            <div class="verification-info">
+              <p><strong>Report ID:</strong></p>
+              <p class="report-id" id="reportIdDisplay">Loading...</p>
+              <div class="blockchain-badge">
+                <i class="fas fa-shield-alt"></i>
+                Blockchain Secured
+              </div>
+              <p style="margin-top: 10px; font-size: 0.8rem;">
+                <i class="fas fa-fingerprint"></i> Tamper-Proof Certificate
+              </p>
             </div>
           </div>
         </div>
-      </section>
 
-      <section class="growth-timeline">
-        <h4>Development Timeline</h4>
-        <div class="timeline">
-          <div class="timeline-item">
-            <div class="timeline-icon">
-              <i class="fas fa-bullseye"></i>
-            </div>
-            <div class="timeline-content">
-              <div class="timeline-date">Current Assessment</div>
-              <p>Initial assessment completed. Development plan created.</p>
-            </div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-icon">
-              <i class="fas fa-chart-line"></i>
-            </div>
-            <div class="timeline-content">
-              <div class="timeline-date">Next 30 Days</div>
-              <p>Focus on improving teaching methods and ICT integration.</p>
-            </div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-icon">
-              <i class="fas fa-users"></i>
-            </div>
-            <div class="timeline-content">
-              <div class="timeline-date">Next 90 Days</div>
-              <p>Participate in peer mentoring and community contribution activities.</p>
-            </div>
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-icon">
-              <i class="fas fa-graduation-cap"></i>
-            </div>
-            <div class="timeline-content">
-              <div class="timeline-date">Next 6 Months</div>
-              <p>Achieve advanced certification in mentorship and learning design.</p>
-            </div>
+        <!-- Report Footer -->
+        <div class="report-footer">
+          <p><strong>This certificate is officially issued by UHAN 360°</strong></p>
+          <p>Universal Holistic Assessment Network • Education 5.0 Framework</p>
+          <div class="certification-seal">
+            <i class="fas fa-certificate"></i>
+            <span>Digitally Signed & Blockchain Verified</span>
           </div>
         </div>
-      </section>
-
-      <section class="actions">
-        <button id="downloadReportBtn"><i class="fas fa-file-pdf"></i> Download Full Report</button>
-        <button id="updateReportBtn"><i class="fas fa-sync"></i> Update Report</button>
-      </section>
+      </div>
     </div>
 
-    <footer>
-      <p>UHAN 360° © Universal Education Transformation Framework | Advanced Mentor Assessment System</p>
+    <!-- Footer -->
+    <footer style="text-align: center; padding: 30px; background: rgba(5,17,36,0.8); border-top: 2px solid var(--accent);">
+      <p style="font-size: 1rem; margin-bottom: 10px;">
+        <strong>UHAN 360°</strong> © 2024-2025 Universal Holistic Assessment Network
+      </p>
+      <p style="font-size: 0.9rem; color: rgba(255,255,255,0.7);">
+        Part of Universal Education Transformation Framework | Education 5.0 Initiative
+      </p>
+      <p style="margin-top: 15px; font-size: 0.9rem;">
+        <i class="fas fa-shield-alt" style="color: var(--success);"></i> Secure • 
+        <i class="fas fa-globe" style="color: var(--accent);"></i> Global • 
+        <i class="fas fa-leaf" style="color: var(--success);"></i> Sustainable
+      </p>
     </footer>
   </div>
 
+  <!-- External Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+  <!-- Main JavaScript -->
   <script src="mentors-assessment.js"></script>
 </body>
 </html>
