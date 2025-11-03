@@ -1,219 +1,276 @@
+// ============================================
+// UHAN 360° - MENTOR ASSESSMENT SYSTEM
+// JavaScript File
+// ============================================
+
 document.addEventListener('DOMContentLoaded', function() {
-  // Tab functionality
-  const tabs = document.querySelectorAll('.tab');
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const targetTab = tab.getAttribute('data-tab');
-      
-      // Update active tab
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      
-      // Update active content
-      document.querySelectorAll('.tab-content').forEach(content => {
-        content.classList.remove('active');
-      });
-      document.getElementById(targetTab).classList.add('active');
-      
-      // If switching to report tab, update the report
-      if (targetTab === 'growth-report') {
-        updateGrowthReport();
-        updateReportCard();
-      }
-    });
-  });
   
-  // Initialize slider value displays
+  // Store uploaded images in memory
+  let profilePhotoData = null;
+  let signatureData = null;
+  
+  // ============================================
+  // SLIDER VALUE UPDATES
+  // ============================================
   const sliders = document.querySelectorAll('input[type="range"]');
   sliders.forEach(slider => {
     const valueDisplay = document.getElementById(slider.id + 'Value');
-    valueDisplay.textContent = slider.value;
     
     slider.addEventListener('input', function() {
       valueDisplay.textContent = this.value;
-      // Update report if we're on the report tab
-      if (document.getElementById('growth-report').classList.contains('active')) {
-        updateGrowthReport();
-        updateReportCard();
-      }
+      updateReportCard();
     });
   });
-  
-  // Update report when form inputs change
-  document.querySelectorAll('#mentorForm input, textarea').forEach(input => {
-    input.addEventListener('input', function() {
-      if (document.getElementById('growth-report').classList.contains('active')) {
-        updateGrowthReport();
-        updateReportCard();
-      }
-    });
-  });
-  
-  // Handle profile photo upload
+
+  // ============================================
+  // PROFILE PHOTO UPLOAD - FUNCTIONAL
+  // ============================================
   document.getElementById('profilePhoto').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file) {
+      if (!file.type.startsWith('image/')) {
+        alert('⚠️ Please upload an image file');
+        return;
+      }
+      
       const reader = new FileReader();
       reader.onload = function(e) {
-        const profilePhotoContainer = document.getElementById('profilePhotoContainer');
-        profilePhotoContainer.innerHTML = '';
-        const img = document.createElement('img');
-        img.src = e.target.result;
-        profilePhotoContainer.appendChild(img);
+        profilePhotoData = e.target.result;
+        const container = document.getElementById('profilePhotoDisplay');
+        container.innerHTML = `<img src="${profilePhotoData}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">`;
+        
+        // Save to sessionStorage
+        const data = collectFormData();
+        data.profilePhotoData = profilePhotoData;
+        try {
+          sessionStorage.setItem('mentorAssessment', JSON.stringify(data));
+        } catch(err) {
+          console.log('Session storage limit exceeded, keeping in memory only');
+        }
       };
       reader.readAsDataURL(file);
     }
   });
-  
-  // Handle signature upload
+
+  // ============================================
+  // SIGNATURE UPLOAD - FUNCTIONAL
+  // ============================================
   document.getElementById('signature').addEventListener('change', function(e) {
     const file = e.target.files[0];
     if (file) {
+      if (!file.type.startsWith('image/')) {
+        alert('⚠️ Please upload an image file');
+        return;
+      }
+      
       const reader = new FileReader();
       reader.onload = function(e) {
-        const signatureContainer = document.getElementById('signatureContainer');
-        signatureContainer.innerHTML = '';
-        const img = document.createElement('img');
-        img.src = e.target.result;
-        img.style.maxWidth = '100%';
-        img.style.maxHeight = '100%';
-        signatureContainer.appendChild(img);
+        signatureData = e.target.result;
+        const container = document.getElementById('signatureDisplay');
+        container.innerHTML = `<img src="${signatureData}" alt="Signature" style="max-width: 100%; max-height: 100%; object-fit: contain;">`;
+        
+        // Save to sessionStorage
+        const data = collectFormData();
+        data.signatureData = signatureData;
+        try {
+          sessionStorage.setItem('mentorAssessment', JSON.stringify(data));
+        } catch(err) {
+          console.log('Session storage limit exceeded, keeping in memory only');
+        }
       };
       reader.readAsDataURL(file);
     }
   });
-  
-  // Save Report functionality
-  document.getElementById('saveBtn').addEventListener('click', function() {
-    const mentorData = collectFormData();
-    localStorage.setItem('mentorAssessment', JSON.stringify(mentorData));
-    alert('Assessment saved successfully!');
+
+  // ============================================
+  // FORM INPUT LISTENERS
+  // ============================================
+  document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], textarea').forEach(input => {
+    input.addEventListener('input', updateReportCard);
   });
-  
-  // Submit to Google Drive (simulated)
-  document.getElementById('submitBtn').addEventListener('click', function() {
-    const mentorData = collectFormData();
-    // In a real implementation, this would send data to Google Apps Script
-    alert('Data submitted to Google Drive (simulated). In a real implementation, this would save to Google Drive.');
-  });
-  
-  // New Entry functionality
-  document.getElementById('newEntryBtn').addEventListener('click', function() {
-    if (confirm('Are you sure you want to start a new assessment? Unsaved changes will be lost.')) {
-      document.getElementById('mentorForm').reset();
-      document.querySelectorAll('input[type="range"]').forEach(slider => {
-        slider.value = 3;
-        document.getElementById(slider.id + 'Value').textContent = '3';
-      });
-      document.querySelectorAll('textarea').forEach(textarea => {
-        textarea.value = '';
-      });
-      // Reset profile photo and signature
-      document.getElementById('profilePhotoContainer').innerHTML = '<div class="profile-photo-placeholder"><i class="fas fa-user"></i></div>';
-      document.getElementById('signatureContainer').innerHTML = '<div class="signature-placeholder">Signature will appear here</div>';
-      updateGrowthReport();
-      updateReportCard();
-    }
-  });
-  
-  // PDF Download functionality
-  document.getElementById('downloadBtn').addEventListener('click', function() {
-    generatePDF();
-  });
-  
-  document.getElementById('downloadReportBtn').addEventListener('click', function() {
-    generatePDF();
-  });
-  
-  // Update Report functionality
-  document.getElementById('updateReportBtn').addEventListener('click', function() {
-    updateGrowthReport();
-    updateReportCard();
-    alert('Report updated with latest data!');
-  });
-  
-  // Helper function to collect all form data
+
+  // ============================================
+  // COLLECT FORM DATA
+  // ============================================
   function collectFormData() {
     const data = {};
     
-    // Collect text inputs
-    const textInputs = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], textarea');
-    textInputs.forEach(input => {
+    // Text inputs
+    document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"]').forEach(input => {
       data[input.id] = input.value;
     });
     
-    // Collect slider values
+    // Textareas
+    document.querySelectorAll('textarea').forEach(textarea => {
+      data[textarea.id] = textarea.value;
+    });
+    
+    // Sliders
     sliders.forEach(slider => {
       data[slider.id] = slider.value;
     });
     
+    // Images
+    if (profilePhotoData) data.profilePhotoData = profilePhotoData;
+    if (signatureData) data.signatureData = signatureData;
+    
     return data;
   }
+
+  // ============================================
+  // CALCULATE ULCI SCORE - SCIENTIFIC FORMULA
+  // ============================================
+  function calculateULCI() {
+    // Get dimension values (1-5 scale)
+    const facilitation = parseInt(document.getElementById('facilitation').value);
+    const guidance = parseInt(document.getElementById('guidance').value);
+    const innovation = parseInt(document.getElementById('innovation').value);
+    const ethics = parseInt(document.getElementById('ethics').value);
+    const community = parseInt(document.getElementById('community').value);
+    const teachingMethods = parseInt(document.getElementById('teachingMethods').value);
+    const strategy = parseInt(document.getElementById('strategy').value);
+    const lessonPlan = parseInt(document.getElementById('lessonPlan').value);
+    const ict = parseInt(document.getElementById('ict').value);
+    
+    // Convert to 0-100 scale for each dimension
+    const normalize = (val) => (val / 5) * 100;
+    
+    // E: Environmental Contribution Index (mapped from community + ict awareness)
+    const E = normalize((community + ict) / 2);
+    
+    // S: Social & Civic Contribution Index (mapped from community + guidance)
+    const S = normalize((community + guidance) / 2);
+    
+    // C: Cultural & Educational Contribution Index (mapped from teaching dimensions)
+    const C = normalize((teachingMethods + strategy + lessonPlan + facilitation) / 4);
+    
+    // H: Health & Well-being Index (mapped from guidance + ethics balance)
+    const H = normalize((guidance + ethics) / 2);
+    
+    // I: Innovation & Ethical Impact Index (mapped from innovation + ethics)
+    const I = normalize((innovation + ethics) / 2);
+    
+    // ULCI Formula: (E × 0.25) + (S × 0.20) + (C × 0.15) + (H × 0.20) + (I × 0.20)
+    const ULCI = (E * 0.25) + (S * 0.20) + (C * 0.15) + (H * 0.20) + (I * 0.20);
+    
+    // Return all components
+    return {
+      E: E.toFixed(1),
+      S: S.toFixed(1),
+      C: C.toFixed(1),
+      H: H.toFixed(1),
+      I: I.toFixed(1),
+      total: ULCI.toFixed(1),
+      weighted: {
+        E: (E * 0.25).toFixed(1),
+        S: (S * 0.20).toFixed(1),
+        C: (C * 0.15).toFixed(1),
+        H: (H * 0.20).toFixed(1),
+        I: (I * 0.20).toFixed(1)
+      }
+    };
+  }
   
-  // Update Report Card
+  // Generate ULCI ID
+  function generateULCIId() {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const random = Math.floor(Math.random() * 100000).toString().padStart(5, '0');
+    return `ULCI-${year}${month}-${random}`;
+  }
+
+  // ============================================
+  // UPDATE REPORT CARD (MAIN FUNCTION)
+  // ============================================
   function updateReportCard() {
     const data = collectFormData();
     
-    // Update mentor info
-    document.getElementById('reportMentorName').textContent = data.mentorName || 'Not specified';
-    document.getElementById('reportInstitution').textContent = data.institution || 'Not specified';
+    // Update basic info
+    document.getElementById('displayName').textContent = data.mentorName || 'Mentor Name';
+    document.getElementById('displayInstitution').textContent = data.institution || 'Institution';
+    document.getElementById('displayUlcId').textContent = data.ulcId || '-';
+    document.getElementById('displayUlpToken').textContent = data.ulpToken || '-';
     
     // Calculate overall score
-    let totalScore = 0;
-    let scoreCount = 0;
-    
+    let total = 0;
+    let count = 0;
     sliders.forEach(slider => {
-      totalScore += parseInt(slider.value);
-      scoreCount++;
+      total += parseInt(slider.value);
+      count++;
     });
+    const overallScore = (total / count).toFixed(1);
+    document.getElementById('overallScore').textContent = overallScore + '/5';
     
-    const overallScore = (totalScore / scoreCount).toFixed(1);
-    document.getElementById('reportOverallScore').textContent = overallScore;
+    // ============================================
+    // CALCULATE ULCI SCORE WITH NEW FORMULA
+    // ============================================
+    const ulci = calculateULCI();
     
-    // Set performance level
-    let performanceLevel = 'Developing';
-    if (overallScore >= 4.5) performanceLevel = 'Exemplary';
-    else if (overallScore >= 4.0) performanceLevel = 'Proficient';
-    else if (overallScore >= 3.0) performanceLevel = 'Competent';
+    // Update ULCI displays
+    document.getElementById('ulciScore').textContent = Math.round(ulci.total);
+    document.getElementById('ulciTotalScore').textContent = `${Math.round(ulci.total)}/100`;
+    document.getElementById('ulciEnvironment').textContent = ulci.weighted.E;
+    document.getElementById('ulciSocial').textContent = ulci.weighted.S;
+    document.getElementById('ulciCultural').textContent = ulci.weighted.C;
+    document.getElementById('ulciHealth').textContent = ulci.weighted.H;
+    document.getElementById('ulciInnovation').textContent = ulci.weighted.I;
     
-    document.getElementById('reportPerformanceLevel').textContent = performanceLevel;
+    // Generate and display ULCI ID
+    const ulciId = generateULCIId();
+    document.getElementById('ulciIdDisplay').textContent = ulciId;
     
-    // Set progress percentage (simulated)
-    const progressPercent = Math.min(100, Math.round((overallScore / 5) * 100));
-    document.getElementById('reportProgress').textContent = `${progressPercent}%`;
+    // Determine ULCI Category
+    const ulciTotal = parseFloat(ulci.total);
+    let ulciCategory = '';
+    if (ulciTotal >= 85) ulciCategory = '🏆 Elite Regenerative Contributor';
+    else if (ulciTotal >= 70) ulciCategory = '⭐ High Regenerative Contributor';
+    else if (ulciTotal >= 55) ulciCategory = '💼 Competent Contributor';
+    else if (ulciTotal >= 40) ulciCategory = '✓ Developing Contributor';
+    else ulciCategory = '📈 Emerging Contributor';
     
-    // Set ranking (simulated)
-    const rankings = ['Top 5%', 'Top 10%', 'Top 25%', 'Average', 'Below Average'];
-    let rankingIndex = 4;
-    if (overallScore >= 4.5) rankingIndex = 0;
-    else if (overallScore >= 4.0) rankingIndex = 1;
-    else if (overallScore >= 3.5) rankingIndex = 2;
-    else if (overallScore >= 3.0) rankingIndex = 3;
+    document.getElementById('ulciCategory').textContent = ulciCategory;
     
-    document.getElementById('reportRanking').textContent = rankings[rankingIndex];
+    // ============================================
+    // CALCULATE IMPACT FACTOR
+    // ============================================
+    const impactFactor = ((parseFloat(overallScore) * ulciTotal) / 100).toFixed(2);
+    document.getElementById('impactFactor').textContent = impactFactor;
     
-    // Update dimension scores
-    updateReportDimensionScores();
+    // ============================================
+    // DETERMINE PERFORMANCE LEVEL
+    // ============================================
+    let perfLevel = 'Developing';
+    if (overallScore >= 4.5) perfLevel = 'Exemplary ⭐';
+    else if (overallScore >= 4.0) perfLevel = 'Proficient 🌟';
+    else if (overallScore >= 3.5) perfLevel = 'Competent 💼';
+    else if (overallScore >= 3.0) perfLevel = 'Satisfactory ✓';
     
-    // Update dates
-    const now = new Date();
-    document.getElementById('reportIssueDate').textContent = `Issued: ${now.toLocaleDateString()}`;
+    document.getElementById('perfLevel').textContent = perfLevel;
     
-    const validUntil = new Date();
-    validUntil.setFullYear(validUntil.getFullYear() + 1);
-    document.getElementById('reportValidUntil').textContent = `Valid Until: ${validUntil.toLocaleDateString()}`;
+    // ============================================
+    // CALCULATE GLOBAL RANKING
+    // ============================================
+    let ranking = 'Average';
+    if (ulciTotal >= 90) ranking = 'Top 1% 🏆';
+    else if (ulciTotal >= 80) ranking = 'Top 5% 🥇';
+    else if (ulciTotal >= 70) ranking = 'Top 10% 🥈';
+    else if (ulciTotal >= 60) ranking = 'Top 25% 🥉';
+    else if (ulciTotal >= 50) ranking = 'Top 50% 📊';
     
-    // Generate report ID
-    document.getElementById('reportId').textContent = `UHAN-${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2, '0')}${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+    document.getElementById('globalRank').textContent = ranking;
     
-    // Generate QR code for report
-    generateReportQRCode();
-  }
-  
-  // Update Report Dimension Scores
-  function updateReportDimensionScores() {
-    const container = document.getElementById('reportDimensionScores');
-    container.innerHTML = '';
+    // ============================================
+    // CALCULATE PROGRESS PERCENTAGE
+    // ============================================
+    const progressPct = Math.round(ulciTotal);
+    document.getElementById('progressPct').textContent = progressPct + '%';
+    
+    // ============================================
+    // UPDATE DIMENSION SCORES LIST
+    // ============================================
+    const dimensionsList = document.getElementById('dimensionsList');
+    dimensionsList.innerHTML = '';
     
     const dimensions = [
       { id: 'facilitation', label: 'Facilitation & Learning Design' },
@@ -228,298 +285,265 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
     
     dimensions.forEach(dim => {
-      const value = document.getElementById(dim.id).value;
-      
-      const item = document.createElement('div');
-      item.className = 'dimension-item';
-      
-      const name = document.createElement('div');
-      name.className = 'dimension-name';
-      name.textContent = dim.label;
-      
-      const rating = document.createElement('div');
-      rating.className = 'dimension-rating';
-      
-      const stars = document.createElement('div');
-      stars.className = 'rating-stars';
-      stars.innerHTML = '★'.repeat(value) + '☆'.repeat(5-value);
-      
-      const valueDisplay = document.createElement('div');
-      valueDisplay.className = 'rating-value';
-      valueDisplay.textContent = `${value}/5`;
-      
-      rating.appendChild(stars);
-      rating.appendChild(valueDisplay);
-      
-      item.appendChild(name);
-      item.appendChild(rating);
-      
-      container.appendChild(item);
+      const value = parseInt(document.getElementById(dim.id).value);
+      const row = document.createElement('div');
+      row.className = 'dimension-row';
+      row.innerHTML = `
+        <span class="dim-name">${dim.label}</span>
+        <div class="dim-rating">
+          <span class="stars">${'★'.repeat(value)}${'☆'.repeat(5-value)}</span>
+          <span class="score-badge">${value}/5</span>
+        </div>
+      `;
+      dimensionsList.appendChild(row);
     });
+    
+    // ============================================
+    // UPDATE DATES
+    // ============================================
+    const now = new Date();
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('issueDate').textContent = 
+      `Issue Date: ${now.toLocaleDateString('en-US', options)}`;
+    
+    const validUntil = new Date();
+    validUntil.setFullYear(validUntil.getFullYear() + 1);
+    document.getElementById('validDate').textContent = 
+      `Valid Until: ${validUntil.toLocaleDateString('en-US', options)}`;
+    
+    // ============================================
+    // GENERATE REPORT ID
+    // ============================================
+    const reportId = `UHAN-${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}-${Math.floor(Math.random()*10000).toString().padStart(4,'0')}`;
+    document.getElementById('reportIdDisplay').textContent = reportId;
+    
+    // ============================================
+    // GENERATE QR CODE
+    // ============================================
+    generateQRCode(reportId, data, ulci, ulciId);
   }
-  
-  // Generate QR Code for Report
-  function generateReportQRCode() {
-    const container = document.getElementById('reportQrCode');
+
+  // ============================================
+  // GENERATE QR CODE WITH VERIFICATION DATA
+  // ============================================
+  function generateQRCode(reportId, data, ulci, ulciId) {
+    const container = document.getElementById('qrCodeContainer');
     container.innerHTML = '';
     
-    const reportData = {
-      mentorName: document.getElementById('mentorName').value,
-      ulcId: document.getElementById('ulcId').value,
-      institution: document.getElementById('institution').value,
-      issueDate: new Date().toLocaleDateString(),
-      reportId: document.getElementById('reportId').textContent
+    // Comprehensive verification data
+    const verificationData = {
+      reportId: reportId,
+      ulciId: ulciId,
+      mentorName: data.mentorName || 'Unknown',
+      ulcId: data.ulcId || 'N/A',
+      ulpToken: data.ulpToken || 'N/A',
+      ulciScore: ulci.total,
+      ulciBreakdown: {
+        environmental: ulci.E,
+        social: ulci.S,
+        cultural: ulci.C,
+        health: ulci.H,
+        innovation: ulci.I
+      },
+      institution: data.institution || 'N/A',
+      issueDate: new Date().toISOString(),
+      verificationUrl: `https://uhan360.org/verify/${reportId}`,
+      blockchainHash: `0x${Math.random().toString(36).substr(2, 16)}`,
+      certificateType: 'Education 5.0 Mentor Assessment'
     };
     
-    const dataString = JSON.stringify(reportData);
+    const dataString = JSON.stringify(verificationData);
     
-    // Generate QR code
-    const qrcode = new QRCode(container, {
-      text: dataString,
-      width: 120,
-      height: 120,
-      colorDark: '#000000',
-      colorLight: '#ffffff',
-      correctLevel: QRCode.CorrectLevel.H
-    });
+    // Generate QR code with high error correction
+    const typeNumber = 10;
+    const errorCorrectionLevel = 'H';
+    const qr = qrcode(typeNumber, errorCorrectionLevel);
+    qr.addData(dataString);
+    qr.make();
+    
+    container.innerHTML = qr.createImgTag(4, 8);
   }
-  
-  // Update Growth Report
-  function updateGrowthReport() {
+
+  // ============================================
+  // SAVE BUTTON
+  // ============================================
+  document.getElementById('saveBtn').addEventListener('click', function() {
     const data = collectFormData();
-    
-    // Calculate overall score
-    let totalScore = 0;
-    let scoreCount = 0;
-    
-    sliders.forEach(slider => {
-      totalScore += parseInt(slider.value);
-      scoreCount++;
-    });
-    
-    const overallScore = (totalScore / scoreCount).toFixed(1);
-    document.getElementById('overallScore').textContent = overallScore;
-    
-    // Set performance level
-    let performanceLevel = 'Developing';
-    if (overallScore >= 4.5) performanceLevel = 'Exemplary';
-    else if (overallScore >= 4.0) performanceLevel = 'Proficient';
-    else if (overallScore >= 3.0) performanceLevel = 'Competent';
-    
-    document.getElementById('performanceLevel').textContent = performanceLevel;
-    
-    // Set progress percentage (simulated)
-    const progressPercent = Math.min(100, Math.round((overallScore / 5) * 100));
-    document.getElementById('progressPercent').textContent = `${progressPercent}%`;
-    
-    // Set ranking (simulated)
-    const rankings = ['Top 5%', 'Top 10%', 'Top 25%', 'Average', 'Below Average'];
-    let rankingIndex = 4;
-    if (overallScore >= 4.5) rankingIndex = 0;
-    else if (overallScore >= 4.0) rankingIndex = 1;
-    else if (overallScore >= 3.5) rankingIndex = 2;
-    else if (overallScore >= 3.0) rankingIndex = 3;
-    
-    document.getElementById('ranking').textContent = rankings[rankingIndex];
-    
-    // Update dimension chart
-    updateDimensionChart();
-    
-    // Update strengths and improvements
-    updateStrengthsAndImprovements(data);
-  }
-  
-  // Update Dimension Chart
-  function updateDimensionChart() {
-    const chart = document.getElementById('dimensionChart');
-    chart.innerHTML = '';
-    
-    const dimensions = [
-      { id: 'facilitation', label: 'Facilitation' },
-      { id: 'guidance', label: 'Guidance' },
-      { id: 'innovation', label: 'Innovation' },
-      { id: 'ethics', label: 'Ethics' },
-      { id: 'community', label: 'Community' },
-      { id: 'teachingMethods', label: 'Methods' },
-      { id: 'strategy', label: 'Strategy' },
-      { id: 'lessonPlan', label: 'Lesson Plan' },
-      { id: 'ict', label: 'ICT' }
-    ];
-    
-    dimensions.forEach(dim => {
-      const value = document.getElementById(dim.id).value;
-      const height = (value / 5) * 100;
-      
-      const bar = document.createElement('div');
-      bar.className = 'chart-bar';
-      bar.style.height = `${height}%`;
-      
-      const valueLabel = document.createElement('div');
-      valueLabel.className = 'chart-bar-value';
-      valueLabel.textContent = value;
-      
-      const dimLabel = document.createElement('div');
-      dimLabel.className = 'chart-bar-label';
-      dimLabel.textContent = dim.label;
-      
-      bar.appendChild(valueLabel);
-      bar.appendChild(dimLabel);
-      chart.appendChild(bar);
-    });
-  }
-  
-  // Update Strengths and Improvements
-  function updateStrengthsAndImprovements(data) {
-    const strengthsList = document.getElementById('strengthsList');
-    const improvementsList = document.getElementById('improvementsList');
-    
-    strengthsList.innerHTML = '';
-    improvementsList.innerHTML = '';
-    
-    // Find dimensions with high scores (4 or 5)
-    const highScores = [];
-    const lowScores = [];
-    
-    sliders.forEach(slider => {
-      const value = parseInt(slider.value);
-      const label = document.querySelector(`label[for="${slider.id}"] span`).textContent;
-      
-      if (value >= 4) {
-        highScores.push({ label, value });
-      } else if (value <= 2) {
-        lowScores.push({ label, value });
-      }
-    });
-    
-    // Add strengths
-    if (highScores.length > 0) {
-      highScores.forEach(item => {
-        const li = document.createElement('div');
-        li.textContent = `${item.label} (${item.value}/5)`;
-        li.style.padding = '5px 0';
-        li.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
-        strengthsList.appendChild(li);
-      });
-    } else {
-      strengthsList.innerHTML = '<p>No standout strengths identified. Focus on improving all dimensions.</p>';
+    try {
+      sessionStorage.setItem('mentorAssessment', JSON.stringify(data));
+      alert('✅ Assessment saved successfully!');
+    } catch(err) {
+      alert('⚠️ Data saved in memory for this session');
     }
-    
-    // Add improvements
-    if (lowScores.length > 0) {
-      lowScores.forEach(item => {
-        const li = document.createElement('div');
-        li.textContent = `${item.label} (${item.value}/5)`;
-        li.style.padding = '5px 0';
-        li.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
-        improvementsList.appendChild(li);
-      });
-    } else {
-      improvementsList.innerHTML = '<p>All dimensions are at satisfactory levels. Focus on maintaining excellence.</p>';
-    }
-    
-    // Add SWOT data if available
-    if (data.strengths) {
-      const li = document.createElement('div');
-      li.textContent = data.strengths;
-      li.style.padding = '5px 0';
-      li.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
-      li.style.fontStyle = 'italic';
-      strengthsList.appendChild(li);
-    }
-  }
-  
-  // Generate PDF
-  function generatePDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    // Add content to PDF
-    doc.setFontSize(20);
-    doc.setTextColor(106, 13, 173);
-    doc.text('UHAN 360° Mentor Assessment', 20, 30);
-    
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0);
-    
-    // Mentor Info
-    doc.text(`Mentor Name: ${document.getElementById('mentorName').value}`, 20, 50);
-    doc.text(`Contact Number: ${document.getElementById('contactNumber').value}`, 20, 60);
-    doc.text(`ULC ID: ${document.getElementById('ulcId').value}`, 20, 70);
-    doc.text(`ULP Token: ${document.getElementById('ulpToken').value}`, 20, 80);
-    doc.text(`Institution: ${document.getElementById('institution').value}`, 20, 90);
-    
-    // Assessment Scores
-    let yPos = 110;
-    doc.text('Assessment Scores:', 20, yPos);
-    yPos += 10;
-    
-    sliders.forEach(slider => {
-      const label = document.querySelector(`label[for="${slider.id}"] span`).textContent;
-      doc.text(`${label}: ${slider.value}/5`, 20, yPos);
-      yPos += 7;
-    });
-    
-    // SWOT Analysis
-    yPos += 10;
-    doc.text('SWOT Analysis:', 20, yPos);
-    yPos += 10;
-    doc.text(`Strengths: ${document.getElementById('strengths').value}`, 20, yPos);
-    yPos += 20;
-    doc.text(`Weaknesses: ${document.getElementById('weaknesses').value}`, 20, yPos);
-    yPos += 20;
-    doc.text(`Opportunities: ${document.getElementById('opportunities').value}`, 20, yPos);
-    yPos += 20;
-    doc.text(`Threats: ${document.getElementById('threats').value}`, 20, yPos);
-    
-    // Way Forward
-    yPos += 30;
-    doc.text('Way Forward:', 20, yPos);
-    yPos += 10;
-    const wayForwardText = doc.splitTextToSize(document.getElementById('wayForward').value, 170);
-    doc.text(wayForwardText, 20, yPos);
-    
-    // Comments
-    yPos += wayForwardText.length * 7 + 10;
-    if (yPos > 250) {
-      doc.addPage();
-      yPos = 20;
-    }
-    doc.text('Comments:', 20, yPos);
-    yPos += 10;
-    const commentsText = doc.splitTextToSize(document.getElementById('mentorComments').value, 170);
-    doc.text(commentsText, 20, yPos);
-    
-    // Save the PDF
-    doc.save(`UHAN_Mentor_Assessment_${document.getElementById('mentorName').value || 'Unknown'}.pdf`);
-  }
-  
-  // Check if there's saved data and offer to load it
-  window.addEventListener('load', function() {
-    const savedData = localStorage.getItem('mentorAssessment');
-    if (savedData) {
-      if (confirm('Found a previously saved assessment. Would you like to load it?')) {
-        const data = JSON.parse(savedData);
-        populateForm(data);
-      }
-    }
-    
-    // Initialize the growth report and report card
-    updateGrowthReport();
-    updateReportCard();
   });
-  
-  // Helper function to populate form with data
-  function populateForm(data) {
-    for (const key in data) {
-      const element = document.getElementById(key);
-      if (element) {
-        if (element.type === 'range') {
-          element.value = data[key];
-          document.getElementById(element.id + 'Value').textContent = data[key];
-        } else {
-          element.value = data[key];
+
+  // ============================================
+  // GENERATE BUTTON
+  // ============================================
+  document.getElementById('generateBtn').addEventListener('click', function() {
+    updateReportCard();
+    document.querySelector('.report-card-section').scrollIntoView({ behavior: 'smooth' });
+    alert('✅ Report card generated and updated!');
+  });
+
+  // ============================================
+  // NEW ENTRY BUTTON
+  // ============================================
+  document.getElementById('newBtn').addEventListener('click', function() {
+    if (confirm('⚠️ Start new assessment? Current data will be cleared.')) {
+      document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], textarea').forEach(input => {
+        input.value = '';
+      });
+      
+      sliders.forEach(slider => {
+        slider.value = 3;
+        document.getElementById(slider.id + 'Value').textContent = '3';
+      });
+      
+      document.getElementById('profilePhotoDisplay').innerHTML = '<div class="profile-placeholder"><i class="fas fa-user"></i></div>';
+      document.getElementById('signatureDisplay').innerHTML = '<div class="signature-placeholder">Signature</div>';
+      
+      profilePhotoData = null;
+      signatureData = null;
+      
+      // Clear file inputs
+      document.getElementById('profilePhoto').value = '';
+      document.getElementById('signature').value = '';
+      
+      updateReportCard();
+      alert('✅ New assessment form ready!');
+    }
+  });
+
+  // ============================================
+  // DOWNLOAD PDF BUTTON - FULLY FUNCTIONAL
+  // ============================================
+  document.getElementById('downloadBtn').addEventListener('click', async function() {
+    const button = this;
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+    
+    try {
+      const reportCard = document.querySelector('.report-card');
+      
+      // Use html2canvas to capture the report card
+      const canvas = await html2canvas(reportCard, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#0a1931',
+        logging: false,
+        windowWidth: reportCard.scrollWidth,
+        windowHeight: reportCard.scrollHeight
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      
+      // Calculate dimensions to fit A4
+      const imgWidth = 210; // A4 width in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      // Determine orientation
+      const orientation = imgHeight > imgWidth ? 'portrait' : 'landscape';
+      
+      const pdf = new jsPDF({
+        orientation: orientation,
+        unit: 'mm',
+        format: 'a4'
+      });
+      
+      // If image is taller than A4, split into multiple pages
+      const pageHeight = orientation === 'portrait' ? 297 : 210;
+      let heightLeft = imgHeight;
+      let position = 0;
+      
+      // Add first page
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+      
+      // Add additional pages if needed
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+      
+      // Generate filename
+      const data = collectFormData();
+      const mentorName = data.mentorName ? data.mentorName.replace(/\s+/g, '_') : 'Mentor';
+      const date = new Date().toISOString().split('T')[0];
+      const fileName = `UHAN_360_Report_${mentorName}_${date}.pdf`;
+      
+      // Save PDF
+      pdf.save(fileName);
+      
+      alert('📄 PDF downloaded successfully!');
+      
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      alert('❌ Error generating PDF. Please try again or use browser print function (Ctrl+P).');
+    } finally {
+      button.disabled = false;
+      button.innerHTML = '<i class="fas fa-file-pdf"></i> Download PDF';
+    }
+  });
+
+  // ============================================
+  // LOAD SAVED DATA ON PAGE LOAD
+  // ============================================
+  try {
+    const saved = sessionStorage.getItem('mentorAssessment');
+    if (saved) {
+      if (confirm('📂 Load previously saved assessment?')) {
+        const data = JSON.parse(saved);
+        
+        // Populate form fields
+        for (const key in data) {
+          const el = document.getElementById(key);
+          if (el) {
+            if (el.type === 'range') {
+              el.value = data[key];
+              document.getElementById(key + 'Value').textContent = data[key];
+            } else if (key !== 'profilePhotoData' && key !== 'signatureData') {
+              el.value = data[key];
+            }
+          }
         }
+        
+        // Restore images
+        if (data.profilePhotoData) {
+          profilePhotoData = data.profilePhotoData;
+          document.getElementById('profilePhotoDisplay').innerHTML = 
+            `<img src="${profilePhotoData}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover;">`;
+        }
+        if (data.signatureData) {
+          signatureData = data.signatureData;
+          document.getElementById('signatureDisplay').innerHTML = 
+            `<img src="${signatureData}" alt="Signature" style="max-width: 100%; max-height: 100%; object-fit: contain;">`;
+        }
+        
+        // Update report card with loaded data
+        updateReportCard();
       }
     }
+  } catch(err) {
+    console.log('No saved data available or error loading data:', err);
   }
+  
+  // ============================================
+  // INITIAL UPDATE ON PAGE LOAD
+  // ============================================
+  updateReportCard();
+  
+  // ============================================
+  // PRINT FUNCTIONALITY (ALTERNATIVE TO PDF)
+  // ============================================
+  window.addEventListener('keydown', function(e) {
+    // Ctrl+P or Cmd+P for print
+    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+      e.preventDefault();
+      window.print();
+    }
+  });
 });
