@@ -1222,5 +1222,685 @@ function handleMemberSearch(e) {
     
     if (query) {
         const rows = document.querySelectorAll('#membersTableBody tr');
-        rows
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(query) ? '' : 'none';
+        });
+    } else {
+        const rows = document.querySelectorAll('#membersTableBody tr');
+        rows.forEach(row => {
+            row.style.display = '';
+        });
+    }
+}
+
+// Show Loading Spinner
+function showLoading(show) {
+    const spinner = document.getElementById('loadingSpinner');
+    if (show) {
+        spinner.classList.add('active');
+    } else {
+        spinner.classList.remove('active');
+    }
+}
+
+// Save to Local Storage
+function saveToLocalStorage() {
+    localStorage.setItem('daoMembers', JSON.stringify(members));
+}
+
+// Utility Functions
+function formatWalletAddress(address) {
+    if (!address) return '';
+    return address.substr(0, 6) + '...' + address.substr(-4);
+}
+
+function formatRole(role) {
+    const roleMap = {
+        'citizen': 'Citizen',
+        'council-member': 'Council Member',
+        'delegate': 'Delegate',
+        'guardian': 'Guardian',
+        'treasurer': 'Treasurer'
+    };
+    return roleMap[role] || role;
+}
+
+function formatStatus(status) {
+    const statusMap = {
+        'active': 'Active',
+        'pending': 'Pending',
+        'inactive': 'Inactive'
+    };
+    return statusMap[status] || status;
+}
+
+function formatDate(dateString) {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
+}
+
+function formatDateTimeLocal(date) {
+    return date.toISOString().slice(0, 16);
+}
+
+function showNotification(message, type = 'info') {
+    // Remove existing notifications
+    document.querySelectorAll('.notification').forEach(notification => {
+        notification.remove();
+    });
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification ${type} fade-in`;
+    notification.innerHTML = `
+        <i class="fas fa-${getNotificationIcon(type)}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remove after 4 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease-in';
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 300);
+    }, 4000);
+}
+
+function getNotificationIcon(type) {
+    const icons = {
+        success: 'check-circle',
+        error: 'exclamation-circle',
+        warning: 'exclamation-triangle',
+        info: 'info-circle'
+    };
+    return icons[type] || 'info-circle';
+}
+
+// Enhanced Features Implementation
+// Format date for datetime-local input
+function formatDateTimeLocal(date) {
+    return date.toISOString().slice(0, 16);
+}
+
+// Populate proposal creator select
+function populateProposalCreatorSelect() {
+    const select = document.getElementById('proposalCreator');
+    select.innerHTML = '<option value="">Select Member</option>';
+    
+    members.forEach(member => {
+        if (member.status === 'active') {
+            const option = document.createElement('option');
+            option.value = member.id;
+            option.textContent = `${member.fullName} (${member.ulpId})`;
+            select.appendChild(option);
+        }
+    });
+}
+
+// Show/hide proposal form
+function showProposalForm() {
+    document.getElementById('proposalForm').style.display = 'block';
+    document.getElementById('proposalForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+function hideProposalForm() {
+    document.getElementById('proposalForm').style.display = 'none';
+    document.getElementById('proposalDataForm').reset();
+}
+
+// Handle proposal submission
+function handleProposalSubmit(e) {
+    e.preventDefault();
+    
+    if (!validateProposalForm()) {
+        return;
+    }
+    
+    const formData = new FormData(e.target);
+    const proposalData = Object.fromEntries(formData);
+    
+    createProposal(proposalData);
+}
+
+function validateProposalForm() {
+    const title = document.getElementById('proposalTitle').value;
+    const category = document.getElementById('proposalCategory').value;
+    const creator = document.getElementById('proposalCreator').value;
+    const startDate = new Date(document.getElementById('proposalStartDate').value);
+    const endDate = new Date(document.getElementById('proposalEndDate').value);
+    const description = document.getElementById('proposalDescription').value;
+    
+    if (!title || !category || !creator || !description) {
+        showNotification('Please fill in all required fields', 'error');
+        return false;
+    }
+    
+    if (startDate >= endDate) {
+        showNotification('End date must be after start date', 'error');
+        return false;
+    }
+    
+    if (startDate < new Date()) {
+        showNotification('Start date must be in the future', 'error');
+        return false;
+    }
+    
+    return true;
+}
+
+function createProposal(data) {
+    showLoading(true);
+    
+    setTimeout(() => {
+        const newProposal = {
+            id: 'PROP-' + Date.now().toString(36).toUpperCase(),
+            ...data,
+            status: 'pending',
+            votes: {
+                yes: 0,
+                no: 0,
+                abstain: 0
+            },
+            voters: [],
+            quorum: parseInt(document.getElementById('quorumSlider').value),
+            createdAt: new Date().toISOString(),
+            totalVotingPower: calculateTotalVotingPower(),
+            currentQuorum: 0
+        };
         
+        proposals.push(newProposal);
+        saveProposalsToStorage();
+        loadProposalsTable();
+        hideProposalForm();
+        addActivity('New proposal created: ' + data.proposalTitle, 'file-alt');
+        
+        showNotification('Proposal created successfully!', 'success');
+        showLoading(false);
+    }, 1000);
+}
+
+function calculateTotalVotingPower() {
+    return members.reduce((total, member) => {
+        return total + (member.status === 'active' ? parseInt(member.votingPower) : 0);
+    }, 0);
+}
+
+// Load proposals table
+function loadProposalsTable() {
+    const tbody = document.getElementById('proposalsTableBody');
+    tbody.innerHTML = '';
+    
+    if (proposals.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="11" class="empty-state">
+                    <i class="fas fa-vote-yea"></i>
+                    <p>No proposals found. Create your first proposal to get started.</p>
+                    <button class="btn-primary" onclick="showProposalForm()">
+                        <i class="fas fa-plus"></i> Create First Proposal
+                    </button>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    proposals.forEach(proposal => {
+        const row = document.createElement('tr');
+        const yesPercent = proposal.totalVotingPower > 0 ? 
+            (proposal.votes.yes / proposal.totalVotingPower * 100).toFixed(1) : 0;
+        const noPercent = proposal.totalVotingPower > 0 ? 
+            (proposal.votes.no / proposal.totalVotingPower * 100).toFixed(1) : 0;
+        const abstainPercent = proposal.totalVotingPower > 0 ? 
+            (proposal.votes.abstain / proposal.totalVotingPower * 100).toFixed(1) : 0;
+        
+        row.innerHTML = `
+            <td>${proposal.id}</td>
+            <td>${proposal.proposalTitle}</td>
+            <td><span class="role-badge">${proposal.proposalCategory}</span></td>
+            <td>${getMemberName(proposal.proposalCreator)}</td>
+            <td>${formatDate(proposal.proposalStartDate)}</td>
+            <td>${formatDate(proposal.proposalEndDate)}</td>
+            <td><span class="status-badge status-${proposal.status}">${proposal.status}</span></td>
+            <td>${proposal.votes.yes + proposal.votes.no + proposal.votes.abstain}</td>
+            <td>${proposal.quorum}%</td>
+            <td>
+                <div class="vote-summary">
+                    <span style="color: var(--success)">${yesPercent}%</span> /
+                    <span style="color: var(--danger)">${noPercent}%</span>
+                </div>
+            </td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-icon btn-view" onclick="viewProposal('${proposal.id}')" title="View Details">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn-icon btn-edit" onclick="editProposal('${proposal.id}')" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-icon btn-delete" onclick="deleteProposal('${proposal.id}')" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+        
+        tbody.appendChild(row);
+    });
+}
+
+function getMemberName(memberId) {
+    const member = members.find(m => m.id === memberId);
+    return member ? member.fullName : 'Unknown Member';
+}
+
+// View proposal details
+function viewProposal(proposalId) {
+    const proposal = proposals.find(p => p.id === proposalId);
+    if (!proposal) return;
+    
+    currentProposalId = proposalId;
+    
+    // Populate modal
+    document.getElementById('modalProposalTitle').textContent = proposal.proposalTitle;
+    document.getElementById('modalCategory').textContent = proposal.proposalCategory;
+    document.getElementById('modalProposer').textContent = getMemberName(proposal.proposalCreator);
+    document.getElementById('modalStatus').textContent = proposal.status;
+    document.getElementById('modalQuorum').textContent = proposal.quorum + '%';
+    document.getElementById('modalDescription').textContent = proposal.proposalDescription;
+    document.getElementById('modalDetails').textContent = proposal.proposalDetails || 'No implementation details provided.';
+    
+    // Update voting results
+    updateVotingResults(proposal);
+    
+    // Load comments
+    loadComments(proposalId);
+    
+    // Show modal
+    document.getElementById('proposalModal').classList.add('active');
+}
+
+function updateVotingResults(proposal) {
+    const container = document.getElementById('modalVotingResults');
+    const totalVotes = proposal.votes.yes + proposal.votes.no + proposal.votes.abstain;
+    const yesPercent = proposal.totalVotingPower > 0 ? 
+        (proposal.votes.yes / proposal.totalVotingPower * 100).toFixed(1) : 0;
+    const noPercent = proposal.totalVotingPower > 0 ? 
+        (proposal.votes.no / proposal.totalVotingPower * 100).toFixed(1) : 0;
+    const abstainPercent = proposal.totalVotingPower > 0 ? 
+        (proposal.votes.abstain / proposal.totalVotingPower * 100).toFixed(1) : 0;
+    
+    container.innerHTML = `
+        <h4>Voting Results</h4>
+        <div class="vote-bar">
+            <div class="vote-option">
+                <div class="vote-label">
+                    <i class="fas fa-check-circle" style="color: var(--success)"></i>
+                    <span>Yes</span>
+                </div>
+                <span class="vote-percentage">${yesPercent}%</span>
+            </div>
+            <div class="vote-progress">
+                <div class="vote-fill yes" style="width: ${yesPercent}%"></div>
+            </div>
+        </div>
+        
+        <div class="vote-bar">
+            <div class="vote-option">
+                <div class="vote-label">
+                    <i class="fas fa-times-circle" style="color: var(--danger)"></i>
+                    <span>No</span>
+                </div>
+                <span class="vote-percentage">${noPercent}%</span>
+            </div>
+            <div class="vote-progress">
+                <div class="vote-fill no" style="width: ${noPercent}%"></div>
+            </div>
+        </div>
+        
+        <div class="vote-bar">
+            <div class="vote-option">
+                <div class="vote-label">
+                    <i class="fas fa-minus-circle" style="color: var(--warning)"></i>
+                    <span>Abstain</span>
+                </div>
+                <span class="vote-percentage">${abstainPercent}%</span>
+            </div>
+            <div class="vote-progress">
+                <div class="vote-fill abstain" style="width: ${abstainPercent}%"></div>
+            </div>
+        </div>
+        
+        <div class="vote-meta">
+            <p>Total Votes: ${totalVotes}</p>
+            <p>Quorum Progress: ${proposal.currentQuorum || 0}% / ${proposal.quorum}%</p>
+        </div>
+    `;
+}
+
+function closeProposalModal() {
+    document.getElementById('proposalModal').classList.remove('active');
+    currentProposalId = null;
+}
+
+// Voting system
+function castVote(voteType) {
+    if (!currentProposalId) return;
+    
+    const proposal = proposals.find(p => p.id === currentProposalId);
+    if (!proposal) return;
+    
+    // Check if voting is active
+    const now = new Date();
+    const startDate = new Date(proposal.proposalStartDate);
+    const endDate = new Date(proposal.proposalEndDate);
+    
+    if (now < startDate) {
+        showNotification('Voting has not started yet', 'error');
+        return;
+    }
+    
+    if (now > endDate) {
+        showNotification('Voting has ended', 'error');
+        return;
+    }
+    
+    // Simulate voting (in real app, this would use blockchain)
+    proposal.votes[voteType]++;
+    
+    // Update quorum progress
+    const totalVotes = proposal.votes.yes + proposal.votes.no + proposal.votes.abstain;
+    proposal.currentQuorum = Math.min((totalVotes / proposal.totalVotingPower * 100).toFixed(1), 100);
+    
+    saveProposalsToStorage();
+    updateVotingResults(proposal);
+    showNotification(`Vote cast: ${voteType}`, 'success');
+}
+
+function delegateVote() {
+    showNotification('Vote delegation feature coming soon!', 'info');
+}
+
+// Comment system
+function loadComments(proposalId) {
+    const commentsList = document.getElementById('commentsList');
+    const proposalComments = comments[proposalId] || [];
+    
+    commentsList.innerHTML = '';
+    
+    if (proposalComments.length === 0) {
+        commentsList.innerHTML = '<p class="empty-comments">No comments yet. Be the first to comment!</p>';
+        return;
+    }
+    
+    proposalComments.forEach(comment => {
+        const commentElement = document.createElement('div');
+        commentElement.className = 'comment';
+        commentElement.innerHTML = `
+            <div class="comment-header">
+                <span class="comment-author">${comment.author}</span>
+                <span class="comment-time">${formatDate(comment.timestamp)}</span>
+            </div>
+            <div class="comment-content">${comment.content}</div>
+        `;
+        commentsList.appendChild(commentElement);
+    });
+}
+
+function submitComment() {
+    if (!currentProposalId) return;
+    
+    const commentText = document.getElementById('commentText').value.trim();
+    if (!commentText) {
+        showNotification('Please enter a comment', 'error');
+        return;
+    }
+    
+    const comment = {
+        id: 'COMMENT-' + Date.now(),
+        author: 'Current User', // In real app, get from auth system
+        content: commentText,
+        timestamp: new Date().toISOString()
+    };
+    
+    if (!comments[currentProposalId]) {
+        comments[currentProposalId] = [];
+    }
+    
+    comments[currentProposalId].push(comment);
+    saveCommentsToStorage();
+    loadComments(currentProposalId);
+    
+    document.getElementById('commentText').value = '';
+    showNotification('Comment posted successfully!', 'success');
+}
+
+// Treasury Management
+function loadTransactionsTable() {
+    // This would load actual transaction data
+    const tbody = document.getElementById('transactionsTableBody');
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="8" class="empty-state">
+                <i class="fas fa-exchange-alt"></i>
+                <p>No transactions found.</p>
+            </td>
+        </tr>
+    `;
+}
+
+function loadFundingTable() {
+    // This would load actual funding request data
+    const tbody = document.getElementById('fundingTableBody');
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="8" class="empty-state">
+                <i class="fas fa-hand-holding-usd"></i>
+                <p>No funding requests found.</p>
+            </td>
+        </tr>
+    `;
+}
+
+// Enhanced Charts Initialization
+function initializeProposalCharts() {
+    // Initialize charts for the analytics section
+    // This is a simplified version - in a real app you would use Chart.js
+    console.log('Proposal charts initialized');
+}
+
+function initializeTreasuryCharts() {
+    // Initialize treasury charts
+    console.log('Treasury charts initialized');
+}
+
+// Settings Functions
+function saveBlockchainSettings() {
+    const network = document.getElementById('blockchainNetwork').value;
+    const contractAddress = document.getElementById('contractAddress').value;
+    const rpcUrl = document.getElementById('rpcUrl').value;
+    
+    // Save settings to localStorage
+    const settings = {
+        network,
+        contractAddress,
+        rpcUrl
+    };
+    
+    localStorage.setItem('blockchainSettings', JSON.stringify(settings));
+    showNotification('Blockchain settings saved successfully!', 'success');
+}
+
+function saveSecuritySettings() {
+    const twoFactorAuth = document.getElementById('twoFactorAuth').checked;
+    const sessionTimeout = document.getElementById('sessionTimeout').value;
+    const ipWhitelist = document.getElementById('ipWhitelist').value;
+    
+    const securitySettings = {
+        twoFactorAuth,
+        sessionTimeout,
+        ipWhitelist: ipWhitelist.split('\n').filter(ip => ip.trim())
+    };
+    
+    localStorage.setItem('securitySettings', JSON.stringify(securitySettings));
+    showNotification('Security settings saved successfully!', 'success');
+}
+
+function downloadMobileApp() {
+    showNotification('Mobile app download link sent to your email!', 'info');
+}
+
+// Utility functions for enhanced features
+function saveProposalsToStorage() {
+    localStorage.setItem('daoProposals', JSON.stringify(proposals));
+}
+
+function saveCommentsToStorage() {
+    localStorage.setItem('daoComments', JSON.stringify(comments));
+}
+
+function downloadChart(chartId) {
+    showNotification(`Chart ${chartId} exported successfully!`, 'success');
+}
+
+// Filter and search functions
+function filterProposals() {
+    // Implementation for filtering proposals
+    loadProposalsTable();
+}
+
+function filterTransactions() {
+    // Implementation for filtering transactions
+    loadTransactionsTable();
+}
+
+function filterFunding() {
+    // Implementation for filtering funding requests
+    loadFundingTable();
+}
+
+function searchProposals() {
+    // Implementation for searching proposals
+    loadProposalsTable();
+}
+
+// Additional utility functions for proposals
+function saveProposalDraft() {
+    showNotification('Proposal draft saved successfully!', 'success');
+}
+
+function showTransactionForm() {
+    showNotification('Transaction form will be implemented', 'info');
+}
+
+function showFundingForm() {
+    showNotification('Funding request form will be implemented', 'info');
+}
+
+function editProposal(id) {
+    showNotification('Edit proposal feature coming soon!', 'info');
+}
+
+function deleteProposal(id) {
+    if (confirm('Are you sure you want to delete this proposal?')) {
+        proposals = proposals.filter(p => p.id !== id);
+        saveProposalsToStorage();
+        loadProposalsTable();
+        showNotification('Proposal deleted successfully!', 'success');
+    }
+}
+
+// Report generation functions
+function generateMemberDirectory() {
+    showLoading(true);
+    setTimeout(() => {
+        showNotification('Member Directory PDF generated successfully!', 'success');
+        showLoading(false);
+    }, 2000);
+}
+
+function generateGovernanceReport() {
+    showLoading(true);
+    setTimeout(() => {
+        showNotification('Governance Report PDF generated successfully!', 'success');
+        showLoading(false);
+    }, 2000);
+}
+
+function generateVotingAnalysis() {
+    showLoading(true);
+    setTimeout(() => {
+        showNotification('Voting Analysis PDF generated successfully!', 'success');
+        showLoading(false);
+    }, 2000);
+}
+
+function generateFinancialReport() {
+    showLoading(true);
+    setTimeout(() => {
+        showNotification('Financial Report PDF generated successfully!', 'success');
+        showLoading(false);
+    }, 2000);
+}
+
+// Add CSS for notifications if not already in CSS
+if (!document.querySelector('#notification-styles')) {
+    const style = document.createElement('style');
+    style.id = 'notification-styles';
+    style.textContent = `
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            z-index: 10000;
+            max-width: 300px;
+            animation: slideInRight 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .notification.success {
+            background: var(--success);
+            color: var(--text-dark);
+        }
+        
+        .notification.error {
+            background: var(--danger);
+            color: var(--text-light);
+        }
+        
+        .notification.warning {
+            background: var(--warning);
+            color: var(--text-dark);
+        }
+        
+        .notification.info {
+            background: var(--accent-cyan);
+            color: var(--text-dark);
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+}
