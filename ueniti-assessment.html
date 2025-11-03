@@ -1,13 +1,288 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 <head>
-  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
-  <title>Hello, World!</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UEITI Assessment - Admin Data Entry</title>
+    <link rel="stylesheet" href="ueniti-assessment.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
-  <h1>
-    Hello, World!
-  </h1>
+    <div class="quantum-particles" id="particles"></div>
+    
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🏛️ UEITI ASSESSMENT - ADMIN PANEL</h1>
+            <div class="subtitle">Data Entry Form for Institutional Assessment</div>
+            <div class="quantum-badge">
+                <span>⚛️ Quantum Blockchain Technology</span>
+                <span class="nano-chip-indicator">🔬 AI Nano Chip SIM</span>
+            </div>
+        </div>
+
+        <!-- Live Preview Toggle -->
+        <div class="glass-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+                <h2 style="margin: 0;">📝 Institute Data Entry Form</h2>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="togglePreview()">
+                        👁️ <span id="previewBtnText">Show Live Preview</span>
+                    </button>
+                    <button class="btn btn-success" onclick="saveAssessment()">💾 Save Assessment</button>
+                    <button class="btn btn-warning" onclick="downloadPDF()">📄 Download PDF</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 1: Institute Profile -->
+        <div class="glass-card">
+            <div class="section-title">
+                <span class="icon">🧭</span>
+                <span>Section 1 — Institute Profile & Contact Details</span>
+            </div>
+            <div class="form-grid">
+                <div class="form-field">
+                    <label>Institute / Learning Hub Name *</label>
+                    <input type="text" id="instituteName" placeholder="e.g., SHCE Village Academy" onchange="updatePreview()">
+                </div>
+                <div class="form-field">
+                    <label>UEITI ULP Token ID *</label>
+                    <input type="text" id="tokenId" placeholder="e.g., ULP-2025-001" onchange="updatePreview()">
+                </div>
+                <div class="form-field">
+                    <label>ULCI ID *</label>
+                    <input type="text" id="ulciId" placeholder="e.g., ULCI-NE-001" onchange="updatePreview()">
+                </div>
+                <div class="form-field">
+                    <label>Region / Network Node</label>
+                    <input type="text" id="region" placeholder="e.g., North-East Bioregion Node 04" onchange="updatePreview()">
+                </div>
+                <div class="form-field">
+                    <label>Institute Email ID *</label>
+                    <input type="email" id="instituteEmail" placeholder="contact@institute.edu" onchange="updatePreview()">
+                </div>
+                <div class="form-field">
+                    <label>Phone Number *</label>
+                    <input type="tel" id="phoneNumber" placeholder="+91 1234567890" onchange="updatePreview()">
+                </div>
+                <div class="form-field">
+                    <label>Website URL</label>
+                    <input type="url" id="website" placeholder="https://institute.edu" onchange="updatePreview()">
+                </div>
+                <div class="form-field">
+                    <label>Total Trainers/Coaches/Staff *</label>
+                    <input type="number" id="totalStaff" min="1" placeholder="e.g., 45" onchange="updatePreview()">
+                </div>
+                <div class="form-field" style="grid-column: span 2;">
+                    <label>Address</label>
+                    <textarea id="address" placeholder="Complete institutional address" rows="3" onchange="updatePreview()"></textarea>
+                </div>
+                <div class="form-field">
+                    <label>Date of Assessment</label>
+                    <input type="date" id="assessmentDate" onchange="updatePreview()">
+                </div>
+                <div class="form-field">
+                    <label>Assessment Cycle</label>
+                    <select id="assessmentCycle" onchange="updatePreview()">
+                        <option value="Pilot">Pilot</option>
+                        <option value="Quarterly">Quarterly</option>
+                        <option value="Yearly">Yearly</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Core Dimensions -->
+        <div class="glass-card">
+            <div class="section-title">
+                <span class="icon">⚙️</span>
+                <span>Section 2 — Core Dimensions Assessment</span>
+            </div>
+            <div class="dimension-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Core Dimension</th>
+                            <th>Rating (1-5)</th>
+                            <th>Remarks / Evidence</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dimensionsBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ULCI Components -->
+        <div class="glass-card">
+            <div class="section-title">
+                <span class="icon">🌍</span>
+                <span>ULCI Component Scoring (0-100)</span>
+            </div>
+            <div class="form-grid">
+                <div class="form-field">
+                    <label>🌱 Environmental Contribution (E)</label>
+                    <input type="number" id="ulciE" min="0" max="100" value="0" onchange="updatePreview()">
+                    <small style="opacity: 0.7;">Trees, resources, carbon offset, solutions</small>
+                </div>
+                <div class="form-field">
+                    <label>🧍‍♀️ Social & Civic Contribution (S)</label>
+                    <input type="number" id="ulciS" min="0" max="100" value="0" onchange="updatePreview()">
+                    <small style="opacity: 0.7;">Volunteer hours, civic participation</small>
+                </div>
+                <div class="form-field">
+                    <label>🎨 Cultural & Educational (C)</label>
+                    <input type="number" id="ulciC" min="0" max="100" value="0" onchange="updatePreview()">
+                    <small style="opacity: 0.7;">Education, arts, knowledge sharing</small>
+                </div>
+                <div class="form-field">
+                    <label>🧘 Health & Well-being (H)</label>
+                    <input type="number" id="ulciH" min="0" max="100" value="0" onchange="updatePreview()">
+                    <small style="opacity: 0.7;">Yoga, meditation, health services</small>
+                </div>
+                <div class="form-field">
+                    <label>💡 Innovation & Ethical Impact (I)</label>
+                    <input type="number" id="ulciI" min="0" max="100" value="0" onchange="updatePreview()">
+                    <small style="opacity: 0.7;">Ideas, innovations, ethics, reforms</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: Qualitative Insights -->
+        <div class="glass-card">
+            <div class="section-title">
+                <span class="icon">🧠</span>
+                <span>Section 4 — Qualitative Insights</span>
+            </div>
+            <div class="form-grid">
+                <div class="form-field">
+                    <label>Strengths</label>
+                    <textarea id="strengths" placeholder="e.g., Strong AI adoption, inclusive mentor community" onchange="updatePreview()"></textarea>
+                </div>
+                <div class="form-field">
+                    <label>Areas for Improvement</label>
+                    <textarea id="improvements" placeholder="e.g., Expand eco-literacy programs" onchange="updatePreview()"></textarea>
+                </div>
+                <div class="form-field">
+                    <label>Key Innovations</label>
+                    <textarea id="innovations" placeholder="e.g., DAO Learning Hub Governance" onchange="updatePreview()"></textarea>
+                </div>
+                <div class="form-field">
+                    <label>Civilizational Contribution</label>
+                    <textarea id="contribution" placeholder="Impact on local regeneration and global citizenship" onchange="updatePreview()"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Training Ecosystem -->
+        <div class="glass-card">
+            <div class="section-title">
+                <span class="icon">🏫</span>
+                <span>Section 5 — UEITI Training Ecosystem</span>
+            </div>
+            <div class="form-grid">
+                <div class="form-field">
+                    <label>AI & Digital Co-Teaching Modules</label>
+                    <input type="text" id="aiModules" placeholder="Enter modules" onchange="updatePreview()">
+                </div>
+                <div class="form-field">
+                    <label>Sustainability Leadership Modules</label>
+                    <input type="text" id="sustainModules" placeholder="Enter modules" onchange="updatePreview()">
+                </div>
+                <div class="form-field">
+                    <label>Holistic Human Development Modules</label>
+                    <input type="text" id="holisticModules" placeholder="Enter modules" onchange="updatePreview()">
+                </div>
+                <div class="form-field">
+                    <label>Innovation & Research Modules</label>
+                    <input type="text" id="innovationModules" placeholder="Enter modules" onchange="updatePreview()">
+                </div>
+            </div>
+        </div>
+
+        <!-- Digital Infrastructure -->
+        <div class="glass-card">
+            <div class="section-title">
+                <span class="icon">🧩</span>
+                <span>Section 6 — Digital Infrastructure Checklist</span>
+            </div>
+            <div class="form-grid">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="firestore" onchange="updatePreview()">
+                    <label for="firestore">Firestore / AI Database Sync</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="dao" onchange="updatePreview()">
+                    <label for="dao">DAO Governance System</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="robotics" onchange="updatePreview()">
+                    <label for="robotics">Robotics Assistance</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="whiteboards" onchange="updatePreview()">
+                    <label for="whiteboards">Digital Whiteboards</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="blockchain" onchange="updatePreview()">
+                    <label for="blockchain">Blockchain Badge Integration</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="nanoChip" onchange="updatePreview()">
+                    <label for="nanoChip">AI Nano Chip SIM</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Validation -->
+        <div class="glass-card">
+            <div class="section-title">
+                <span class="icon">🪙</span>
+                <span>Validation & Credentials</span>
+            </div>
+            <div class="form-grid">
+                <div class="form-field">
+                    <label>Validated By DAO Council</label>
+                    <input type="text" id="daoCouncil" placeholder="e.g., UHAN 360° Council Node 03" onchange="updatePreview()">
+                </div>
+                <div class="form-field">
+                    <label>Validator Name</label>
+                    <input type="text" id="validatorName" placeholder="e.g., Dr. Shivanta Kumar" onchange="updatePreview()">
+                </div>
+                <div class="form-field">
+                    <label>Date of Issue</label>
+                    <input type="date" id="issueDate" onchange="updatePreview()">
+                </div>
+                <div class="form-field">
+                    <label>Verification Status</label>
+                    <select id="verificationStatus" onchange="updatePreview()">
+                        <option value="verified">✅ AI Verified</option>
+                        <option value="pending">⏳ Pending Review</option>
+                        <option value="approved">🏆 Approved & Certified</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-success" onclick="saveAssessment()">💾 Save Assessment</button>
+            <button class="btn btn-primary" onclick="togglePreview()">👁️ Toggle Preview</button>
+            <button class="btn btn-warning" onclick="downloadPDF()">📄 Download PDF</button>
+            <button class="btn btn-quantum" onclick="resetForm()">🔄 Reset Form</button>
+        </div>
+    </div>
+
+    <!-- Live Preview Panel (Initially Hidden) -->
+    <div id="previewPanel" class="preview-panel hidden">
+        <div class="preview-header">
+            <h2>📊 Live Report Card Preview</h2>
+            <button class="close-btn" onclick="togglePreview()">✕</button>
+        </div>
+        <iframe id="previewFrame" src="report-card.html"></iframe>
+    </div>
+
+    <script src="ueniti-assessment.js"></script>
 </body>
 </html>
