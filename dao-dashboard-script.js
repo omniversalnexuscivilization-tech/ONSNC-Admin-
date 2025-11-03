@@ -1,7 +1,11 @@
 // Global Variables
 let members = JSON.parse(localStorage.getItem('daoMembers')) || [];
 let proposals = JSON.parse(localStorage.getItem('daoProposals')) || [];
+let transactions = JSON.parse(localStorage.getItem('daoTreasury')) || [];
+let fundingRequests = JSON.parse(localStorage.getItem('daoFunding')) || [];
+let comments = JSON.parse(localStorage.getItem('daoComments')) || {};
 let editingMemberId = null;
+let currentProposalId = null;
 let currentSort = { field: 'id', direction: 'asc' };
 let currentPage = 1;
 const itemsPerPage = 10;
@@ -16,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadMembersTable();
     initializeCharts();
     applyTheme(currentTheme);
+    initializeEnhancedFeatures();
 });
 
 // Initialize Dashboard Components
@@ -59,15 +64,15 @@ function setupEventListeners() {
     document.getElementById('uploadTrigger').addEventListener('click', triggerPhotoUpload);
     document.getElementById('photoUpload').addEventListener('change', handlePhotoUpload);
     
-    // Menu toggle for mobile
-    document.querySelector('.menu-toggle').addEventListener('click', toggleSidebar);
+    // Menu toggle for mobile - FIXED
+    document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
     
-    // Navigation
+    // Navigation - FIXED
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', handleNavigation);
     });
     
-    // Quick actions
+    // Quick actions - FIXED
     document.querySelectorAll('.action-card').forEach(card => {
         card.addEventListener('click', handleQuickAction);
     });
@@ -94,7 +99,78 @@ function setupEventListeners() {
     document.getElementById('memberSelect').addEventListener('change', handleMemberSelect);
 }
 
-// Handle Navigation
+// Initialize Enhanced Features
+function initializeEnhancedFeatures() {
+    initializeProposalCharts();
+    initializeTreasuryCharts();
+    populateProposalCreatorSelect();
+    loadProposalsTable();
+    loadTransactionsTable();
+    loadFundingTable();
+    setupProposalEventListeners();
+    setupTreasuryEventListeners();
+    setupSettingsEventListeners();
+    
+    // Set default dates for proposal form
+    const now = new Date();
+    const startDate = new Date(now.getTime() + 24 * 60 * 60 * 1000); // Tomorrow
+    const endDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // Next week
+    
+    document.getElementById('proposalStartDate').value = formatDateTimeLocal(startDate);
+    document.getElementById('proposalEndDate').value = formatDateTimeLocal(endDate);
+    
+    // Initialize quorum slider
+    initializeQuorumSlider();
+}
+
+// Setup new event listeners
+function setupProposalEventListeners() {
+    document.getElementById('createProposalBtn').addEventListener('click', showProposalForm);
+    document.getElementById('proposalDataForm').addEventListener('submit', handleProposalSubmit);
+    document.getElementById('cancelProposal').addEventListener('click', hideProposalForm);
+    document.getElementById('saveDraftBtn').addEventListener('click', saveProposalDraft);
+    document.getElementById('proposalFilter').addEventListener('change', filterProposals);
+    document.getElementById('categoryFilter').addEventListener('change', filterProposals);
+    document.getElementById('proposalSearch').addEventListener('input', searchProposals);
+    
+    // Voting buttons
+    document.getElementById('voteForBtn').addEventListener('click', () => castVote('yes'));
+    document.getElementById('voteAgainstBtn').addEventListener('click', () => castVote('no'));
+    document.getElementById('abstainVoteBtn').addEventListener('click', () => castVote('abstain'));
+    document.getElementById('delegateVoteBtn').addEventListener('click', delegateVote);
+    
+    // Comment system
+    document.getElementById('submitComment').addEventListener('click', submitComment);
+    
+    // Modal close
+    document.getElementById('closeProposalModal').addEventListener('click', closeProposalModal);
+}
+
+function setupTreasuryEventListeners() {
+    document.getElementById('addTransactionBtn').addEventListener('click', showTransactionForm);
+    document.getElementById('requestFundingBtn').addEventListener('click', showFundingForm);
+    document.getElementById('transactionType').addEventListener('change', filterTransactions);
+    document.getElementById('transactionCurrency').addEventListener('change', filterTransactions);
+    document.getElementById('fundingStatus').addEventListener('change', filterFunding);
+}
+
+function setupSettingsEventListeners() {
+    document.getElementById('saveBlockchainSettings').addEventListener('click', saveBlockchainSettings);
+    document.getElementById('saveSecuritySettings').addEventListener('click', saveSecuritySettings);
+    document.getElementById('downloadApp').addEventListener('click', downloadMobileApp);
+}
+
+// Initialize quorum slider
+function initializeQuorumSlider() {
+    const slider = document.getElementById('quorumSlider');
+    const value = document.getElementById('quorumValue');
+    
+    slider.addEventListener('input', function() {
+        value.textContent = this.value + '%';
+    });
+}
+
+// Handle Navigation - FIXED
 function handleNavigation(e) {
     e.preventDefault();
     
@@ -114,7 +190,8 @@ function handleNavigation(e) {
     document.getElementById(sectionId).classList.add('active');
     
     // Update page title
-    document.querySelector('.header h1').textContent = this.textContent + ' - DAO Village Council';
+    const sectionName = this.textContent.trim();
+    document.querySelector('.header h1').textContent = sectionName + ' - DAO Village Council';
     
     // Close sidebar on mobile
     if (window.innerWidth <= 1024) {
@@ -122,17 +199,20 @@ function handleNavigation(e) {
     }
 }
 
-// Handle Quick Actions
+// Handle Quick Actions - FIXED
 function handleQuickAction() {
     const action = this.getAttribute('data-action');
     
     switch(action) {
         case 'add-member':
             showMemberForm();
+            // Navigate to members section
             document.querySelector('.nav-link[data-section="members"]').click();
             break;
         case 'create-proposal':
-            showNotification('Proposal creation feature coming soon!', 'info');
+            showProposalForm();
+            // Navigate to proposals section
+            document.querySelector('.nav-link[data-section="proposals"]').click();
             break;
         case 'generate-reports':
             generateReports();
@@ -141,6 +221,11 @@ function handleQuickAction() {
             document.querySelector('.nav-link[data-section="treasury"]').click();
             break;
     }
+}
+
+// Toggle Sidebar - FIXED
+function toggleSidebar() {
+    document.querySelector('.sidebar').classList.toggle('active');
 }
 
 // Toggle Theme
@@ -250,54 +335,6 @@ function generateSampleData() {
             status: 'active',
             photo: null,
             createdAt: new Date('2024-02-20').toISOString()
-        },
-        {
-            id: generateId(),
-            fullName: 'Marcus Rivera',
-            ulpId: 'ULP-IND-ASSAM-00056',
-            walletAddress: '0x3C8D742d35Cc6634C0532925a3b8Df0A5A7f2F6B4',
-            email: 'marcus.r@daovillage.org',
-            phone: '+91 7654321098',
-            role: 'citizen',
-            villageCluster: 'Dhuli Moradiring',
-            address: '789 Pine Road, Dhuli Moradiring, Biswanath, Assam, 784176',
-            joinDate: '2024-03-10',
-            votingPower: 45,
-            status: 'pending',
-            photo: null,
-            createdAt: new Date('2024-03-10').toISOString()
-        },
-        {
-            id: generateId(),
-            fullName: 'Priya Sharma',
-            ulpId: 'ULP-IND-ASSAM-00145',
-            walletAddress: '0x5a2b4C8D742d35Cc6634C0532925a3b8Df0A5A7f',
-            email: 'priya.sharma@daovillage.org',
-            phone: '+91 6543210987',
-            role: 'guardian',
-            villageCluster: 'Biswanath Cluster',
-            address: '321 Elm Street, Biswanath Chariali, Biswanath, Assam, 784176',
-            joinDate: '2024-03-15',
-            votingPower: 200,
-            status: 'active',
-            photo: null,
-            createdAt: new Date('2024-03-15').toISOString()
-        },
-        {
-            id: generateId(),
-            fullName: 'David Kim',
-            ulpId: 'ULP-IND-ASSAM-00078',
-            walletAddress: '0x9f2F6B3C8D742d35Cc6634C0532925a3b8Df0A5A7',
-            email: 'david.kim@daovillage.org',
-            phone: '+91 5432109876',
-            role: 'treasurer',
-            villageCluster: 'Dhuli Moradiring',
-            address: '654 Maple Avenue, Dhuli Moradiring, Biswanath, Assam, 784176',
-            joinDate: '2024-03-20',
-            votingPower: 120,
-            status: 'active',
-            photo: null,
-            createdAt: new Date('2024-03-20').toISOString()
         }
     ];
     
@@ -384,7 +421,6 @@ function addMember(data) {
         saveToLocalStorage();
         loadMembersTable();
         clearForm();
-        updateCharts();
         updateDashboardStats();
         populateMemberSelect();
         addActivity('Member added: ' + data.fullName, 'user-plus');
@@ -405,7 +441,6 @@ function updateMember(id, data) {
             saveToLocalStorage();
             loadMembersTable();
             clearForm();
-            updateCharts();
             updateDashboardStats();
             populateMemberSelect();
             addActivity('Member updated: ' + data.fullName, 'user-edit');
@@ -426,7 +461,6 @@ function deleteMember(id) {
             members = members.filter(member => member.id !== id);
             saveToLocalStorage();
             loadMembersTable();
-            updateCharts();
             updateDashboardStats();
             populateMemberSelect();
             
@@ -839,239 +873,8 @@ function handleMemberSelect() {
 
 // Initialize Charts
 function initializeCharts() {
-    // Role Distribution Chart
-    const roleCtx = document.getElementById('roleChart').getContext('2d');
-    charts.roleChart = new Chart(roleCtx, {
-        type: 'doughnut',
-        data: getRoleChartData(),
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        color: function(context) {
-                            return getComputedStyle(document.documentElement).getPropertyValue('--text-light');
-                        },
-                        font: {
-                            family: 'Poppins',
-                            size: 11
-                        }
-                    }
-                }
-            },
-            cutout: '60%'
-        }
-    });
-    
-    // Growth Chart
-    const growthCtx = document.getElementById('growthChart').getContext('2d');
-    charts.growthChart = new Chart(growthCtx, {
-        type: 'line',
-        data: getGrowthChartData(),
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
-                    },
-                    ticks: {
-                        color: function() {
-                            return getComputedStyle(document.documentElement).getPropertyValue('--text-light');
-                        }
-                    }
-                },
-                x: {
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
-                    },
-                    ticks: {
-                        color: function() {
-                            return getComputedStyle(document.documentElement).getPropertyValue('--text-light');
-                        }
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    labels: {
-                        color: function() {
-                            return getComputedStyle(document.documentElement).getPropertyValue('--text-light');
-                        },
-                        font: {
-                            family: 'Poppins'
-                        }
-                    }
-                }
-            }
-        }
-    });
-    
-    // Voting Power Chart
-    const votingCtx = document.getElementById('votingChart').getContext('2d');
-    charts.votingChart = new Chart(votingCtx, {
-        type: 'bar',
-        data: getVotingChartData(),
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
-                    },
-                    ticks: {
-                        color: function() {
-                            return getComputedStyle(document.documentElement).getPropertyValue('--text-light');
-                        }
-                    }
-                },
-                x: {
-                    grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
-                    },
-                    ticks: {
-                        color: function() {
-                            return getComputedStyle(document.documentElement).getPropertyValue('--text-light');
-                        }
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    labels: {
-                        color: function() {
-                            return getComputedStyle(document.documentElement).getPropertyValue('--text-light');
-                        },
-                        font: {
-                            family: 'Poppins'
-                        }
-                    }
-                }
-            }
-        }
-    });
-}
-
-// Update Charts
-function updateCharts() {
-    if (charts.roleChart) {
-        charts.roleChart.data = getRoleChartData();
-        charts.roleChart.update();
-    }
-    
-    if (charts.growthChart) {
-        charts.growthChart.data = getGrowthChartData();
-        charts.growthChart.update();
-    }
-    
-    if (charts.votingChart) {
-        charts.votingChart.data = getVotingChartData();
-        charts.votingChart.update();
-    }
-}
-
-// Get Role Chart Data
-function getRoleChartData() {
-    const roleCounts = {
-        'citizen': 0,
-        'council-member': 0,
-        'delegate': 0,
-        'guardian': 0,
-        'treasurer': 0
-    };
-    
-    members.forEach(member => {
-        roleCounts[member.role] = (roleCounts[member.role] || 0) + 1;
-    });
-    
-    return {
-        labels: ['Citizens', 'Council Members', 'Delegates', 'Guardians', 'Treasurers'],
-        datasets: [{
-            data: Object.values(roleCounts),
-            backgroundColor: [
-                '#00FFFF',
-                '#8A2BE2',
-                '#FFAA00',
-                '#00FF88',
-                '#FF4444'
-            ],
-            borderColor: '#0A192F',
-            borderWidth: 2
-        }]
-    };
-}
-
-// Get Growth Chart Data
-function getGrowthChartData() {
-    // Generate growth data based on member join dates
-    const last6Months = Array.from({ length: 6 }, (_, i) => {
-        const date = new Date();
-        date.setMonth(date.getMonth() - (5 - i));
-        return date.toLocaleString('en', { month: 'short' });
-    });
-    
-    const monthlyCounts = last6Months.map(month => {
-        // In a real app, this would be calculated from actual data
-        return Math.floor(Math.random() * 20) + 5;
-    });
-    
-    // Calculate cumulative totals
-    const cumulativeCounts = [];
-    let total = 0;
-    monthlyCounts.forEach(count => {
-        total += count;
-        cumulativeCounts.push(total);
-    });
-    
-    return {
-        labels: last6Months,
-        datasets: [
-            {
-                label: 'New Members',
-                data: monthlyCounts,
-                borderColor: '#00FFFF',
-                backgroundColor: 'rgba(0, 255, 255, 0.1)',
-                tension: 0.4,
-                fill: true
-            },
-            {
-                label: 'Total Members',
-                data: cumulativeCounts,
-                borderColor: '#8A2BE2',
-                backgroundColor: 'transparent',
-                tension: 0.4,
-                borderDash: [5, 5]
-            }
-        ]
-    };
-}
-
-// Get Voting Chart Data
-function getVotingChartData() {
-    const roles = ['Citizens', 'Council Members', 'Delegates', 'Guardians', 'Treasurers'];
-    const avgVotingPower = roles.map(role => {
-        const roleKey = role.toLowerCase().replace(' ', '-');
-        const roleMembers = members.filter(m => m.role === roleKey);
-        if (roleMembers.length === 0) return 0;
-        return roleMembers.reduce((sum, m) => sum + parseInt(m.votingPower), 0) / roleMembers.length;
-    });
-    
-    return {
-        labels: roles,
-        datasets: [{
-            label: 'Average Voting Power',
-            data: avgVotingPower,
-            backgroundColor: '#8A2BE2',
-            borderColor: '#00FFFF',
-            borderWidth: 2
-        }]
-    };
+    // This will be enhanced with the new charts
+    updateDashboardStats();
 }
 
 // Update Dashboard Stats
@@ -1083,7 +886,7 @@ function updateDashboardStats() {
     document.getElementById('memberGrowth').textContent = growth + '%';
     
     // Simulate other stats
-    document.getElementById('activeProposals').textContent = '12';
+    document.getElementById('activeProposals').textContent = proposals.filter(p => p.status === 'active').length;
     document.getElementById('proposalGrowth').textContent = '8%';
     document.getElementById('treasuryValue').textContent = '₿ 124.5';
     document.getElementById('treasuryGrowth').textContent = '5.2%';
@@ -1173,986 +976,6 @@ function generateReports() {
         showLoading(false);
     }, 2000);
 }
-
-// Download ID Card
-function downloadIdCard() {
-    const memberSelect = document.getElementById('memberSelect');
-    const memberId = memberSelect.value;
-    
-    if (!memberId) {
-        showNotification('Please select a member first', 'error');
-        return;
-    }
-    
-    showLoading(true);
-    
-    setTimeout(() => {
-        showNotification('ID Card downloaded successfully!', 'success');
-        addActivity('ID Card generated for selected member', 'id-card');
-        showLoading(false);
-    }, 1500);
-}
-
-// Download Certificate
-function downloadCertificate() {
-    const memberSelect = document.getElementById('memberSelect');
-    const memberId = memberSelect.value;
-    
-    if (!memberId) {
-        showNotification('Please select a member first', 'error');
-        return;
-    }
-    
-    showLoading(true);
-    
-    setTimeout(() => {
-        showNotification('Certificate downloaded successfully!', 'success');
-        addActivity('Certificate generated for selected member', 'certificate');
-        showLoading(false);
-    }, 1500);
-}
-
-// Bulk Generate IDs
-function bulkGenerateIds() {
-    if (members.length === 0) {
-        showNotification('No members available for ID generation', 'error');
-        return;
-    }
-    
-    showLoading(true);
-    
-    setTimeout(() => {
-        showNotification(`ID Cards generated for ${members.length} members!`, 'success');
-        addActivity(`Bulk ID generation for ${members.length} members`, 'id-card-alt');
-        showLoading(false);
-    }, 3000);
-}
-
-// Refresh Preview
-function refreshPreview() {
-    const memberSelect = document.getElementById('memberSelect');
-    const memberId = memberSelect.value;
-    
-    if (memberId) {
-        const member = members.find(m => m.id === memberId);
-        if (member) {
-            updatePreviewsWithMember(member);
-            showNotification('Preview refreshed!', 'success');
-        }
-    } else {
-        updatePreviews();
-        showNotification('Preview refreshed!', 'success');
-    }
-}
-
-// View All Activity
-function viewAllActivity() {
-    showNotification('Opening full activity log...', 'info');
-    // In a real app, this would open a modal or navigate to full activity page
-}
-
-// Handle Global Search
-function handleGlobalSearch(e) {
-    const query = e.target.value.toLowerCase();
-    
-    if (query.length < 2) {
-        // Reset views if query is too short
-        return;
-    }
-    
-    // Search members
-    const memberResults = members.filter(member => 
-        member.fullName.toLowerCase().includes(query) ||
-        member.ulpId.toLowerCase().includes(query) ||
-        member.email.toLowerCase().includes(query) ||
-        member.villageCluster.toLowerCase().includes(query)
-    );
-    
-    // Search proposals (would be implemented with actual proposal data)
-    
-    // Show results (in a real app, this would display search results)
-    if (memberResults.length > 0) {
-        showNotification(`Found ${memberResults.length} members matching "${query}"`, 'info');
-    } else {
-        showNotification(`No results found for "${query}"`, 'warning');
-    }
-}
-
-// Handle Member Search
-function handleMemberSearch(e) {
-    const query = e.target.value.toLowerCase();
-    
-    if (query) {
-        // Filter table (in a real app, this would be more sophisticated)
-        const rows = document.querySelectorAll('#membersTableBody tr');
-        rows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(query) ? '' : 'none';
-        });
-    } else {
-        // Show all rows
-        const rows = document.querySelectorAll('#membersTableBody tr');
-        rows.forEach(row => {
-            row.style.display = '';
-        });
-    }
-}
-
-// Toggle Sidebar (Mobile)
-function toggleSidebar() {
-    document.querySelector('.sidebar').classList.toggle('active');
-}
-
-// Show Loading Spinner
-function showLoading(show) {
-    const spinner = document.getElementById('loadingSpinner');
-    if (show) {
-        spinner.classList.add('active');
-    } else {
-        spinner.classList.remove('active');
-    }
-}
-
-// Save to Local Storage
-function saveToLocalStorage() {
-    localStorage.setItem('daoMembers', JSON.stringify(members));
-}
-
-// Utility Functions
-function formatWalletAddress(address) {
-    if (!address) return '';
-    return address.substr(0, 6) + '...' + address.substr(-4);
-}
-
-function formatRole(role) {
-    const roleMap = {
-        'citizen': 'Citizen',
-        'council-member': 'Council Member',
-        'delegate': 'Delegate',
-        'guardian': 'Guardian',
-        'treasurer': 'Treasurer'
-    };
-    return roleMap[role] || role;
-}
-
-function formatStatus(status) {
-    const statusMap = {
-        'active': 'Active',
-        'pending': 'Pending',
-        'inactive': 'Inactive'
-    };
-    return statusMap[status] || status;
-}
-
-function formatDate(dateString) {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
-}
-
-function showNotification(message, type = 'info') {
-    // Remove existing notifications
-    document.querySelectorAll('.notification').forEach(notification => {
-        notification.remove();
-    });
-    
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = `notification ${type} fade-in`;
-    notification.innerHTML = `
-        <i class="fas fa-${getNotificationIcon(type)}"></i>
-        <span>${message}</span>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Remove after 4 seconds
-    setTimeout(() => {
-        notification.style.animation = 'slideOutRight 0.3s ease-in';
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
-        }, 300);
-    }, 4000);
-}
-
-function getNotificationIcon(type) {
-    const icons = {
-        success: 'check-circle',
-        error: 'exclamation-circle',
-        warning: 'exclamation-triangle',
-        info: 'info-circle'
-    };
-    return icons[type] || 'info-circle';
-}
-
-// Add CSS for notifications if not already in CSS
-if (!document.querySelector('#notification-styles')) {
-    const style = document.createElement('style');
-    style.id = 'notification-styles';
-    style.textContent = `
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-            z-index: 10000;
-            max-width: 300px;
-            animation: slideInRight 0.3s ease-out;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .notification.success {
-            background: var(--success);
-            color: var(--text-dark);
-        }
-        
-        .notification.error {
-            background: var(--danger);
-            color: var(--text-light);
-        }
-        
-        .notification.warning {
-            background: var(--warning);
-            color: var(--text-dark);
-        }
-        
-        .notification.info {
-            background: var(--accent-cyan);
-            color: var(--text-dark);
-        }
-        
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        @keyframes slideOutRight {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-    `;
-    document.head.appendChild(style);
-}
-
-// Enhanced JavaScript - Add to script.js
-
-// Global variables for new features
-let proposals = JSON.parse(localStorage.getItem('daoProposals')) || [];
-let transactions = JSON.parse(localStorage.getItem('daoTreasury')) || [];
-let fundingRequests = JSON.parse(localStorage.getItem('daoFunding')) || [];
-let comments = JSON.parse(localStorage.getItem('daoComments')) || {};
-let currentProposalId = null;
-
-// Initialize all new features
-function initializeEnhancedFeatures() {
-    initializeProposalCharts();
-    initializeTreasuryCharts();
-    populateProposalCreatorSelect();
-    loadProposalsTable();
-    loadTransactionsTable();
-    loadFundingTable();
-    setupProposalEventListeners();
-    setupTreasuryEventListeners();
-    setupSettingsEventListeners();
-    
-    // Set default dates for proposal form
-    const now = new Date();
-    const startDate = new Date(now.getTime() + 24 * 60 * 60 * 1000); // Tomorrow
-    const endDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000); // Next week
-    
-    document.getElementById('proposalStartDate').value = formatDateTimeLocal(startDate);
-    document.getElementById('proposalEndDate').value = formatDateTimeLocal(endDate);
-    
-    // Initialize quorum slider
-    initializeQuorumSlider();
-}
-
-// Setup new event listeners
-function setupProposalEventListeners() {
-    document.getElementById('createProposalBtn').addEventListener('click', showProposalForm);
-    document.getElementById('proposalDataForm').addEventListener('submit', handleProposalSubmit);
-    document.getElementById('cancelProposal').addEventListener('click', hideProposalForm);
-    document.getElementById('saveDraftBtn').addEventListener('click', saveProposalDraft);
-    document.getElementById('proposalFilter').addEventListener('change', filterProposals);
-    document.getElementById('categoryFilter').addEventListener('change', filterProposals);
-    document.getElementById('proposalSearch').addEventListener('input', searchProposals);
-    
-    // Voting buttons
-    document.getElementById('voteForBtn').addEventListener('click', () => castVote('yes'));
-    document.getElementById('voteAgainstBtn').addEventListener('click', () => castVote('no'));
-    document.getElementById('abstainVoteBtn').addEventListener('click', () => castVote('abstain'));
-    document.getElementById('delegateVoteBtn').addEventListener('click', delegateVote);
-    
-    // Comment system
-    document.getElementById('submitComment').addEventListener('click', submitComment);
-    
-    // Modal close
-    document.getElementById('closeProposalModal').addEventListener('click', closeProposalModal);
-}
-
-function setupTreasuryEventListeners() {
-    document.getElementById('addTransactionBtn').addEventListener('click', showTransactionForm);
-    document.getElementById('requestFundingBtn').addEventListener('click', showFundingForm);
-    document.getElementById('transactionType').addEventListener('change', filterTransactions);
-    document.getElementById('transactionCurrency').addEventListener('change', filterTransactions);
-    document.getElementById('fundingStatus').addEventListener('change', filterFunding);
-}
-
-function setupSettingsEventListeners() {
-    document.getElementById('saveBlockchainSettings').addEventListener('click', saveBlockchainSettings);
-    document.getElementById('saveSecuritySettings').addEventListener('click', saveSecuritySettings);
-    document.getElementById('downloadApp').addEventListener('click', downloadMobileApp);
-}
-
-// Initialize quorum slider
-function initializeQuorumSlider() {
-    const slider = document.getElementById('quorumSlider');
-    const value = document.getElementById('quorumValue');
-    
-    slider.addEventListener('input', function() {
-        value.textContent = this.value + '%';
-    });
-}
-
-// Format date for datetime-local input
-function formatDateTimeLocal(date) {
-    return date.toISOString().slice(0, 16);
-}
-
-// Populate proposal creator select
-function populateProposalCreatorSelect() {
-    const select = document.getElementById('proposalCreator');
-    select.innerHTML = '<option value="">Select Member</option>';
-    
-    members.forEach(member => {
-        if (member.status === 'active') {
-            const option = document.createElement('option');
-            option.value = member.id;
-            option.textContent = `${member.fullName} (${member.ulpId})`;
-            select.appendChild(option);
-        }
-    });
-}
-
-// Show/hide proposal form
-function showProposalForm() {
-    document.getElementById('proposalForm').style.display = 'block';
-    document.getElementById('proposalForm').scrollIntoView({ behavior: 'smooth' });
-}
-
-function hideProposalForm() {
-    document.getElementById('proposalForm').style.display = 'none';
-    document.getElementById('proposalDataForm').reset();
-}
-
-// Handle proposal submission
-function handleProposalSubmit(e) {
-    e.preventDefault();
-    
-    if (!validateProposalForm()) {
-        return;
-    }
-    
-    const formData = new FormData(e.target);
-    const proposalData = Object.fromEntries(formData);
-    
-    createProposal(proposalData);
-}
-
-function validateProposalForm() {
-    const title = document.getElementById('proposalTitle').value;
-    const category = document.getElementById('proposalCategory').value;
-    const creator = document.getElementById('proposalCreator').value;
-    const startDate = new Date(document.getElementById('proposalStartDate').value);
-    const endDate = new Date(document.getElementById('proposalEndDate').value);
-    const description = document.getElementById('proposalDescription').value;
-    
-    if (!title || !category || !creator || !description) {
-        showNotification('Please fill in all required fields', 'error');
-        return false;
-    }
-    
-    if (startDate >= endDate) {
-        showNotification('End date must be after start date', 'error');
-        return false;
-    }
-    
-    if (startDate < new Date()) {
-        showNotification('Start date must be in the future', 'error');
-        return false;
-    }
-    
-    return true;
-}
-
-function createProposal(data) {
-    showLoading(true);
-    
-    setTimeout(() => {
-        const newProposal = {
-            id: 'PROP-' + Date.now().toString(36).toUpperCase(),
-            ...data,
-            status: 'pending',
-            votes: {
-                yes: 0,
-                no: 0,
-                abstain: 0
-            },
-            voters: [],
-            quorum: parseInt(document.getElementById('quorumSlider').value),
-            createdAt: new Date().toISOString(),
-            totalVotingPower: calculateTotalVotingPower(),
-            currentQuorum: 0
-        };
-        
-        proposals.push(newProposal);
-        saveProposalsToStorage();
-        loadProposalsTable();
-        hideProposalForm();
-        addActivity('New proposal created: ' + data.proposalTitle, 'file-alt');
-        
-        showNotification('Proposal created successfully!', 'success');
-        showLoading(false);
-    }, 1000);
-}
-
-function calculateTotalVotingPower() {
-    return members.reduce((total, member) => {
-        return total + (member.status === 'active' ? parseInt(member.votingPower) : 0);
-    }, 0);
-}
-
-// Load proposals table
-function loadProposalsTable() {
-    const tbody = document.getElementById('proposalsTableBody');
-    tbody.innerHTML = '';
-    
-    if (proposals.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="11" class="empty-state">
-                    <i class="fas fa-vote-yea"></i>
-                    <p>No proposals found. Create your first proposal to get started.</p>
-                    <button class="btn-primary" onclick="showProposalForm()">
-                        <i class="fas fa-plus"></i> Create First Proposal
-                    </button>
-                </td>
-            </tr>
-        `;
-        return;
-    }
-    
-    proposals.forEach(proposal => {
-        const row = document.createElement('tr');
-        const yesPercent = proposal.totalVotingPower > 0 ? 
-            (proposal.votes.yes / proposal.totalVotingPower * 100).toFixed(1) : 0;
-        const noPercent = proposal.totalVotingPower > 0 ? 
-            (proposal.votes.no / proposal.totalVotingPower * 100).toFixed(1) : 0;
-        const abstainPercent = proposal.totalVotingPower > 0 ? 
-            (proposal.votes.abstain / proposal.totalVotingPower * 100).toFixed(1) : 0;
-        
-        row.innerHTML = `
-            <td>${proposal.id}</td>
-            <td>${proposal.proposalTitle}</td>
-            <td><span class="role-badge">${proposal.proposalCategory}</span></td>
-            <td>${getMemberName(proposal.proposalCreator)}</td>
-            <td>${formatDate(proposal.proposalStartDate)}</td>
-            <td>${formatDate(proposal.proposalEndDate)}</td>
-            <td><span class="status-badge status-${proposal.status}">${proposal.status}</span></td>
-            <td>${proposal.votes.yes + proposal.votes.no + proposal.votes.abstain}</td>
-            <td>${proposal.quorum}%</td>
-            <td>
-                <div class="vote-summary">
-                    <span style="color: var(--success)">${yesPercent}%</span> /
-                    <span style="color: var(--danger)">${noPercent}%</span>
-                </div>
-            </td>
-            <td>
-                <div class="action-buttons">
-                    <button class="btn-icon btn-view" onclick="viewProposal('${proposal.id}')" title="View Details">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="btn-icon btn-edit" onclick="editProposal('${proposal.id}')" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon btn-delete" onclick="deleteProposal('${proposal.id}')" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </td>
-        `;
-        
-        tbody.appendChild(row);
-    });
-}
-
-function getMemberName(memberId) {
-    const member = members.find(m => m.id === memberId);
-    return member ? member.fullName : 'Unknown Member';
-}
-
-// View proposal details
-function viewProposal(proposalId) {
-    const proposal = proposals.find(p => p.id === proposalId);
-    if (!proposal) return;
-    
-    currentProposalId = proposalId;
-    
-    // Populate modal
-    document.getElementById('modalProposalTitle').textContent = proposal.proposalTitle;
-    document.getElementById('modalCategory').textContent = proposal.proposalCategory;
-    document.getElementById('modalProposer').textContent = getMemberName(proposal.proposalCreator);
-    document.getElementById('modalStatus').textContent = proposal.status;
-    document.getElementById('modalQuorum').textContent = proposal.quorum + '%';
-    document.getElementById('modalDescription').textContent = proposal.proposalDescription;
-    document.getElementById('modalDetails').textContent = proposal.proposalDetails || 'No implementation details provided.';
-    
-    // Update voting results
-    updateVotingResults(proposal);
-    
-    // Load comments
-    loadComments(proposalId);
-    
-    // Show modal
-    document.getElementById('proposalModal').classList.add('active');
-}
-
-function updateVotingResults(proposal) {
-    const container = document.getElementById('modalVotingResults');
-    const totalVotes = proposal.votes.yes + proposal.votes.no + proposal.votes.abstain;
-    const yesPercent = proposal.totalVotingPower > 0 ? 
-        (proposal.votes.yes / proposal.totalVotingPower * 100).toFixed(1) : 0;
-    const noPercent = proposal.totalVotingPower > 0 ? 
-        (proposal.votes.no / proposal.totalVotingPower * 100).toFixed(1) : 0;
-    const abstainPercent = proposal.totalVotingPower > 0 ? 
-        (proposal.votes.abstain / proposal.totalVotingPower * 100).toFixed(1) : 0;
-    
-    container.innerHTML = `
-        <h4>Voting Results</h4>
-        <div class="vote-bar">
-            <div class="vote-option">
-                <div class="vote-label">
-                    <i class="fas fa-check-circle" style="color: var(--success)"></i>
-                    <span>Yes</span>
-                </div>
-                <span class="vote-percentage">${yesPercent}%</span>
-            </div>
-            <div class="vote-progress">
-                <div class="vote-fill yes" style="width: ${yesPercent}%"></div>
-            </div>
-        </div>
-        
-        <div class="vote-bar">
-            <div class="vote-option">
-                <div class="vote-label">
-                    <i class="fas fa-times-circle" style="color: var(--danger)"></i>
-                    <span>No</span>
-                </div>
-                <span class="vote-percentage">${noPercent}%</span>
-            </div>
-            <div class="vote-progress">
-                <div class="vote-fill no" style="width: ${noPercent}%"></div>
-            </div>
-        </div>
-        
-        <div class="vote-bar">
-            <div class="vote-option">
-                <div class="vote-label">
-                    <i class="fas fa-minus-circle" style="color: var(--warning)"></i>
-                    <span>Abstain</span>
-                </div>
-                <span class="vote-percentage">${abstainPercent}%</span>
-            </div>
-            <div class="vote-progress">
-                <div class="vote-fill abstain" style="width: ${abstainPercent}%"></div>
-            </div>
-        </div>
-        
-        <div class="vote-meta">
-            <p>Total Votes: ${totalVotes}</p>
-            <p>Quorum Progress: ${proposal.currentQuorum || 0}% / ${proposal.quorum}%</p>
-        </div>
-    `;
-}
-
-function closeProposalModal() {
-    document.getElementById('proposalModal').classList.remove('active');
-    currentProposalId = null;
-}
-
-// Voting system
-function castVote(voteType) {
-    if (!currentProposalId) return;
-    
-    const proposal = proposals.find(p => p.id === currentProposalId);
-    if (!proposal) return;
-    
-    // Check if voting is active
-    const now = new Date();
-    const startDate = new Date(proposal.proposalStartDate);
-    const endDate = new Date(proposal.proposalEndDate);
-    
-    if (now < startDate) {
-        showNotification('Voting has not started yet', 'error');
-        return;
-    }
-    
-    if (now > endDate) {
-        showNotification('Voting has ended', 'error');
-        return;
-    }
-    
-    // Simulate voting (in real app, this would use blockchain)
-    proposal.votes[voteType]++;
-    
-    // Update quorum progress
-    const totalVotes = proposal.votes.yes + proposal.votes.no + proposal.votes.abstain;
-    proposal.currentQuorum = Math.min((totalVotes / proposal.totalVotingPower * 100).toFixed(1), 100);
-    
-    saveProposalsToStorage();
-    updateVotingResults(proposal);
-    showNotification(`Vote cast: ${voteType}`, 'success');
-}
-
-function delegateVote() {
-    showNotification('Vote delegation feature coming soon!', 'info');
-}
-
-// Comment system
-function loadComments(proposalId) {
-    const commentsList = document.getElementById('commentsList');
-    const proposalComments = comments[proposalId] || [];
-    
-    commentsList.innerHTML = '';
-    
-    if (proposalComments.length === 0) {
-        commentsList.innerHTML = '<p class="empty-comments">No comments yet. Be the first to comment!</p>';
-        return;
-    }
-    
-    proposalComments.forEach(comment => {
-        const commentElement = document.createElement('div');
-        commentElement.className = 'comment';
-        commentElement.innerHTML = `
-            <div class="comment-header">
-                <span class="comment-author">${comment.author}</span>
-                <span class="comment-time">${formatDate(comment.timestamp)}</span>
-            </div>
-            <div class="comment-content">${comment.content}</div>
-        `;
-        commentsList.appendChild(commentElement);
-    });
-}
-
-function submitComment() {
-    if (!currentProposalId) return;
-    
-    const commentText = document.getElementById('commentText').value.trim();
-    if (!commentText) {
-        showNotification('Please enter a comment', 'error');
-        return;
-    }
-    
-    const comment = {
-        id: 'COMMENT-' + Date.now(),
-        author: 'Current User', // In real app, get from auth system
-        content: commentText,
-        timestamp: new Date().toISOString()
-    };
-    
-    if (!comments[currentProposalId]) {
-        comments[currentProposalId] = [];
-    }
-    
-    comments[currentProposalId].push(comment);
-    saveCommentsToStorage();
-    loadComments(currentProposalId);
-    
-    document.getElementById('commentText').value = '';
-    showNotification('Comment posted successfully!', 'success');
-}
-
-// Treasury Management
-function loadTransactionsTable() {
-    const tbody = document.getElementById('transactionsTableBody');
-    tbody.innerHTML = '';
-    
-    if (transactions.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="8" class="empty-state">
-                    <i class="fas fa-exchange-alt"></i>
-                    <p>No transactions found.</p>
-                </td>
-            </tr>
-        `;
-        return;
-    }
-    
-    transactions.forEach(transaction => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${formatDate(transaction.date)}</td>
-            <td>${transaction.description}</td>
-            <td><span class="type-badge type-${transaction.type}">${transaction.type}</span></td>
-            <td>${transaction.amount}</td>
-            <td>${transaction.currency}</td>
-            <td>${transaction.counterparty || 'N/A'}</td>
-            <td><span class="status-badge status-${transaction.status}">${transaction.status}</span></td>
-            <td>
-                <div class="action-buttons">
-                    <button class="btn-icon btn-view" title="View Details">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </div>
-            </td>
-        `;
-        tbody.appendChild(row);
-    });
-}
-
-function loadFundingTable() {
-    const tbody = document.getElementById('fundingTableBody');
-    tbody.innerHTML = '';
-    
-    if (fundingRequests.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="8" class="empty-state">
-                    <i class="fas fa-hand-holding-usd"></i>
-                    <p>No funding requests found.</p>
-                </td>
-            </tr>
-        `;
-        return;
-    }
-    
-    fundingRequests.forEach(request => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${request.id}</td>
-            <td>${request.project}</td>
-            <td>${getMemberName(request.requester)}</td>
-            <td>${request.amount}</td>
-            <td>${request.currency}</td>
-            <td><span class="status-badge status-${request.status}">${request.status}</span></td>
-            <td>${formatDate(request.date)}</td>
-            <td>
-                <div class="action-buttons">
-                    <button class="btn-icon btn-view" title="View Details">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    ${request.status === 'pending' ? `
-                        <button class="btn-icon btn-edit" title="Approve">
-                            <i class="fas fa-check"></i>
-                        </button>
-                        <button class="btn-icon btn-delete" title="Reject">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    ` : ''}
-                </div>
-            </td>
-        `;
-        tbody.appendChild(row);
-    });
-}
-
-// Enhanced Charts Initialization
-function initializeProposalCharts() {
-    // Role Distribution Chart
-    const roleCtx = document.getElementById('roleChart').getContext('2d');
-    new Chart(roleCtx, {
-        type: 'doughnut',
-        data: getEnhancedRoleChartData(),
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
-    
-    // Growth Timeline Chart
-    const growthCtx = document.getElementById('growthTimelineChart').getContext('2d');
-    new Chart(growthCtx, {
-        type: 'line',
-        data: getGrowthTimelineData(),
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-    
-    // Initialize other charts...
-}
-
-function initializeTreasuryCharts() {
-    const treasuryCtx = document.getElementById('treasuryFlowChart').getContext('2d');
-    new Chart(treasuryCtx, {
-        type: 'line',
-        data: getTreasuryFlowData(),
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-}
-
-// PDF Generation Functions
-function downloadIdCard() {
-    showLoading(true);
-    
-    // Use html2pdf library for PDF generation
-    const element = document.getElementById('idCardPreview');
-    
-    setTimeout(() => {
-        showNotification('ID Card PDF downloaded successfully!', 'success');
-        addActivity('ID Card generated for selected member', 'id-card');
-        showLoading(false);
-    }, 2000);
-}
-
-function downloadCertificate() {
-    showLoading(true);
-    
-    const element = document.getElementById('certificatePreview');
-    
-    setTimeout(() => {
-        showNotification('Certificate PDF downloaded successfully!', 'success');
-        addActivity('Certificate generated for selected member', 'certificate');
-        showLoading(false);
-    }, 2000);
-}
-
-function generateMemberDirectory() {
-    showLoading(true);
-    
-    setTimeout(() => {
-        showNotification('Member Directory PDF generated successfully!', 'success');
-        addActivity('Member directory report generated', 'file-pdf');
-        showLoading(false);
-    }, 3000);
-}
-
-function generateGovernanceReport() {
-    showLoading(true);
-    
-    setTimeout(() => {
-        showNotification('Governance Report PDF generated successfully!', 'success');
-        addActivity('Governance report generated', 'chart-pie');
-        showLoading(false);
-    }, 3000);
-}
-
-// Settings Functions
-function saveBlockchainSettings() {
-    const network = document.getElementById('blockchainNetwork').value;
-    const contractAddress = document.getElementById('contractAddress').value;
-    const rpcUrl = document.getElementById('rpcUrl').value;
-    
-    // Save settings to localStorage
-    const settings = {
-        network,
-        contractAddress,
-        rpcUrl
-    };
-    
-    localStorage.setItem('blockchainSettings', JSON.stringify(settings));
-    showNotification('Blockchain settings saved successfully!', 'success');
-}
-
-function saveSecuritySettings() {
-    const twoFactorAuth = document.getElementById('twoFactorAuth').checked;
-    const sessionTimeout = document.getElementById('sessionTimeout').value;
-    const ipWhitelist = document.getElementById('ipWhitelist').value;
-    
-    const securitySettings = {
-        twoFactorAuth,
-        sessionTimeout,
-        ipWhitelist: ipWhitelist.split('\n').filter(ip => ip.trim())
-    };
-    
-    localStorage.setItem('securitySettings', JSON.stringify(securitySettings));
-    showNotification('Security settings saved successfully!', 'success');
-}
-
-function downloadMobileApp() {
-    showNotification('Mobile app download link sent to your email!', 'info');
-}
-
-// Utility functions for enhanced features
-function saveProposalsToStorage() {
-    localStorage.setItem('daoProposals', JSON.stringify(proposals));
-}
-
-function saveCommentsToStorage() {
-    localStorage.setItem('daoComments', JSON.stringify(comments));
-}
-
-function downloadChart(chartId) {
-    showNotification(`Chart ${chartId} exported successfully!`, 'success');
-}
-
-// Filter and search functions
-function filterProposals() {
-    const statusFilter = document.getElementById('proposalFilter').value;
-    const categoryFilter = document.getElementById('categoryFilter').value;
-    
-    // Implementation for filtering proposals
-    loadProposalsTable(); // Reload with filters applied
-}
-
-function filterTransactions() {
-    const typeFilter = document.getElementById('transactionType').value;
-    const currencyFilter = document.getElementById('transactionCurrency').value;
-    
-    // Implementation for filtering transactions
-    loadTransactionsTable();
-}
-
-function filterFunding() {
-    const statusFilter = document.getElementById('fundingStatus').value;
-    
-    // Implementation for filtering funding requests
-    loadFundingTable();
-}
-
-function searchProposals() {
-    const query = document.getElementById('proposalSearch').value.toLowerCase();
-    
-    // Implementation for searching proposals
-    loadProposalsTable();
-}
-
-// Update the existing initializeDashboard function to include new features
-const originalInitializeDashboard = initializeDashboard;
-initializeDashboard = function() {
-    originalInitializeDashboard();
-    initializeEnhancedFeatures();
-};
-
 
 // Enhanced PDF Generation Functions
 function generatePDF(element, filename, options = {}) {
@@ -2332,3 +1155,72 @@ function generateCertificateHTML(member) {
     `;
 }
 
+// Bulk Generate IDs
+function bulkGenerateIds() {
+    if (members.length === 0) {
+        showNotification('No members available for ID generation', 'error');
+        return;
+    }
+    
+    showLoading(true);
+    
+    setTimeout(() => {
+        showNotification(`ID Cards generated for ${members.length} members!`, 'success');
+        addActivity(`Bulk ID generation for ${members.length} members`, 'id-card-alt');
+        showLoading(false);
+    }, 3000);
+}
+
+// Refresh Preview
+function refreshPreview() {
+    const memberSelect = document.getElementById('memberSelect');
+    const memberId = memberSelect.value;
+    
+    if (memberId) {
+        const member = members.find(m => m.id === memberId);
+        if (member) {
+            updatePreviewsWithMember(member);
+            showNotification('Preview refreshed!', 'success');
+        }
+    } else {
+        updatePreviews();
+        showNotification('Preview refreshed!', 'success');
+    }
+}
+
+// View All Activity
+function viewAllActivity() {
+    showNotification('Opening full activity log...', 'info');
+}
+
+// Handle Global Search
+function handleGlobalSearch(e) {
+    const query = e.target.value.toLowerCase();
+    
+    if (query.length < 2) {
+        return;
+    }
+    
+    // Search members
+    const memberResults = members.filter(member => 
+        member.fullName.toLowerCase().includes(query) ||
+        member.ulpId.toLowerCase().includes(query) ||
+        member.email.toLowerCase().includes(query) ||
+        member.villageCluster.toLowerCase().includes(query)
+    );
+    
+    if (memberResults.length > 0) {
+        showNotification(`Found ${memberResults.length} members matching "${query}"`, 'info');
+    } else {
+        showNotification(`No results found for "${query}"`, 'warning');
+    }
+}
+
+// Handle Member Search
+function handleMemberSearch(e) {
+    const query = e.target.value.toLowerCase();
+    
+    if (query) {
+        const rows = document.querySelectorAll('#membersTableBody tr');
+        rows
+        
