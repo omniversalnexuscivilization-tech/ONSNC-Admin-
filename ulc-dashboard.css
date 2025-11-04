@@ -1,10 +1,17 @@
+/* ===================================
+   UNETS Certificate System - Styles
+   Version: 3.0.0
+   =================================== */
+
 :root {
-    --primary-blue: #1a3c6e;
-    --secondary-blue: #2a5ca0;
-    --accent-gold: #d4af37;
-    --light-gold: #f4e4a9;
-    --light-bg: #f8f9fa;
-    --dark-text: #2c3e50;
+    --primary-blue: #1e3a8a;
+    --primary-gold: #d4af37;
+    --accent-cyan: #00d4ff;
+    --purple: #667eea;
+    --dark-purple: #764ba2;
+    --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --gradient-gold: linear-gradient(135deg, #d4af37 0%, #f4e5a1 100%);
 }
 
 * {
@@ -15,630 +22,755 @@
 
 body {
     font-family: 'Montserrat', sans-serif;
-    background-color: #f5f7fa;
-    color: #333;
-    line-height: 1.6;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
     overflow-x: hidden;
 }
 
-/* Top Navigation Styles */
+/* =================== TOP NAVBAR =================== */
 .top-navbar {
-    background-color: white;
-    padding: 10px 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    padding: 0.75rem 0;
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 999;
 }
 
-.top-navbar .navbar-brand {
-    font-weight: 600;
+.navbar-brand {
+    font-size: 1.4rem;
+    font-weight: 700;
     color: var(--primary-blue);
-    font-size: 1.3rem;
     display: flex;
     align-items: center;
+}
+
+.hamburger-btn {
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.hamburger-btn:hover {
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.hamburger-line {
+    width: 24px;
+    height: 3px;
+    background: var(--purple);
+    border-radius: 3px;
+    transition: all 0.3s;
+}
+
+.hamburger-btn.active .hamburger-line:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger-btn.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-btn.active .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
 }
 
 .user-menu {
     display: flex;
     align-items: center;
-    margin-left: auto;
+    gap: 0.75rem;
 }
 
 .user-avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: var(--secondary-blue);
-    color: white;
+    background: var(--gradient-1);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
-    margin-right: 10px;
+    color: white;
+    font-weight: 700;
+    font-size: 0.9rem;
 }
 
 .user-info {
-    display: flex;
-    flex-direction: column;
+    text-align: left;
 }
 
 .user-name {
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    color: var(--primary-blue);
 }
 
 .user-role {
-    font-size: 0.8rem;
-    color: #6c757d;
+    font-size: 0.7rem;
+    color: #666;
 }
 
-.navbar-toggler {
-    border: none;
-    padding: 5px 10px;
-    background: none;
-    cursor: pointer;
-}
-
-.navbar-toggler:focus {
-    box-shadow: none;
-    outline: none;
-}
-
-.navbar-toggler-icon {
-    display: block;
-    width: 24px;
-    height: 2px;
-    background-color: #333;
-    position: relative;
-}
-
-.navbar-toggler-icon::before,
-.navbar-toggler-icon::after {
-    content: '';
-    position: absolute;
-    width: 24px;
-    height: 2px;
-    background-color: #333;
-    left: 0;
-}
-
-.navbar-toggler-icon::before {
-    top: -6px;
-}
-
-.navbar-toggler-icon::after {
-    top: 6px;
-}
-
-/* Mobile Navigation Styles */
-.mobile-nav {
+/* =================== SIDEBAR =================== */
+.sidebar {
     position: fixed;
     top: 0;
-    left: -100%;
+    left: -280px;
     width: 280px;
     height: 100vh;
-    background-color: white;
-    z-index: 1100;
-    overflow-y: auto;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    background: white;
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.1);
     transition: left 0.3s ease;
+    z-index: 1001;
+    overflow-y: auto;
 }
 
-.mobile-nav.active {
+.sidebar.active {
     left: 0;
 }
 
-.mobile-nav-header {
-    padding: 20px 15px;
-    border-bottom: 1px solid #eaeaea;
-    background: linear-gradient(180deg, var(--primary-blue), var(--secondary-blue));
+.sidebar-header {
+    background: var(--gradient-1);
     color: white;
-    position: relative;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.mobile-nav-header h3 {
-    font-size: 1.3rem;
+.sidebar-header h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
     margin: 0;
-    font-weight: 600;
 }
 
-.mobile-nav-header p {
-    font-size: 0.8rem;
-    opacity: 0.9;
-    margin: 5px 0 0;
-}
-
-.close-menu {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
+.close-sidebar {
+    background: rgba(255, 255, 255, 0.2);
     border: none;
     color: white;
-    font-size: 1.2rem;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
     cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
 }
 
-.mobile-nav-menu {
-    padding: 15px 0;
+.close-sidebar:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
 }
 
-.mobile-nav-menu ul {
+.sidebar-menu {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.mobile-nav-menu li {
-    margin-bottom: 5px;
-}
-
-.mobile-nav-menu a {
+.sidebar-menu li a {
     display: flex;
     align-items: center;
-    padding: 15px 20px;
-    color: var(--dark-text);
+    gap: 12px;
+    padding: 1rem 1.5rem;
+    color: #333;
     text-decoration: none;
+    border-bottom: 1px solid #f0f0f0;
     transition: all 0.3s;
-    border-left: 3px solid transparent;
+    font-size: 0.95rem;
 }
 
-.mobile-nav-menu a:hover, .mobile-nav-menu a.active {
-    background-color: #f8f9fa;
-    color: var(--primary-blue);
-    border-left: 3px solid var(--accent-gold);
+.sidebar-menu li a:hover,
+.sidebar-menu li a.active {
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), transparent);
+    color: var(--purple);
+    border-left: 3px solid var(--purple);
 }
 
-.mobile-nav-menu i {
-    margin-right: 10px;
-    font-size: 1.1rem;
+.sidebar-menu li a i {
     width: 20px;
     text-align: center;
-    color: var(--primary-blue);
 }
 
-/* Overlay for mobile menu */
-.mobile-overlay {
+.sidebar-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 1050;
-    display: none;
-}
-
-.mobile-overlay.active {
-    display: block;
-}
-
-/* Sidebar Styles */
-.sidebar {
-    background: linear-gradient(180deg, var(--primary-blue), var(--secondary-blue));
-    color: white;
-    min-height: calc(100vh - 60px);
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
     transition: all 0.3s;
-    box-shadow: 3px 0 10px rgba(0,0,0,0.1);
-    padding: 0;
+    z-index: 1000;
 }
 
-.sidebar-header {
-    padding: 20px 15px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    text-align: center;
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
 }
 
-.sidebar-header h3 {
-    font-size: 1.3rem;
-    margin: 0;
-    font-weight: 600;
+/* =================== MAIN CONTENT =================== */
+.main-wrapper {
+    padding: 2rem 1rem;
 }
 
-.sidebar-header p {
-    font-size: 0.8rem;
-    opacity: 0.8;
-    margin: 5px 0 0;
+.stats-row {
+    margin-bottom: 2rem;
 }
 
-.sidebar-menu {
-    padding: 15px 0;
-}
-
-.sidebar-menu ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.sidebar-menu li {
-    margin-bottom: 5px;
-}
-
-.sidebar-menu a {
-    display: flex;
-    align-items: center;
-    padding: 12px 20px;
-    color: rgba(255,255,255,0.9);
-    text-decoration: none;
-    transition: all 0.3s;
-    border-left: 3px solid transparent;
-}
-
-.sidebar-menu a:hover, .sidebar-menu a.active {
-    background-color: rgba(255,255,255,0.1);
-    color: white;
-    border-left: 3px solid var(--accent-gold);
-}
-
-.sidebar-menu i {
-    margin-right: 10px;
-    font-size: 1.1rem;
-    width: 20px;
-    text-align: center;
-}
-
-/* Main Content Styles */
-.main-content {
-    padding: 20px;
-    min-height: calc(100vh - 60px);
-}
-
-/* Card Styles */
-.card {
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    margin-bottom: 25px;
-}
-
-.card-header {
-    background-color: white;
-    border-bottom: 1px solid #eaeaea;
-    padding: 15px 20px;
-    border-radius: 10px 10px 0 0 !important;
-    font-weight: 600;
-}
-
-/* Stats Cards */
 .stats-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
     text-align: center;
-    transition: transform 0.3s;
-    height: 100%;
 }
 
 .stats-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
 .stats-card i {
-    font-size: 2rem;
-    color: var(--secondary-blue);
-    margin-bottom: 15px;
+    font-size: 2.5rem;
+    color: var(--purple);
+    margin-bottom: 1rem;
 }
 
 .stats-card h3 {
-    font-size: 1.8rem;
-    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
     color: var(--primary-blue);
+    margin: 0;
 }
 
 .stats-card p {
-    color: #6c757d;
-    margin: 5px 0 0;
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0.5rem 0 0 0;
 }
 
-/* Certificate A4 Styles */
-.certificate-a4 {
-    width: 100%;
-    max-width: 794px; /* A4 width in pixels at 96dpi */
-    height: 1123px; /* A4 height in pixels at 96dpi */
-    margin: 0 auto;
+/* =================== CARDS =================== */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     background: white;
-    position: relative;
 }
 
-.certificate-border {
-    width: 100%;
-    height: 100%;
-    border: 15px double transparent;
-    border-image: linear-gradient(45deg, var(--primary-blue), var(--accent-gold)) 1;
-    padding: 20px;
-    position: relative;
-}
-
-.certificate-content {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-}
-
-.certificate-header {
+.card-header {
+    background: var(--gradient-1);
+    color: white;
+    border-radius: 12px 12px 0 0 !important;
+    padding: 1rem 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #eaeaea;
 }
 
-.header-left, .header-right {
-    flex: 0 0 auto;
+.card-header h5 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.form-card .card-body {
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #333;
+    margin-bottom: 0.4rem;
+}
+
+.form-control {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.form-control:focus {
+    border-color: var(--purple);
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+}
+
+.btn {
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background: var(--gradient-1);
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-gold {
+    background: var(--gradient-gold);
+    color: #333;
+    border: none;
+}
+
+.btn-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+}
+
+/* =================== CERTIFICATE PREVIEW =================== */
+.certificate-container {
+    width: 100%;
+    overflow-x: auto;
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+}
+
+.certificate-a4 {
+    width: 794px;
+    height: 1123px;
+    background: white;
+    position: relative;
+    transform-origin: top center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive scaling */
+@media (max-width: 1400px) {
+    .certificate-a4 {
+        transform: scale(0.85);
+    }
+}
+
+@media (max-width: 1200px) {
+    .certificate-a4 {
+        transform: scale(0.7);
+    }
+}
+
+@media (max-width: 992px) {
+    .certificate-a4 {
+        transform: scale(0.6);
+    }
+}
+
+@media (max-width: 768px) {
+    .certificate-a4 {
+        transform: scale(0.45);
+    }
+}
+
+.certificate-border {
+    position: absolute;
+    inset: 15px;
+    border: 3px solid;
+    border-image: linear-gradient(45deg, #d4af37, #667eea, #764ba2, #d4af37) 1;
+    box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.15);
+}
+
+.certificate-border::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    pointer-events: none;
+}
+
+.certificate-content {
+    padding: 30px 35px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* =================== CERTIFICATE HEADER =================== */
+.cert-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.header-left .globe-icon {
+    font-size: 2.2rem;
+    animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .header-center {
     flex: 1;
     text-align: center;
-    margin: 0 15px;
+    padding: 0 15px;
 }
 
-.logo {
-    width: 60px;
-    height: 60px;
-    background: var(--navy);
-    color: var(--gold);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    font-weight: bold;
-    font-size: 0.7rem;
-    text-align: center;
+.header-center h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
     line-height: 1.2;
 }
 
-.certificate-header h1 {
-    font-family: 'Cinzel', serif;
-    font-size: 1.2rem;
-    color: var(--primary-blue);
-    margin: 0 0 5px;
-    line-height: 1.3;
-}
-
-.certificate-header h2 {
-    font-size: 0.8rem;
-    color: var(--secondary-blue);
-    font-weight: 500;
-    margin: 0 0 5px;
-    line-height: 1.3;
-}
-
-.certificate-header h3 {
-    font-size: 0.7rem;
+.header-center h2 {
+    font-size: 10px;
     color: #666;
-    font-weight: 400;
-    margin: 0;
+    font-weight: 500;
+    margin-bottom: 4px;
     line-height: 1.3;
 }
 
-.certificate-body {
-    flex: 1;
+.header-center h3 {
+    font-size: 8px;
+    color: #999;
+    font-weight: 400;
+    line-height: 1.3;
+}
+
+.header-right {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    text-align: center;
-    padding: 10px 0;
+    align-items: flex-end;
+    gap: 8px;
 }
 
-.certificate-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5rem;
-    color: var(--primary-blue);
-    margin-bottom: 8px;
+.ulc-serial {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+}
+
+.qr-blockchain {
+    width: 70px;
+    height: 70px;
+    background: var(--gradient-2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(245, 87, 108, 0.3);
+    position: relative;
+}
+
+.blockchain-chip {
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #00d4ff;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 7px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* =================== CERTIFICATE BODY =================== */
+.cert-title {
+    font-family: 'Cinzel', serif;
+    font-size: 26px;
+    font-weight: 700;
+    text-align: center;
+    background: var(--gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 12px 0 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
 .badge-name {
-    font-size: 0.9rem;
-    color: var(--accent-gold);
+    text-align: center;
+    font-size: 11px;
+    color: #667eea;
     font-weight: 600;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
-.learner-info {
-    margin-bottom: 20px;
+.learner-section {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.04), rgba(118, 75, 162, 0.04));
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 15px;
+    border: 2px solid rgba(212, 175, 55, 0.2);
+}
+
+.learner-section > p {
+    font-size: 11px;
+    color: #666;
+    margin: 0 0 10px 0;
 }
 
 .learner-name {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--primary-blue);
-    margin: 10px 0;
-    padding: 8px 0;
-    border-top: 1px solid #eaeaea;
-    border-bottom: 1px solid #eaeaea;
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    color: #1e3a8a;
+    margin: 8px 0;
+    line-height: 1.2;
 }
 
 .institution {
-    font-size: 0.9rem;
-    color: #555;
-    margin-bottom: 5px;
+    text-align: center;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.learner-ids {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.id-item {
+    background: white;
+    padding: 6px;
+    border-radius: 6px;
+    border-left: 2px solid #667eea;
+    font-size: 9px;
+}
+
+.id-label {
+    font-weight: 600;
+    color: #667eea;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.id-value {
+    font-family: 'Orbitron', monospace;
+    color: #333;
+    font-size: 8px;
+    word-break: break-all;
+}
+
+.parent-info {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 10px;
+    color: #667eea;
+}
+
+.parent-info strong {
+    font-weight: 600;
+}
+
+/* =================== PROGRAM SECTION =================== */
+.program-section {
+    text-align: center;
+    margin: 15px 0;
+}
+
+.program-section > p {
+    font-size: 11px;
+    color: #666;
+    margin: 0 0 8px 0;
 }
 
 .program-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--primary-blue);
-    margin: 15px 0;
-    font-style: italic;
+    font-size: 16px;
+    font-weight: 700;
+    color: #764ba2;
+    margin: 8px 0;
+    line-height: 1.3;
 }
 
 .cycle-info {
-    font-size: 0.8rem;
+    font-size: 9px;
     color: #666;
-    margin-bottom: 20px;
+    font-style: italic;
+    margin: 8px 0 0 0;
 }
 
+/* =================== DOMAINS GRID =================== */
 .domains-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin: 20px 0;
-    text-align: left;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 18px 0;
 }
 
 .domain {
-    padding: 5px 0;
-    border-bottom: 1px dotted #ddd;
-    font-size: 0.8rem;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.08));
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    text-align: center;
 }
 
 .domain-name {
     font-weight: 600;
-    color: var(--primary-blue);
+    color: #667eea;
+    font-size: 9px;
+    display: block;
+    margin-bottom: 4px;
+    line-height: 1.2;
 }
 
-.certificate-footer {
+.domain-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: #d4af37;
+}
+
+/* =================== CERTIFICATE FOOTER =================== */
+.cert-footer {
     margin-top: auto;
     padding-top: 15px;
-    border-top: 1px solid #eee;
-}
-
-.issuance-details {
+    border-top: 2px solid rgba(212, 175, 55, 0.25);
     display: flex;
     justify-content: space-between;
-    margin-bottom: 15px;
-    font-size: 0.75rem;
+    align-items: flex-end;
 }
 
-.issuance-left, .issuance-right {
+.footer-left {
     flex: 1;
 }
 
-.issuance-right {
-    text-align: right;
+.footer-left > p {
+    font-size: 9px;
+    color: #666;
+    margin: 0 0 8px 0;
+}
+
+.footer-left strong {
+    color: #667eea;
+    font-weight: 600;
+}
+
+.signature-section {
+    margin-top: 10px;
 }
 
 .signature {
-    font-family: 'Dancing Script', cursive;
-    font-size: 1rem;
-    color: var(--primary-blue);
-    margin-top: 5px;
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    color: #1e3a8a;
+    font-weight: 700;
+    font-style: italic;
+    margin-bottom: 4px;
 }
 
-/* Form Styles */
-.form-label {
-    font-weight: 500;
-    color: var(--dark-text);
+.verified-by {
+    font-size: 8px;
+    color: #666;
 }
 
-.btn-primary {
-    background-color: var(--primary-blue);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
+.verified-by strong {
+    font-weight: 600;
+    color: #667eea;
 }
 
-.btn-gold {
-    background-color: var(--accent-gold);
+.footer-right {
+    text-align: right;
+}
+
+.authority-badge {
+    background: var(--gradient-1);
     color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 11px;
+    box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+    margin-bottom: 8px;
 }
 
-.btn-gold:hover {
-    background-color: #c19d2e;
-    color: white;
+.credential-info {
+    font-size: 8px;
+    color: #666;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 1200px) {
+.credential-info p {
+    margin: 2px 0;
+}
+
+.credential-info strong {
+    font-weight: 600;
+    color: #333;
+}
+
+.verification-url {
+    font-family: 'Orbitron', monospace;
+    color: #00d4ff;
+    font-size: 7px;
+    word-break: break-all;
+}
+
+/* =================== PRINT STYLES =================== */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    .certificate-a4, .certificate-a4 * {
+        visibility: visible;
+    }
     .certificate-a4 {
-        max-width: 100%;
-        height: auto;
-        aspect-ratio: 1 / 1.414; /* A4 aspect ratio */
+        position: fixed;
+        left: 0;
+        top: 0;
+        transform: none !important;
+        width: 210mm;
+        height: 297mm;
+        box-shadow: none;
     }
 }
 
-@media (max-width: 768px) {
-    .main-content {
-        padding: 15px;
-    }
-    
-    .certificate-a4 {
-        height: auto;
-    }
-    
-    .certificate-border {
-        padding: 15px;
-    }
-    
-    .certificate-content {
-        padding: 5px;
-    }
-    
-    .certificate-header {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .header-center {
-        margin: 10px 0;
-    }
-    
-    .certificate-header h1 {
-        font-size: 1rem;
-    }
-    
-    .certificate-header h2 {
-        font-size: 0.7rem;
-    }
-    
-    .certificate-header h3 {
-        font-size: 0.65rem;
-    }
-    
-    .certificate-title {
-        font-size: 1.2rem;
-    }
-    
-    .learner-name {
-        font-size: 1.2rem;
-    }
-    
-    .program-title {
-        font-size: 1rem;
-    }
-    
-    .domains-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .issuance-details {
-        flex-direction: column;
-    }
-    
-    .issuance-right {
-        text-align: left;
-        margin-top: 10px;
-    }
-    
-    .user-info {
-        display: none;
-    }
-}
-
-@media (max-width: 576px) {
-    .top-navbar .navbar-brand span {
-        display: none;
+/* =================== RESPONSIVE =================== */
+@media (max-width: 992px) {
+    .main-wrapper {
+        padding: 1rem 0.5rem;
     }
     
     .stats-card {
-        padding: 15px;
+        padding: 1rem;
+    }
+    
+    .stats-card i {
+        font-size: 2rem;
     }
     
     .stats-card h3 {
         font-size: 1.5rem;
-    }
-    
-    .certificate-border {
-        padding: 10px;
-    }
-    
-    .certificate-header h1 {
-        font-size: 0.9rem;
     }
 }
