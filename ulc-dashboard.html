@@ -6,27 +6,27 @@
     <title>UNETS Admin Dashboard | ONSNC 3.0</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display:wght@700&family=Montserrat:wght@400;500;600&family=Dancing+Script:wght@500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="ulc-dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display:wght@700&family=Montserrat:wght@400;500;600&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="ulc-dashboard-styles.css">
 </head>
 <body>
     <!-- Top Navigation -->
     <nav class="navbar navbar-expand-lg top-navbar">
         <div class="container-fluid">
+            <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            
             <a class="navbar-brand" href="#">
                 <i class="fas fa-graduation-cap me-2"></i>
                 <span>UNETS Admin</span>
             </a>
             
-            <!-- Mobile Menu Toggle -->
-            <button class="navbar-toggler" type="button" id="mobileMenuToggler">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <!-- User Menu -->
             <div class="user-menu">
                 <div class="user-avatar">AD</div>
-                <div class="user-info">
+                <div class="user-info d-none d-md-block">
                     <div class="user-name">Admin User</div>
                     <div class="user-role">Super Administrator</div>
                 </div>
@@ -34,174 +34,199 @@
         </div>
     </nav>
 
-    <!-- Mobile Navigation Menu -->
-    <div class="mobile-nav" id="mobileNav">
-        <div class="mobile-nav-header">
-            <h3>UNETS Admin</h3>
-            <p>Navigation Menu</p>
-            <button class="close-menu" id="closeMenuBtn">
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>Navigation</h3>
+            <button class="close-sidebar" id="closeSidebar" aria-label="Close menu">
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        <div class="mobile-nav-menu">
-            <ul>
-                <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                <li><a href="#"><i class="fas fa-user-graduate"></i> Learners</a></li>
-                <li><a href="#"><i class="fas fa-certificate"></i> Certificates</a></li>
-                <li><a href="#"><i class="fas fa-passport"></i> Life Passports</a></li>
-                <li><a href="#"><i class="fas fa-chart-line"></i> Growth Reports</a></li>
-                <li><a href="#"><i class="fas fa-clipboard-check"></i> Assessments</a></li>
-                <li><a href="#"><i class="fas fa-cogs"></i> System Settings</a></li>
-                <li><a href="#"><i class="fas fa-database"></i> Data Management</a></li>
-                <li><a href="#"><i class="fas fa-users-cog"></i> Admin Users</a></li>
-            </ul>
-        </div>
+        <ul class="sidebar-menu">
+            <li><a href="#dashboard" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#learners"><i class="fas fa-user-graduate"></i> Learners</a></li>
+            <li><a href="#certificates"><i class="fas fa-certificate"></i> Certificates</a></li>
+            <li><a href="#passports"><i class="fas fa-passport"></i> Life Passports</a></li>
+            <li><a href="#reports"><i class="fas fa-chart-line"></i> Growth Reports</a></li>
+            <li><a href="#assessments"><i class="fas fa-clipboard-check"></i> Assessments</a></li>
+            <li><a href="#settings"><i class="fas fa-cogs"></i> System Settings</a></li>
+            <li><a href="#data"><i class="fas fa-database"></i> Data Management</a></li>
+            <li><a href="#admin"><i class="fas fa-users-cog"></i> Admin Users</a></li>
+        </ul>
     </div>
-            
-            <!-- Main Content Area -->
-            <div class="col-lg-10 col-md-9 main-content">
-                <!-- Dashboard Stats -->
-                <div class="row mb-4">
-                    <div class="col-xl-3 col-md-6 mb-3">
-                        <div class="card stats-card">
-                            <div class="card-body">
-                                <i class="fas fa-user-graduate"></i>
-                                <h3>1,248</h3>
-                                <p>Total Learners</p>
-                            </div>
-                        </div>
+
+    <!-- Overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <div class="main-wrapper">
+        <div class="container-fluid">
+            <!-- Dashboard Stats -->
+            <div class="row stats-row">
+                <div class="col-xl-3 col-md-6 col-sm-6 mb-3">
+                    <div class="stats-card">
+                        <i class="fas fa-user-graduate"></i>
+                        <h3>1,248</h3>
+                        <p>Total Learners</p>
                     </div>
-                    <div class="col-xl-3 col-md-6 mb-3">
-                        <div class="card stats-card">
-                            <div class="card-body">
-                                <i class="fas fa-certificate"></i>
-                                <h3>856</h3>
-                                <p>Certificates Issued</p>
-                            </div>
-                        </div>
+                </div>
+                <div class="col-xl-3 col-md-6 col-sm-6 mb-3">
+                    <div class="stats-card">
+                        <i class="fas fa-certificate"></i>
+                        <h3>856</h3>
+                        <p>Certificates Issued</p>
                     </div>
-                    <div class="col-xl-3 col-md-6 mb-3">
-                        <div class="card stats-card">
-                            <div class="card-body">
-                                <i class="fas fa-chart-line"></i>
-                                <h3>94%</h3>
-                                <p>Completion Rate</p>
-                            </div>
-                        </div>
+                </div>
+                <div class="col-xl-3 col-md-6 col-sm-6 mb-3">
+                    <div class="stats-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>94%</h3>
+                        <p>Completion Rate</p>
                     </div>
-                    <div class="col-xl-3 col-md-6 mb-3">
-                        <div class="card stats-card">
-                            <div class="card-body">
-                                <i class="fas fa-tasks"></i>
-                                <h3>42</h3>
-                                <p>Pending Actions</p>
-                            </div>
+                </div>
+                <div class="col-xl-3 col-md-6 col-sm-6 mb-3">
+                    <div class="stats-card">
+                        <i class="fas fa-tasks"></i>
+                        <h3>42</h3>
+                        <p>Pending Actions</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certificate Generator -->
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="card form-card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Certificate Data Entry</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="certificateForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Learner Name *</label>
+                                    <input type="text" class="form-control" id="learnerName" placeholder="Enter full name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Parent's Name *</label>
+                                    <input type="text" class="form-control" id="parentName" placeholder="Enter parent's name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Place Name *</label>
+                                    <input type="text" class="form-control" id="placeName" placeholder="City, State" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Institution/Hub *</label>
+                                    <input type="text" class="form-control" id="institution" placeholder="Institution name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Program Title *</label>
+                                    <input type="text" class="form-control" id="programTitle" placeholder="Program name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Badge Name *</label>
+                                    <input type="text" class="form-control" id="badgeName" placeholder="Badge name" required>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">ULP ID</label>
+                                        <input type="text" class="form-control" id="ulpId" readonly>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">ULC ID</label>
+                                        <input type="text" class="form-control" id="ulcId" readonly>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">ULCI ID</label>
+                                        <input type="text" class="form-control" id="ulciId" readonly>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">ULCI Score</label>
+                                        <input type="text" class="form-control" id="ulciScore" placeholder="e.g., 95%">
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Index Level</label>
+                                    <select class="form-control" id="indexLevel">
+                                        <option value="Level 1">Level 1</option>
+                                        <option value="Level 2">Level 2</option>
+                                        <option value="Level 3">Level 3</option>
+                                        <option value="Level 4">Level 4</option>
+                                        <option value="Level 5">Level 5</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Knowledge Score</label>
+                                        <input type="text" class="form-control" id="knowledgeScore" placeholder="95%">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Creativity</label>
+                                        <input type="text" class="form-control" id="creativity" placeholder="Advanced">
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Collaboration</label>
+                                        <input type="text" class="form-control" id="collaboration" placeholder="88%">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Leadership</label>
+                                        <input type="text" class="form-control" id="leadership" placeholder="High Impact">
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Date Issued</label>
+                                        <input type="date" class="form-control" id="dateIssued">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Verified By</label>
+                                        <input type="text" class="form-control" id="verifiedBy" placeholder="Mentor name">
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="button" class="btn btn-primary" id="previewBtn">
+                                        <i class="fas fa-eye me-2"></i>Update Preview
+                                    </button>
+                                    <button type="button" class="btn btn-gold" id="generatePdfBtn">
+                                        <i class="fas fa-file-pdf me-2"></i>Generate PDF Certificate
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" id="resetBtn">
+                                        <i class="fas fa-redo me-2"></i>Reset Form
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Certificate Generator Section -->
-                <div class="row">
-                    <div class="col-lg-5 mb-4">
-                        <div class="card h-100">
-                            <div class="card-header">
-                                <h5 class="mb-0">Certificate Data Entry</h5>
-                            </div>
-                            <div class="card-body">
-                                <form id="certificateForm">
-                                    <div class="mb-3">
-                                        <label for="learnerName" class="form-label">Learner Name</label>
-                                        <input type="text" class="form-control" id="learnerName" placeholder="Enter full name">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="communityInstitution" class="form-label">Community / Institution / Learning Hub</label>
-                                        <input type="text" class="form-control" id="communityInstitution" placeholder="Enter institution name">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="programTitle" class="form-label">Program Title</label>
-                                        <input type="text" class="form-control" id="programTitle" placeholder="Enter program title">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="badgeName" class="form-label">Metamorphic Badge Name</label>
-                                        <input type="text" class="form-control" id="badgeName" placeholder="Enter badge name">
-                                    </div>
-                                    
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="knowledgeScore" class="form-label">Knowledge & Inquiry Score</label>
-                                            <input type="text" class="form-control" id="knowledgeScore" placeholder="e.g., 95%">
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="creativeSkill" class="form-label">Creativity & Innovation</label>
-                                            <input type="text" class="form-control" id="creativeSkill" placeholder="e.g., Advanced">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="collaborationScore" class="form-label">Collaboration & Compassion</label>
-                                            <input type="text" class="form-control" id="collaborationScore" placeholder="e.g., 88%">
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="communityImpact" class="form-label">Leadership & Contribution</label>
-                                            <input type="text" class="form-control" id="communityImpact" placeholder="e.g., High Impact">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="dateIssued" class="form-label">Date Issued</label>
-                                            <input type="date" class="form-control" id="dateIssued">
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="mentorName" class="form-label">Verified By</label>
-                                            <input type="text" class="form-control" id="mentorName" placeholder="Mentor or DAO Council">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <label for="certificateId" class="form-label">Certificate ID</label>
-                                            <input type="text" class="form-control" id="certificateId" placeholder="Auto-generated">
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label for="llpId" class="form-label">Lifelong Learning Passport ID</label>
-                                            <input type="text" class="form-control" id="llpId" placeholder="LLP ID">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="d-grid gap-2">
-                                        <button type="button" class="btn btn-primary" id="previewCertificateBtn">
-                                            <i class="fas fa-eye me-2"></i>Preview Certificate
-                                        </button>
-                                        <button type="button" class="btn btn-gold" id="generateCertificateBtn">
-                                            <i class="fas fa-file-pdf me-2"></i>Generate PDF Certificate
-                                        </button>
-                                        <button type="button" class="btn btn-outline-secondary" id="saveTemplateBtn">
-                                            <i class="fas fa-save me-2"></i>Save as Template
-                                        </button>
-                                    </div>
-                                </form>
+                <div class="col-lg-8">
+                    <div class="card preview-card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-certificate me-2"></i>Certificate Preview</h5>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="autoPreview" checked>
+                                <label class="form-check-label" for="autoPreview">Auto Preview</label>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="col-lg-7">
-                        <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">Certificate Preview</h5>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="livePreviewToggle" checked>
-                                    <label class="form-check-label" for="livePreviewToggle">Live Preview</label>
-                                </div>
-                            </div>
-                            <div class="card-body p-2">
+                        <div class="card-body p-2">
+                            <div class="certificate-container">
                                 <div class="certificate-a4" id="certificatePreview">
                                     <div class="certificate-border">
                                         <div class="certificate-content">
-                                            <div class="certificate-header">
+                                            <!-- Header -->
+                                            <div class="cert-header">
                                                 <div class="header-left">
-                                                    <div class="logo">UNETS</div>
+                                                    <div class="globe-icon">🌎</div>
                                                 </div>
                                                 <div class="header-center">
                                                     <h1>UNIVERSAL NEXUS EDUCATION TRANSFORMATION SYSTEM</h1>
@@ -209,55 +234,101 @@
                                                     <h3>Education 5.0 · Lifelong Learning · Scientific Humanism · Global Citizenship</h3>
                                                 </div>
                                                 <div class="header-right">
-                                                    <div class="logo">ONSNC 3.0</div>
+                                                    <div class="ulc-serial" id="ulcSerial">ULC-2025-XXXX</div>
+                                                    <div class="qr-blockchain" id="qrContainer">
+                                                        <div class="blockchain-chip">QUANTUM BLOCKCHAIN</div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             
-                                            <div class="certificate-body">
-                                                <div class="certificate-title">CERTIFICATE OF ACHIEVEMENT</div>
-                                                <div class="badge-name" id="previewBadgeName">Metamorphic Badge: [Insert Badge Name]</div>
+                                            <!-- Title -->
+                                            <div class="cert-title">CERTIFICATE OF ACHIEVEMENT</div>
+                                            <div class="badge-name" id="previewBadge">Metamorphic Badge: [Badge Name]</div>
+                                            
+                                            <!-- Learner Section -->
+                                            <div class="learner-section">
+                                                <p class="text-center">This certifies that</p>
+                                                <div class="learner-name" id="previewLearnerName">[Learner Name]</div>
+                                                <p class="institution" id="previewInstitution">of [Institution]</p>
                                                 
-                                                <div class="learner-info">
-                                                    <p>This certifies that</p>
-                                                    <div class="learner-name" id="previewLearnerName">[Learner Name]</div>
-                                                    <p class="institution" id="previewInstitution">of [Community / Institution / Learning Hub]</p>
+                                                <div class="learner-ids">
+                                                    <div class="id-item">
+                                                        <span class="id-label">ULP ID:</span>
+                                                        <span class="id-value" id="previewUlpId">ULP-2025-XXXX</span>
+                                                    </div>
+                                                    <div class="id-item">
+                                                        <span class="id-label">ULC ID:</span>
+                                                        <span class="id-value" id="previewUlcId">ULC-2025-XXXX</span>
+                                                    </div>
+                                                    <div class="id-item">
+                                                        <span class="id-label">ULCI ID:</span>
+                                                        <span class="id-value" id="previewUlciId">ULCI-2025-XXXX</span>
+                                                    </div>
+                                                    <div class="id-item">
+                                                        <span class="id-label">ULCI Score:</span>
+                                                        <span class="id-value" id="previewUlciScore">95%</span>
+                                                    </div>
+                                                    <div class="id-item">
+                                                        <span class="id-label">Index Level:</span>
+                                                        <span class="id-value" id="previewIndexLevel">Level 1</span>
+                                                    </div>
+                                                    <div class="id-item">
+                                                        <span class="id-label">Place:</span>
+                                                        <span class="id-value" id="previewPlace">City, State</span>
+                                                    </div>
                                                 </div>
                                                 
+                                                <div class="parent-info">
+                                                    <strong>Parent's Name:</strong> <span id="previewParent">[Parent's Name]</span>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Program Section -->
+                                            <div class="program-section">
                                                 <p>has successfully completed the program</p>
-                                                <div class="program-title" id="previewProgramTitle">"[Program Title]"</div>
-                                                <p class="cycle-info">under the Education 5.0 — Discovery → Integration → Creation → Contribution Cycle.</p>
-                                                
-                                                <div class="domains-grid">
-                                                    <div class="domain">
-                                                        <span class="domain-name">Knowledge & Inquiry:</span> 
-                                                        <span id="previewKnowledgeScore">[KnowledgeScore]</span>
-                                                    </div>
-                                                    <div class="domain">
-                                                        <span class="domain-name">Creativity & Innovation:</span> 
-                                                        <span id="previewCreativeSkill">[CreativeSkill]</span>
-                                                    </div>
-                                                    <div class="domain">
-                                                        <span class="domain-name">Collaboration & Compassion:</span> 
-                                                        <span id="previewCollaborationScore">[CollaborationScore]</span>
-                                                    </div>
-                                                    <div class="domain">
-                                                        <span class="domain-name">Leadership & Contribution:</span> 
-                                                        <span id="previewCommunityImpact">[CommunityImpact]</span>
-                                                    </div>
+                                                <div class="program-title" id="previewProgram">"[Program Title]"</div>
+                                                <p class="cycle-info">under the Education 5.0 — Discovery → Integration → Creation → Contribution Cycle</p>
+                                            </div>
+                                            
+                                            <!-- Domains Grid -->
+                                            <div class="domains-grid">
+                                                <div class="domain">
+                                                    <span class="domain-name">Knowledge & Inquiry</span>
+                                                    <div class="domain-value" id="previewKnowledge">95%</div>
+                                                </div>
+                                                <div class="domain">
+                                                    <span class="domain-name">Creativity & Innovation</span>
+                                                    <div class="domain-value" id="previewCreativity">Advanced</div>
+                                                </div>
+                                                <div class="domain">
+                                                    <span class="domain-name">Collaboration & Compassion</span>
+                                                    <div class="domain-value" id="previewCollaboration">88%</div>
+                                                </div>
+                                                <div class="domain">
+                                                    <span class="domain-name">Leadership & Contribution</span>
+                                                    <div class="domain-value" id="previewLeadership">High Impact</div>
                                                 </div>
                                             </div>
                                             
-                                            <div class="certificate-footer">
-                                                <div class="issuance-details">
-                                                    <div class="issuance-left">
-                                                        <p>Issued on: <span id="previewDateIssued">October 31, 2025</span></p>
-                                                        <p>Verified by: <span id="previewMentorName">[Mentor_Name / DAO Council]</span></p>
+                                            <!-- Footer -->
+                                            <div class="cert-footer">
+                                                <div class="footer-left">
+                                                    <p><strong>Issued on:</strong> <span id="previewDate">October 31, 2025</span></p>
+                                                    <div class="signature-section">
                                                         <div class="signature" id="previewSignature">Digital Signature</div>
+                                                        <div class="verified-by">
+                                                            <strong>Verified by:</strong> <span id="previewVerifiedBy">[Mentor Name]</span>
+                                                        </div>
                                                     </div>
-                                                    <div class="issuance-right">
-                                                        <p>Credential ID: <span id="previewCredentialId">UNETS-CERT-2025-220048947</span></p>
-                                                        <p>Verification: <span id="previewVerificationUrl">https://verify.education.onsnc.org/UNETS-CERT-2025-220048947</span></p>
-                                                        <p>www.education.onsnc.org</p>
+                                                </div>
+                                                <div class="footer-right">
+                                                    <div class="authority-badge">
+                                                        Authorized by UIENC
+                                                    </div>
+                                                    <div class="credential-info">
+                                                        <p><strong>Credential ID:</strong> <span id="previewCredentialId">UNETS-CERT-2025-220048947</span></p>
+                                                        <p class="verification-url" id="previewVerificationUrl">verify.education.onsnc.org</p>
+                                                        <p style="margin-top: 5px;"><strong>www.education.onsnc.org</strong></p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -272,12 +343,11 @@
         </div>
     </div>
 
-    <!-- External Libraries -->
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
-    <!-- Our JavaScript -->
-    <script src="ulc-dashboard.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="ulc-dashboard-script.js"></script>
 </body>
 </html>
