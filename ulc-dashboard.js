@@ -1,12 +1,8 @@
 /**
  * UNETS Certificate System - JavaScript
- * Version: 3.0.0
- * Optimized for Performance and Fast Loading
+ * Version: 3.0.1 - Fixed Hamburger Menu & Auto-Submit
+ * Optimized for Performance
  */
-
-// =================== GLOBAL VARIABLES ===================
-let qrCodeInstance = null;
-let autoPreviewEnabled = true;
 
 // =================== INITIALIZATION ===================
 document.addEventListener('DOMContentLoaded', function() {
@@ -14,21 +10,15 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeApp() {
-    // Initialize all event listeners
     setupNavigation();
-    setupFormListeners();
-    setupAutoPreview();
-    
-    // Generate initial IDs
+    setupFormSubmit();
     generateUniqueIds();
-    
-    // Set today's date
     setTodayDate();
-    
-    // Initial preview update
     updatePreview();
     
-    console.log('UNETS Certificate System Initialized - v3.0.0');
+    console.log('✓ UNETS Certificate System v3.0.1 Ready');
+    console.log('✓ Hamburger Menu: Working on Right Side');
+    console.log('✓ Auto-Submit: Enabled');
 }
 
 // =================== NAVIGATION & SIDEBAR ===================
@@ -39,14 +29,15 @@ function setupNavigation() {
     const closeSidebar = document.getElementById('closeSidebar');
     
     // Open sidebar
-    hamburgerBtn.addEventListener('click', function() {
+    hamburgerBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
         sidebar.classList.add('active');
         sidebarOverlay.classList.add('active');
         this.classList.add('active');
         document.body.style.overflow = 'hidden';
     });
     
-    // Close sidebar
+    // Close sidebar function
     function closeNav() {
         sidebar.classList.remove('active');
         sidebarOverlay.classList.remove('active');
@@ -54,7 +45,10 @@ function setupNavigation() {
         document.body.style.overflow = '';
     }
     
+    // Close button
     closeSidebar.addEventListener('click', closeNav);
+    
+    // Click overlay to close
     sidebarOverlay.addEventListener('click', closeNav);
     
     // Close on ESC key
@@ -72,25 +66,40 @@ function setupNavigation() {
             menuItems.forEach(i => i.classList.remove('active'));
             this.classList.add('active');
             closeNav();
+            showNotification(`Navigating to ${this.textContent.trim()}`, 'info');
         });
     });
 }
 
-// =================== FORM LISTENERS ===================
-function setupFormListeners() {
-    // Preview button
-    document.getElementById('previewBtn').addEventListener('click', function() {
-        updatePreview();
-        showNotification('Preview updated!', 'success');
-    });
+// =================== FORM SUBMIT & AUTO-GENERATE ===================
+function setupFormSubmit() {
+    const form = document.getElementById('certificateForm');
     
-    // Generate PDF button
-    document.getElementById('generatePdfBtn').addEventListener('click', generatePDF);
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (validateForm()) {
+            // Save data
+            saveFormData();
+            
+            // Update preview
+            updatePreview();
+            
+            // Show success message
+            showNotification('Certificate data saved! Generating PDF...', 'success');
+            
+            // Auto-generate PDF after 1 second
+            setTimeout(() => {
+                generatePDF();
+            }, 1000);
+        }
+    });
     
     // Reset button
     document.getElementById('resetBtn').addEventListener('click', function() {
         if (confirm('Are you sure you want to reset the form?')) {
-            document.getElementById('certificateForm').reset();
+            form.reset();
             generateUniqueIds();
             setTodayDate();
             updatePreview();
@@ -98,37 +107,27 @@ function setupFormListeners() {
         }
     });
     
-    // Auto preview toggle
-    document.getElementById('autoPreview').addEventListener('change', function() {
-        autoPreviewEnabled = this.checked;
-        if (autoPreviewEnabled) {
-            showNotification('Auto preview enabled', 'info');
-        } else {
-            showNotification('Auto preview disabled', 'info');
+    // Download PDF button
+    document.getElementById('downloadPdfBtn').addEventListener('click', function() {
+        if (validateForm()) {
+            updatePreview();
+            setTimeout(() => {
+                generatePDF();
+            }, 500);
         }
     });
-}
-
-// =================== AUTO PREVIEW ===================
-function setupAutoPreview() {
-    const formInputs = document.querySelectorAll('#certificateForm input, #certificateForm select');
     
+    // Auto-update preview on input
+    const formInputs = form.querySelectorAll('input, select');
     formInputs.forEach(input => {
-        // Debounce for better performance
-        let timeout;
-        input.addEventListener('input', function() {
-            if (autoPreviewEnabled) {
-                clearTimeout(timeout);
-                timeout = setTimeout(updatePreview, 300);
-            }
-        });
+        input.addEventListener('input', debounce(updatePreview, 500));
     });
 }
 
 // =================== ID GENERATION ===================
 function generateUniqueIds() {
     const timestamp = Date.now().toString(36).toUpperCase();
-    const random = () => Math.random().toString(36).substring(2, 7).toUpperCase();
+    const random = () => Math.random().toString(36).substring(2, 6).toUpperCase();
     
     document.getElementById('ulpId').value = `ULP-2025-${timestamp}${random()}`;
     document.getElementById('ulcId').value = `ULC-2025-${timestamp}${random()}`;
@@ -142,7 +141,6 @@ function setTodayDate() {
 
 // =================== PREVIEW UPDATE ===================
 function updatePreview() {
-    // Get form values with defaults
     const data = {
         learnerName: document.getElementById('learnerName').value || '[Learner Name]',
         parentName: document.getElementById('parentName').value || '[Parent\'s Name]',
@@ -163,7 +161,7 @@ function updatePreview() {
         verifiedBy: document.getElementById('verifiedBy').value || '[Mentor Name]'
     };
     
-    // Update preview elements
+    // Update all preview elements
     document.getElementById('ulcSerial').textContent = data.ulcId;
     document.getElementById('previewBadge').textContent = `Metamorphic Badge: ${data.badgeName}`;
     document.getElementById('previewLearnerName').textContent = data.learnerName;
@@ -187,47 +185,49 @@ function updatePreview() {
     // Format date
     if (data.dateIssued) {
         const date = new Date(data.dateIssued);
-        const formattedDate = date.toLocaleDateString('en-US', { 
+        const formatted = date.toLocaleDateString('en-US', { 
             year: 'numeric', 
             month: 'long', 
             day: 'numeric' 
         });
-        document.getElementById('previewDate').textContent = formattedDate;
+        document.getElementById('previewDate').textContent = formatted;
     }
     
     document.getElementById('previewVerifiedBy').textContent = data.verifiedBy;
     
-    // Generate credential ID
-    const credentialId = `UNETS-CERT-2025-${Date.now().toString().slice(-9)}`;
-    document.getElementById('previewCredentialId').textContent = credentialId;
-    document.getElementById('previewVerificationUrl').textContent = `verify.education.onsnc.org/${credentialId}`;
+    // Credential ID
+    const credId = `UNETS-CERT-2025-${Date.now().toString().slice(-9)}`;
+    document.getElementById('previewCredentialId').textContent = credId;
+    document.getElementById('previewVerificationUrl').textContent = `verify.education.onsnc.org/${credId}`;
     
     // Generate QR Code
     generateQRCode(data.ulcId);
 }
 
-// =================== QR CODE GENERATION ===================
+// =================== QR CODE ===================
 function generateQRCode(ulcId) {
-    const qrContainer = document.getElementById('qrContainer');
+    const container = document.getElementById('qrContainer');
     
-    // Remove existing QR code
-    const existingQR = qrContainer.querySelector('.qr-code-canvas');
-    if (existingQR) {
-        existingQR.remove();
+    // Remove existing QR
+    const existing = container.querySelector('.qr-canvas');
+    if (existing) {
+        existing.remove();
     }
     
-    // Create new QR code container
+    // Create QR container
     const qrDiv = document.createElement('div');
-    qrDiv.className = 'qr-code-canvas';
-    qrDiv.style.position = 'absolute';
-    qrDiv.style.top = '5px';
-    qrDiv.style.left = '5px';
-    qrDiv.style.width = '60px';
-    qrDiv.style.height = '60px';
+    qrDiv.className = 'qr-canvas';
+    qrDiv.style.cssText = `
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        width: 60px;
+        height: 60px;
+    `;
     
-    qrContainer.insertBefore(qrDiv, qrContainer.firstChild);
+    container.insertBefore(qrDiv, container.firstChild);
     
-    // Generate QR code
+    // Generate QR
     try {
         new QRCode(qrDiv, {
             text: `https://verify.education.onsnc.org/${ulcId}`,
@@ -238,8 +238,8 @@ function generateQRCode(ulcId) {
             correctLevel: QRCode.CorrectLevel.H
         });
     } catch (error) {
-        console.error('QR Code generation error:', error);
-        qrDiv.innerHTML = '<div style="color: white; font-size: 10px; text-align: center; line-height: 60px;">QR</div>';
+        console.error('QR Code error:', error);
+        qrDiv.innerHTML = '<div style="color:white;font-size:10px;text-align:center;line-height:60px;">QR</div>';
     }
 }
 
@@ -247,41 +247,38 @@ function generateQRCode(ulcId) {
 async function generatePDF() {
     const learnerName = document.getElementById('learnerName').value;
     
-    // Validation
     if (!learnerName) {
-        showNotification('Please enter learner name to generate certificate.', 'error');
+        showNotification('Please enter learner name', 'error');
         return;
     }
     
-    const btn = document.getElementById('generatePdfBtn');
+    const btn = document.getElementById('downloadPdfBtn');
+    const originalText = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating PDF...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Generating...';
     
     try {
-        // Update preview one last time
+        // Update preview
         updatePreview();
         
-        // Wait for QR code to render
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Wait for QR code
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        showNotification('Capturing certificate...', 'info');
         
         const certificate = document.getElementById('certificatePreview');
         
-        // Show loading notification
-        showNotification('Capturing certificate...', 'info');
-        
-        // Capture certificate as image with high quality
+        // Capture with html2canvas
         const canvas = await html2canvas(certificate, {
             scale: 2,
             useCORS: true,
             backgroundColor: '#ffffff',
             logging: false,
             width: 794,
-            height: 1123,
-            windowWidth: 794,
-            windowHeight: 1123
+            height: 1123
         });
         
-        showNotification('Creating PDF...', 'info');
+        showNotification('Creating PDF file...', 'info');
         
         const imgData = canvas.toDataURL('image/png', 1.0);
         
@@ -294,71 +291,77 @@ async function generatePDF() {
             compress: true
         });
         
-        // Add image to PDF (A4: 210mm x 297mm)
+        // Add image centered
         pdf.addImage(imgData, 'PNG', 0, 0, 210, 297, '', 'FAST');
         
-        // Generate filename
+        // Filename
+        const sanitized = learnerName.replace(/[^a-zA-Z0-9]/g, '_');
         const ulcId = document.getElementById('ulcId').value;
-        const sanitizedName = learnerName.replace(/[^a-zA-Z0-9]/g, '_');
-        const filename = `ULC_Certificate_${sanitizedName}_${ulcId}.pdf`;
+        const filename = `ULC_Certificate_${sanitized}_${ulcId}.pdf`;
         
-        // Save PDF
+        // Save
         pdf.save(filename);
         
-        showNotification('PDF generated successfully!', 'success');
+        showNotification('PDF downloaded successfully! ✓', 'success');
         
     } catch (error) {
-        console.error('PDF generation error:', error);
+        console.error('PDF Error:', error);
         showNotification('Error generating PDF. Please try again.', 'error');
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-file-pdf me-2"></i>Generate PDF Certificate';
+        btn.innerHTML = originalText;
     }
 }
 
-// =================== NOTIFICATION SYSTEM ===================
-function showNotification(message, type = 'info') {
-    // Remove existing notification
-    const existing = document.querySelector('.notification-toast');
-    if (existing) {
-        existing.remove();
+// =================== FORM VALIDATION ===================
+function validateForm() {
+    const required = ['learnerName', 'parentName', 'placeName', 'institution', 'programTitle', 'badgeName'];
+    const missing = [];
+    
+    required.forEach(id => {
+        const field = document.getElementById(id);
+        if (!field.value.trim()) {
+            field.style.borderColor = '#F44336';
+            missing.push(field.previousElementSibling.textContent.replace('*', '').trim());
+        } else {
+            field.style.borderColor = '';
+        }
+    });
+    
+    if (missing.length > 0) {
+        showNotification(`Please fill: ${missing.join(', ')}`, 'error');
+        return false;
     }
     
-    // Create notification
+    return true;
+}
+
+// =================== LOCAL STORAGE ===================
+function saveFormData() {
+    const data = {};
+    document.querySelectorAll('#certificateForm input, #certificateForm select').forEach(input => {
+        data[input.id] = input.value;
+    });
+    
+    localStorage.setItem('ulc_certificate_data', JSON.stringify(data));
+    localStorage.setItem('ulc_last_saved', new Date().toISOString());
+}
+
+// =================== NOTIFICATION ===================
+function showNotification(message, type = 'info') {
+    const existing = document.querySelector('.notification-toast');
+    if (existing) existing.remove();
+    
     const notification = document.createElement('div');
     notification.className = `notification-toast notification-${type}`;
     
     const icons = {
-        success: '<i class="fas fa-check-circle"></i>',
-        error: '<i class="fas fa-exclamation-circle"></i>',
-        info: '<i class="fas fa-info-circle"></i>',
-        warning: '<i class="fas fa-exclamation-triangle"></i>'
+        success: '✓',
+        error: '✕',
+        info: 'ℹ',
+        warning: '⚠'
     };
     
-    notification.innerHTML = `
-        ${icons[type]}
-        <span>${message}</span>
-    `;
-    
-    // Styling
-    notification.style.cssText = `
-        position: fixed;
-        top: 80px;
-        right: 20px;
-        background: white;
-        padding: 12px 20px;
-        border-radius: 8px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-        z-index: 9999;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 0.9rem;
-        animation: slideInRight 0.3s ease-out;
-        min-width: 250px;
-    `;
-    
-    // Type-specific colors
     const colors = {
         success: '#4CAF50',
         error: '#F44336',
@@ -366,10 +369,161 @@ function showNotification(message, type = 'info') {
         warning: '#FF9800'
     };
     
-    notification.style.borderLeft = `4px solid ${colors[type]}`;
-    notification.querySelector('i').style.color = colors[type];
+    notification.innerHTML = `
+        <span style="font-size: 1.2rem; margin-right: 10px;">${icons[type]}</span>
+        <span>${message}</span>
+    `;
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        font-size: 0.9rem;
+        animation: slideIn 0.3s ease-out;
+        border-left: 4px solid ${colors[type]};
+        min-width: 250px;
+        max-width: 400px;
+    `;
     
     document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Add animation styles
+if (!document.getElementById('notification-styles')) {
+    const style = document.createElement('style');
+    style.id = 'notification-styles';
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(400px); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// =================== UTILITIES ===================
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
+// =================== KEYBOARD SHORTCUTS ===================
+document.addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + S to submit
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        document.getElementById('certificateForm').dispatchEvent(new Event('submit'));
+    }
+    
+    // Ctrl/Cmd + P to download PDF
+    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+        e.preventDefault();
+        document.getElementById('downloadPdfBtn').click();
+    }
+});
+
+// =================== PERFORMANCE ===================
+window.addEventListener('load', function() {
+    if (window.performance) {
+        const loadTime = window.performance.timing.loadEventEnd - window.performance.timing.navigationStart;
+        console.log(`⚡ Page Load Time: ${loadTime}ms`);
+    }
+});
+
+console.log('✓ System Ready');
+console.log('✓ Keyboard Shortcuts: Ctrl+S (Save), Ctrl+P (PDF)');
+console.log('✓ Hamburger Menu: Right Side - Working');
+        border-radius: 8px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        font-size: 0.9rem;
+        animation: slideIn 0.3s ease-out;
+        border-left: 4px solid ${colors[type]};
+        min-width: 250px;
+        max-width: 400px;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Add animation styles
+if (!document.getElementById('notification-styles')) {
+    const style = document.createElement('style');
+    style.id = 'notification-styles';
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(400px); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// =================== UTILITIES ===================
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+}
+
+// =================== KEYBOARD SHORTCUTS ===================
+document.addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + S to submit
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        document.getElementById('certificateForm').dispatchEvent(new Event('submit'));
+    }
+    
+    // Ctrl/Cmd + P to download PDF
+    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+        e.preventDefault();
+        document.getElementById('downloadPdfBtn').click();
+    }
+});
+
+// =================== PERFORMANCE ===================
+window.addEventListener('load', function() {
+    if (window.performance) {
+        const loadTime = window.performance.timing.loadEventEnd - window.performance.timing.navigationStart;
+        console.log(`⚡ Page Load Time: ${loadTime}ms`);
+    }
+});
+
+console.log('✓ System Ready');
+console.log('✓ Keyboard Shortcuts: Ctrl+S (Save), Ctrl+P (PDF)');
+console.log('✓ Hamburger Menu: Right Side - Working');appendChild(notification);
     
     // Auto remove
     setTimeout(() => {
