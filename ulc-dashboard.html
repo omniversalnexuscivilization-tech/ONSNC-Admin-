@@ -240,148 +240,150 @@
             padding: 20px;
         }
         
-        /* SINGLE A4 CERTIFICATE - 210mm x 297mm */
+        /* A4 Certificate - 210mm x 297mm */
         .certificate-a4 {
             width: 210mm;
             height: 297mm;
             background: linear-gradient(135deg, #fffbf0 0%, #fff9e6 100%);
             position: relative;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            padding: 12mm;
+            padding: 10mm;
         }
         
         .cert-border {
-            border: 4mm double var(--gold);
+            border: 3mm double var(--gold);
             height: 100%;
             padding: 8mm;
             display: flex;
             flex-direction: column;
         }
         
-        /* Header Section */
+        /* Header with 3 columns */
         .cert-header {
-            text-align: center;
-            border-bottom: 2px solid var(--gold);
-            padding-bottom: 5mm;
-            margin-bottom: 5mm;
-            position: relative;
+            display: grid;
+            grid-template-columns: 15mm 1fr 25mm;
+            gap: 3mm;
+            align-items: center;
+            border-bottom: 1.5px solid var(--gold);
+            padding-bottom: 4mm;
+            margin-bottom: 4mm;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .cert-logo {
-            font-size: 28pt;
-            margin-bottom: 2mm;
+            font-size: 20pt;
         }
         
-        .cert-header h1 {
+        .header-center {
+            text-align: center;
+        }
+        
+        .header-center h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: 16pt;
+            font-size: 12pt;
             font-weight: 900;
             color: var(--navy);
-            margin-bottom: 2mm;
+            margin-bottom: 1.5mm;
             line-height: 1.1;
         }
         
-        .cert-header h2 {
-            font-size: 9pt;
+        .header-center h2 {
+            font-size: 7pt;
             color: var(--navy);
             font-weight: 600;
             margin-bottom: 1mm;
         }
         
-        .cert-header h3 {
-            font-size: 7pt;
+        .header-center h3 {
+            font-size: 6pt;
             color: #000;
             font-weight: 500;
         }
         
-        /* Top Right - QR & Serial */
-        .qr-section {
-            position: absolute;
-            top: 0;
-            right: 0;
-            text-align: center;
-        }
-        
-        .ulc-serial-box {
-            background: var(--navy);
-            color: white;
-            padding: 2mm 4mm;
-            border-radius: 2mm;
-            font-family: 'Orbitron', monospace;
-            font-size: 7pt;
-            font-weight: 700;
-            margin-bottom: 2mm;
+        .header-right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1mm;
         }
         
         .qr-code {
             width: 18mm;
             height: 18mm;
             background: white;
-            border: 1.5px solid var(--navy);
+            border: 1px solid var(--navy);
             border-radius: 2mm;
-            margin: 0 auto;
         }
         
         .ulc-small-text {
-            font-size: 5pt;
+            font-size: 4pt;
             color: var(--navy);
             font-family: 'Orbitron', monospace;
-            margin-top: 1mm;
             font-weight: 700;
+            text-align: center;
+            word-break: break-all;
+            line-height: 1.1;
         }
         
         /* Title */
         .cert-title {
             font-family: 'Cinzel', serif;
-            font-size: 24pt;
+            font-size: 18pt;
             font-weight: 700;
             text-align: center;
             color: var(--gold);
-            margin: 5mm 0 3mm 0;
+            margin: 4mm 0 2mm 0;
             letter-spacing: 2pt;
             text-transform: uppercase;
         }
         
         .badge-text {
             text-align: center;
-            font-size: 8pt;
+            font-size: 7pt;
             color: var(--navy);
             font-weight: 600;
-            margin-bottom: 4mm;
+            margin-bottom: 3mm;
         }
         
-        /* Body Content */
+        /* Body */
         .cert-body {
             text-align: center;
             flex: 1;
         }
         
         .cert-body p {
-            font-size: 9pt;
+            font-size: 7pt;
             color: #000;
-            margin: 2mm 0;
+            margin: 1.5mm 0;
+            line-height: 1.3;
         }
         
         .learner-name {
             font-family: 'Playfair Display', serif;
-            font-size: 26pt;
+            font-size: 20pt;
             font-weight: 700;
             color: var(--navy);
-            margin: 3mm 0;
-            border-bottom: 3px solid var(--navy);
+            margin: 2mm 0;
+            border-bottom: 2px solid var(--navy);
             display: inline-block;
             padding-bottom: 1mm;
         }
         
         .info-line {
-            font-size: 10pt;
+            font-size: 7pt;
             color: #000;
             font-weight: 500;
-            margin: 2mm 0;
+            margin: 1.5mm 0;
         }
         
         .info-line strong {
             color: var(--navy);
+            font-weight: 700;
         }
         
         /* IDs Grid */
@@ -389,19 +391,19 @@
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 2mm;
-            margin: 4mm 0;
-            padding: 3mm;
+            margin: 3mm 0;
+            padding: 2mm;
             background: rgba(30, 58, 138, 0.05);
             border-radius: 2mm;
         }
         
         .id-box {
             text-align: center;
-            padding: 2mm;
+            padding: 1.5mm;
         }
         
         .id-label {
-            font-size: 6pt;
+            font-size: 5pt;
             color: var(--navy);
             font-weight: 700;
             display: block;
@@ -409,45 +411,46 @@
         }
         
         .id-value {
-            font-size: 7pt;
+            font-size: 6pt;
             color: #000;
             font-family: 'Orbitron', monospace;
             font-weight: 600;
+            word-break: break-all;
         }
         
         .program-title {
-            font-size: 14pt;
+            font-size: 11pt;
             font-weight: 700;
             color: var(--navy);
-            margin: 3mm 0;
+            margin: 2mm 0;
             font-style: italic;
         }
         
         .cycle-text {
-            font-size: 7pt;
+            font-size: 6pt;
             color: #666;
             font-style: italic;
-            margin: 2mm 0;
+            margin: 1.5mm 0;
         }
         
         /* Domains Grid */
         .domains-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 3mm;
-            margin: 4mm 0;
+            gap: 2mm;
+            margin: 3mm 0;
         }
         
         .domain-box {
             text-align: center;
-            padding: 3mm;
-            border: 1.5px solid var(--gold);
+            padding: 2mm;
+            border: 1px solid var(--gold);
             border-radius: 2mm;
             background: rgba(212, 175, 55, 0.05);
         }
         
         .domain-label {
-            font-size: 7pt;
+            font-size: 6pt;
             color: var(--navy);
             font-weight: 700;
             display: block;
@@ -455,7 +458,7 @@
         }
         
         .domain-score {
-            font-size: 14pt;
+            font-size: 11pt;
             color: var(--gold);
             font-weight: 700;
         }
@@ -465,9 +468,9 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-top: 5mm;
-            padding-top: 4mm;
-            border-top: 2px solid var(--gold);
+            margin-top: 4mm;
+            padding-top: 3mm;
+            border-top: 1.5px solid var(--gold);
         }
         
         .footer-left {
@@ -475,21 +478,21 @@
         }
         
         .footer-left p {
-            font-size: 7pt;
+            font-size: 6pt;
             color: #000;
-            margin-bottom: 2mm;
+            margin-bottom: 1.5mm;
         }
         
         .signature-line {
-            border-bottom: 2px solid #000;
-            width: 40mm;
-            height: 12mm;
+            border-bottom: 1.5px solid #000;
+            width: 35mm;
+            height: 10mm;
             margin-bottom: 1mm;
         }
         
         .verifier-name {
             font-family: 'Playfair Display', serif;
-            font-size: 11pt;
+            font-size: 9pt;
             color: var(--navy);
             font-weight: 700;
             margin-bottom: 1mm;
@@ -505,13 +508,13 @@
             padding: 2mm 4mm;
             border-radius: 2mm;
             font-weight: 700;
-            font-size: 9pt;
+            font-size: 7pt;
             display: inline-block;
-            margin-bottom: 2mm;
+            margin-bottom: 1.5mm;
         }
         
         .footer-right p {
-            font-size: 6pt;
+            font-size: 5pt;
             color: #000;
             margin: 0.5mm 0;
         }
@@ -569,82 +572,80 @@
 
     <div class="main-content">
         <div class="form-section">
-            <h2 class="section-title"><i class="fas fa-edit"></i> Certificate Data Entry</h2>
+            <h2 class="section-title"><i class="fas fa-edit"></i> Certificate Data Entry (Manual)</h2>
             <form id="certificateForm">
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Learner Name *</label>
-                        <input type="text" class="form-control" id="learnerName" required>
+                        <input type="text" class="form-control" id="learnerName" placeholder="Enter learner full name" required>
                     </div>
                     <div class="form-group">
-                        <label>Parent Name *</label>
-                        <input type="text" class="form-control" id="parentName" required>
+                        <label>Date of Birth *</label>
+                        <input type="text" class="form-control" id="dateOfBirth" placeholder="DD/MM/YYYY" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Parent/Guardian Name *</label>
+                        <input type="text" class="form-control" id="parentName" placeholder="Enter parent name" required>
                     </div>
                     <div class="form-group">
                         <label>Place Name *</label>
-                        <input type="text" class="form-control" id="placeName" required>
+                        <input type="text" class="form-control" id="placeName" placeholder="City, State" required>
                     </div>
                     <div class="form-group">
-                        <label>Institution *</label>
-                        <input type="text" class="form-control" id="institution" required>
+                        <label>Institution/Hub Name *</label>
+                        <input type="text" class="form-control" id="institution" placeholder="Enter institution name" required>
                     </div>
                     <div class="form-group">
                         <label>Program Title *</label>
-                        <input type="text" class="form-control" id="programTitle" required>
+                        <input type="text" class="form-control" id="programTitle" placeholder="Enter program title" required>
                     </div>
                     <div class="form-group">
                         <label>Badge Name *</label>
-                        <input type="text" class="form-control" id="badgeName" required>
+                        <input type="text" class="form-control" id="badgeName" placeholder="Enter badge name" required>
                     </div>
                     <div class="form-group">
                         <label>ULP ID</label>
-                        <input type="text" class="form-control" id="ulpId" readonly>
+                        <input type="text" class="form-control" id="ulpId" placeholder="ULP-2025-XXXX">
                     </div>
                     <div class="form-group">
-                        <label>ULC ID</label>
-                        <input type="text" class="form-control" id="ulcId" readonly>
+                        <label>ULC ID *</label>
+                        <input type="text" class="form-control" id="ulcId" placeholder="ULC-2025-XXXX" required>
                     </div>
                     <div class="form-group">
                         <label>ULCI ID</label>
-                        <input type="text" class="form-control" id="ulciId" readonly>
+                        <input type="text" class="form-control" id="ulciId" placeholder="ULCI-2025-XXXX">
                     </div>
                     <div class="form-group">
                         <label>ULCI Score</label>
-                        <input type="text" class="form-control" id="ulciScore" placeholder="95%">
+                        <input type="text" class="form-control" id="ulciScore" placeholder="95% or A+ or Excellent">
                     </div>
                     <div class="form-group">
                         <label>Index Level</label>
-                        <select class="form-control" id="indexLevel">
-                            <option>Level 1</option>
-                            <option>Level 2</option>
-                            <option>Level 3</option>
-                            <option>Level 4</option>
-                            <option>Level 5</option>
-                        </select>
+                        <input type="text" class="form-control" id="indexLevel" placeholder="Level 1, Level 2, etc.">
                     </div>
                     <div class="form-group">
-                        <label>Knowledge Score</label>
-                        <input type="text" class="form-control" id="knowledgeScore" placeholder="95%">
+                        <label>Knowledge & Inquiry Score</label>
+                        <input type="text" class="form-control" id="knowledgeScore" placeholder="95%, A+, Excellent, etc.">
                     </div>
                     <div class="form-group">
-                        <label>Creativity</label>
-                        <input type="text" class="form-control" id="creativity" placeholder="Advanced">
+                        <label>Creativity & Innovation</label>
+                        <input type="text" class="form-control" id="creativity" placeholder="Advanced, Excellent, 90%, etc.">
                     </div>
                     <div class="form-group">
-                        <label>Collaboration</label>
-                        <input type="text" class="form-control" id="collaboration" placeholder="88%">
+                        <label>Collaboration & Compassion</label>
+                        <input type="text" class="form-control" id="collaboration" placeholder="88%, Good, High, etc.">
                     </div>
                     <div class="form-group">
-                        <label>Leadership</label>
-                        <input type="text" class="form-control" id="leadership" placeholder="High Impact">
+                        <label>Leadership & Contribution</label>
+                        <input type="text" class="form-control" id="leadership" placeholder="High Impact, Excellent, etc.">
                     </div>
                     <div class="form-group">
                         <label>Date Issued</label>
-                        <input type="date" class="form-control" id="dateIssued">
+                        <input type="text" class="form-control" id="dateIssued" placeholder="DD/MM/YYYY or November 5, 2025">
                     </div>
                     <div class="form-group">
-                        <label>Verified By</label>
-                        <input type="text" class="form-control" id="verifiedBy">
+                        <label>Verified By (Mentor Name)</label>
+                        <input type="text" class="form-control" id="verifiedBy" placeholder="Enter mentor/verifier name">
                     </div>
                 </div>
                 
@@ -666,19 +667,21 @@
         <div class="certificate-section">
             <h2 class="section-title"><i class="fas fa-certificate"></i> Certificate Preview</h2>
             <div class="certificate-wrapper">
-                <!-- SINGLE A4 CERTIFICATE WITH ALL CONTENT INSIDE -->
                 <div class="certificate-a4" id="certificate">
                     <div class="cert-border">
-                        <!-- Header -->
+                        <!-- Header: Logo Left, Text Center, QR Right -->
                         <div class="cert-header">
-                            <div class="cert-logo">🌎</div>
-                            <h1>UNIVERSAL NEXUS EDUCATION<br>TRANSFORMATION SYSTEM</h1>
-                            <h2>"Education for the Universal Nexus Human Civilization 3.0"</h2>
-                            <h3>Education 5.0 · Lifelong Learning · Scientific Humanism</h3>
+                            <div class="header-left">
+                                <div class="cert-logo">🌎</div>
+                            </div>
                             
-                            <!-- QR Code Section -->
-                            <div class="qr-section">
-                                <div class="ulc-serial-box" id="ulcSerial">ULC-2025-XXXX</div>
+                            <div class="header-center">
+                                <h1>UNIVERSAL NEXUS EDUCATION<br>TRANSFORMATION SYSTEM</h1>
+                                <h2>"Education for the Universal Nexus Human Civilization 3.0"</h2>
+                                <h3>Education 5.0 · Lifelong Learning · Scientific Humanism</h3>
+                            </div>
+                            
+                            <div class="header-right">
                                 <div class="qr-code" id="qrCode"></div>
                                 <div class="ulc-small-text" id="ulcSmall">ULC-2025-XXXX</div>
                             </div>
@@ -688,16 +691,17 @@
                         <div class="cert-title">CERTIFICATE OF ACHIEVEMENT</div>
                         <div class="badge-text" id="badgeText">Metamorphic Badge: [Badge Name]</div>
                         
-                        <!-- Body Content -->
+                        <!-- Body -->
                         <div class="cert-body">
                             <p>This certifies that</p>
                             <div class="learner-name" id="certName">[Learner Name]</div>
                             
+                            <p class="info-line"><strong>Date of Birth:</strong> <span id="certDob">[DD/MM/YYYY]</span></p>
                             <p class="info-line"><strong>Parent/Guardian:</strong> <span id="certParent">[Parent Name]</span></p>
                             <p class="info-line"><strong>Institution:</strong> <span id="certInst">[Institution]</span></p>
                             <p class="info-line"><strong>Place:</strong> <span id="certPlace">[Place Name]</span></p>
                             
-                            <!-- All IDs Grid -->
+                            <!-- IDs Grid -->
                             <div class="ids-grid">
                                 <div class="id-box">
                                     <span class="id-label">ULP ID</span>
@@ -725,7 +729,7 @@
                             <div class="program-title" id="certProgram">"[Program Title]"</div>
                             <p class="cycle-text">under the Education 5.0 — Discovery → Integration → Creation → Contribution Cycle</p>
                             
-                            <!-- Domains Grid -->
+                            <!-- Domains -->
                             <div class="domains-grid">
                                 <div class="domain-box">
                                     <span class="domain-label">Knowledge & Inquiry</span>
@@ -750,9 +754,9 @@
                         <div class="cert-footer">
                             <div class="footer-left">
                                 <p><strong>Issued on:</strong> <span id="certDate">November 5, 2025</span></p>
-                                <canvas class="signature-line" id="certSig" width="150" height="45"></canvas>
+                                <canvas class="signature-line" id="certSig" width="130" height="38"></canvas>
                                 <div class="verifier-name" id="certVerifier">[Mentor Name]</div>
-                                <p style="font-size:6pt;">Authorized Verifier</p>
+                                <p style="font-size:5pt;">Authorized Verifier</p>
                             </div>
                             <div class="footer-right">
                                 <div class="authority-badge">Authorized by UIENC</div>
@@ -790,18 +794,6 @@
         
         document.getElementById('closeBtn').addEventListener('click', closeSidebar);
         document.getElementById('overlay').addEventListener('click', closeSidebar);
-        
-        // Generate IDs
-        function generateID(prefix) {
-            const ts = Date.now().toString(36).toUpperCase();
-            const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
-            return `${prefix}-2025-${ts}${rand}`;
-        }
-        
-        document.getElementById('ulpId').value = generateID('ULP');
-        document.getElementById('ulcId').value = generateID('ULC');
-        document.getElementById('ulciId').value = generateID('ULCI');
-        document.getElementById('dateIssued').value = new Date().toISOString().split('T')[0];
         
         // QR Code
         function generateQR(ulcId) {
@@ -878,31 +870,29 @@
         
         // Update Preview
         function updatePreview() {
-            const ulcId = document.getElementById('ulcId').value;
+            const ulcId = document.getElementById('ulcId').value || 'ULC-2025-XXXX';
             
-            document.getElementById('ulcSerial').textContent = ulcId;
             document.getElementById('ulcSmall').textContent = ulcId;
             document.getElementById('badgeText').textContent = `Metamorphic Badge: ${document.getElementById('badgeName').value || '[Badge Name]'}`;
             document.getElementById('certName').textContent = document.getElementById('learnerName').value || '[Learner Name]';
+            document.getElementById('certDob').textContent = document.getElementById('dateOfBirth').value || '[DD/MM/YYYY]';
             document.getElementById('certParent').textContent = document.getElementById('parentName').value || '[Parent Name]';
             document.getElementById('certInst').textContent = document.getElementById('institution').value || '[Institution]';
             document.getElementById('certPlace').textContent = document.getElementById('placeName').value || '[Place Name]';
             document.getElementById('certProgram').textContent = `"${document.getElementById('programTitle').value || '[Program Title]'}"`;
             
-            document.getElementById('idUlp').textContent = document.getElementById('ulpId').value;
+            document.getElementById('idUlp').textContent = document.getElementById('ulpId').value || 'ULP-2025-XXX';
             document.getElementById('idUlc').textContent = ulcId;
-            document.getElementById('idUlci').textContent = document.getElementById('ulciId').value;
+            document.getElementById('idUlci').textContent = document.getElementById('ulciId').value || 'ULCI-2025-XXX';
             document.getElementById('scoreUlci').textContent = document.getElementById('ulciScore').value || '95%';
-            document.getElementById('levelIndex').textContent = document.getElementById('indexLevel').value;
+            document.getElementById('levelIndex').textContent = document.getElementById('indexLevel').value || 'Level 1';
             
             document.getElementById('scoreKnow').textContent = document.getElementById('knowledgeScore').value || '95%';
             document.getElementById('scoreCreat').textContent = document.getElementById('creativity').value || 'Advanced';
             document.getElementById('scoreCollab').textContent = document.getElementById('collaboration').value || '88%';
             document.getElementById('scoreLead').textContent = document.getElementById('leadership').value || 'High Impact';
             
-            const date = new Date(document.getElementById('dateIssued').value);
-            document.getElementById('certDate').textContent = date.toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
-            
+            document.getElementById('certDate').textContent = document.getElementById('dateIssued').value || 'November 5, 2025';
             document.getElementById('certVerifier').textContent = document.getElementById('verifiedBy').value || '[Mentor Name]';
             document.getElementById('credId').textContent = `UNETS-CERT-2025-${Date.now().toString().slice(-9)}`;
             
@@ -918,8 +908,13 @@
                 return;
             }
             
+            if (!document.getElementById('ulcId').value) {
+                alert('⚠ Please enter ULC ID');
+                return;
+            }
+            
             updatePreview();
-            alert('✓ Certificate generated!');
+            alert('✓ Certificate generated successfully!');
             
             setTimeout(() => {
                 document.querySelector('.certificate-section').scrollIntoView({behavior:'smooth'});
@@ -959,21 +954,21 @@
                 pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
                 
                 const name = document.getElementById('learnerName').value.replace(/[^a-zA-Z0-9]/g, '_') || 'Certificate';
-                const ulcId = document.getElementById('ulcId').value;
+                const ulcId = document.getElementById('ulcId').value.replace(/[^a-zA-Z0-9]/g, '_') || 'ULC';
                 pdf.save(`ULC_Certificate_${name}_${ulcId}.pdf`);
                 
-                alert('✓ PDF Downloaded!\n\nA4 Size: 210mm × 297mm');
+                alert('✓ PDF Downloaded Successfully!\n\nA4 Size: 210mm × 297mm');
             } catch(error) {
                 console.error('Error:', error);
-                alert('⚠ Error generating PDF');
+                alert('⚠ Error generating PDF. Please try again.');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-download"></i> Download PDF';
             }
         });
         
-        // Auto-update
-        document.querySelectorAll('#certificateForm input, #certificateForm select').forEach(input => {
+        // Auto-update on input
+        document.querySelectorAll('#certificateForm input').forEach(input => {
             input.addEventListener('input', () => {
                 clearTimeout(window.updateTimer);
                 window.updateTimer = setTimeout(updatePreview, 300);
@@ -984,8 +979,10 @@
         updatePreview();
         
         console.log('✓ UNETS System Ready');
-        console.log('✓ Single A4 Certificate: 210mm × 297mm');
-        console.log('✓ All Content Inside Template');
+        console.log('✓ Manual Entry Mode - No Dropdowns');
+        console.log('✓ Certificate: 210mm × 297mm A4');
+        console.log('✓ Logo Left | Text Center | QR Right');
+        console.log('✓ Small Text Sizes Applied');
     </script>
 </body>
 </html>
